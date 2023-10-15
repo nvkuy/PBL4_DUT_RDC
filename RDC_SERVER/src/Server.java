@@ -5,10 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class Server {
 	
@@ -24,6 +24,7 @@ public class Server {
 	Map<String, AdminHandler> admin;
 	Map<String, EmployeeHandler> employee;
 	volatile Boolean isRunning = false;
+	volatile Boolean inited = false;
 	RSA rsa;
 
 	public static void main(String[] args) {
@@ -37,7 +38,7 @@ public class Server {
 	public void Init() {
 		try {
 			
-			System.out.println("Server starting..");
+			System.out.println("Server initing..");
 			
 			server = new ServerSocket(PORT);
 			
@@ -45,10 +46,10 @@ public class Server {
 			// rsa.printKeys();
 			
 			conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
-			adminIP = new TreeSet<>();
-			notAllowApp = new TreeSet<>();
-			admin = new TreeMap<>();
-			employee = new TreeMap<>();
+			adminIP = new HashSet<>();
+			notAllowApp = new HashSet<>();
+			admin = new HashMap<>();
+			employee = new HashMap<>();
 			
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM _ADMIN_COMP");
@@ -65,6 +66,8 @@ public class Server {
 				// System.out.println(app);
 			}
 			
+			inited = true;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Init server failed!");
@@ -78,7 +81,7 @@ public class Server {
 		
 		try {
 			
-			while (isRunning) {
+			while (inited && isRunning) {
 				
 				Socket socket = server.accept();
 				Thread handler = null;

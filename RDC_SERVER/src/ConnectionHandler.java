@@ -4,7 +4,6 @@ import java.net.Socket;
 import java.security.PublicKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class ConnectionHandler implements Runnable {
 
@@ -61,11 +60,11 @@ public class ConnectionHandler implements Runnable {
 		// client verify server
 		String testMes = inp.readUTF();
 		String signMes = server.rsa.sign(testMes);
-		out.writeUTF(signMes + "\n");
+		out.writeUTF(signMes + "");
 		
 		// server verify client
 		testMes = String.valueOf((long)(Math.random() * 1e18));
-		out.writeUTF(testMes + "\n");
+		out.writeUTF(testMes + "");
 		signMes = inp.readUTF();
 		if (!server.rsa.verify(testMes, signMes, clientPK))
 			return;
@@ -77,8 +76,8 @@ public class ConnectionHandler implements Runnable {
 		String IV = aes.getIVStr();
 		String crypKey = RSA.encrypt(key, clientPK);
 		String crypIV = RSA.encrypt(IV, clientPK);
-		out.writeUTF(crypKey + "\n");
-		out.writeUTF(crypIV + "\n");
+		out.writeUTF(crypKey + "");
+		out.writeUTF(crypIV + "");
 		
 	}
 	
@@ -92,7 +91,7 @@ public class ConnectionHandler implements Runnable {
 	public void writeMes(String mes) throws Exception {
 		
 		String crypMes = aes.encrypt(mes);
-		out.writeUTF(crypMes + "\n");
+		out.writeUTF(crypMes + "");
 		
 	}
 	
