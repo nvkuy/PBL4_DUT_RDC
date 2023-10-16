@@ -36,14 +36,15 @@ public class ConnectionHandler implements Runnable {
 			verify();
 			
 			if (verified) {
-				if (server.adminIP.contains(ip))
-					server.admin.put(compID, (AdminHandler) this);
+				if (server.adminIPs.contains(ip))
+					server.admins.put(compID, (AdminHandler) this);
 				else
-					server.employee.put(compID, (EmployeeHandler) this);
+					server.employees.put(compID, (EmployeeHandler) this);
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			Shutdown();
 		}
 		
 	}
@@ -98,10 +99,10 @@ public class ConnectionHandler implements Runnable {
 	public void Shutdown() {
 		
 		isRunning = false;
-		if (server.adminIP.contains(ip))
-			server.admin.remove(ip);
+		if (server.adminIPs.contains(ip))
+			server.admins.remove(ip);
 		else
-			server.employee.remove(ip);
+			server.employees.remove(ip);
 		
 	}
 

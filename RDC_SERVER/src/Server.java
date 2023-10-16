@@ -20,9 +20,9 @@ public class Server {
 	
 	Connection conn;
 	ServerSocket server;
-	Set<String> adminIP, notAllowApp;
-	Map<String, AdminHandler> admin;
-	Map<String, EmployeeHandler> employee;
+	Set<String> adminIPs, notAllowApps;
+	Map<String, AdminHandler> admins;
+	Map<String, EmployeeHandler> employees;
 	volatile Boolean isRunning = false;
 	volatile Boolean inited = false;
 	RSA rsa;
@@ -46,23 +46,23 @@ public class Server {
 			// rsa.printKeys();
 			
 			conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
-			adminIP = new HashSet<>();
-			notAllowApp = new HashSet<>();
-			admin = new HashMap<>();
-			employee = new HashMap<>();
+			adminIPs = new HashSet<>();
+			notAllowApps = new HashSet<>();
+			admins = new HashMap<>();
+			employees = new HashMap<>();
 			
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM _ADMIN_COMP");
 			while (rs.next()) {
 				String ip = rs.getString("IPComp");
-				adminIP.add(ip);
+				adminIPs.add(ip);
 				// System.out.println(ip);
 			}
 			
 			rs = stmt.executeQuery("SELECT * FROM _NOT_ALLOW_APP");
 			while (rs.next()) {
 				String app = rs.getString("AppName");
-				notAllowApp.add(app);
+				notAllowApps.add(app);
 				// System.out.println(app);
 			}
 			
@@ -85,7 +85,7 @@ public class Server {
 				
 				Socket socket = server.accept();
 				Thread handler = null;
-				if (adminIP.contains(socket.getInetAddress().toString()))
+				if (adminIPs.contains(socket.getInetAddress().toString()))
 					handler = new Thread(new AdminHandler(this, socket));
 				else
 					handler = new Thread(new EmployeeHandler(this, socket));

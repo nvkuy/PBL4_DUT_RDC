@@ -45,6 +45,7 @@ public class EmployeeHandler extends ConnectionHandler {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			Shutdown();
 		}
 		
 	}

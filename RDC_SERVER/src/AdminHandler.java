@@ -73,6 +73,7 @@ public class AdminHandler extends ConnectionHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			Shutdown();
 		}
 
 	}
