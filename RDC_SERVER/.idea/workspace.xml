@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/RDC_ADMIN.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/AES.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RSA.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/RDC_EMPLOYEE.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/AES.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RSA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/CompID.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/Key.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/CompID.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/Key.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AES.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AES.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AdminHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdminHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ConnectionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EmployeeHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/EmployeeHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RSA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RSA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
-    </list>
+    <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,6 +65,7 @@
       <workItem from="1697427905281" duration="8000" />
       <workItem from="1697429167143" duration="11858000" />
       <workItem from="1697447928070" duration="1054000" />
+      <workItem from="1697449582165" duration="321000" />
     </task>
     <servers />
   </component>
