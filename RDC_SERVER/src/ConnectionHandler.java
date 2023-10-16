@@ -12,7 +12,6 @@ public class ConnectionHandler implements Runnable {
 	protected DataInputStream inp;
 	protected DataOutputStream out;
 	protected String compID;
-	volatile protected Boolean verified = false;
 	volatile protected Boolean isRunning = false;
 	protected String ip;
 	protected AES aes;
@@ -30,21 +29,23 @@ public class ConnectionHandler implements Runnable {
 			isRunning = true;
 			inp = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
-			ip = socket.getInetAddress().toString();
+			ip = socket.getInetAddress().getHostAddress();
 			
 			compID = inp.readUTF();
+			// System.out.println(ip);
+			// System.out.println(compID + " connected!");
+
 			verify();
-			
-			if (verified) {
-				if (server.adminIPs.contains(ip))
-					server.admins.put(compID, (AdminHandler) this);
-				else
-					server.employees.put(compID, (EmployeeHandler) this);
-			}
+			// System.out.println(compID + " verified!");
+
+			if (server.adminIPs.contains(ip))
+				server.admins.put(compID, (AdminHandler) this);
+			else
+				server.employees.put(compID, (EmployeeHandler) this);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			Shutdown();
+			// e.printStackTrace();
+			close();
 		}
 		
 	}
@@ -59,44 +60,47 @@ public class ConnectionHandler implements Runnable {
 		while (rs.next()) clientPK = RSA.getPublicKeyFromStr(rs.getString("PublicKey"));
 		
 		// client verify server
-		String testMes = inp.readUTF();
+		String crypMes = inp.readUTF();
+		String testMes = server.rsa.decrypt(crypMes);
 		String signMes = server.rsa.sign(testMes);
-		out.writeUTF(signMes + "");
+		out.writeUTF(signMes);
 		
 		// server verify client
 		testMes = String.valueOf((long)(Math.random() * 1e18));
-		out.writeUTF(testMes + "");
+		crypMes = RSA.encrypt(testMes, clientPK);
+		out.writeUTF(crypMes);
 		signMes = inp.readUTF();
-		if (!server.rsa.verify(testMes, signMes, clientPK))
-			return;
+		if (!RSA.verify(testMes, signMes, clientPK))
+			throw new Exception();
 		
 		// generate share key
-		verified = true;
 		aes = new AES();
 		String key = aes.getKeyStr();
-		String IV = aes.getIVStr();
 		String crypKey = RSA.encrypt(key, clientPK);
-		String crypIV = RSA.encrypt(IV, clientPK);
-		out.writeUTF(crypKey + "");
-		out.writeUTF(crypIV + "");
-		
+		out.writeUTF(crypKey);
+
 	}
 	
 	public String readMes() throws Exception {
-		
+
+		String IVStr = inp.readUTF();
 		String crypMes = inp.readUTF();
-		return aes.decrypt(crypMes);
+		byte[] IV = AES.getIVFromStr(IVStr);
+		return aes.decrypt(crypMes, IV);
 		
 	}
 	
 	public void writeMes(String mes) throws Exception {
-		
-		String crypMes = aes.encrypt(mes);
-		out.writeUTF(crypMes + "");
+
+		byte[] IV = aes.generateIV();
+		String crypMes = aes.encrypt(mes, IV);
+		String IVStr = AES.getIVStr(IV);
+		out.writeUTF(IVStr);
+		out.writeUTF(crypMes);
 		
 	}
 	
-	public void Shutdown() {
+	public void close() {
 		
 		isRunning = false;
 		if (server.adminIPs.contains(ip))

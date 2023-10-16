@@ -18,7 +18,7 @@ public class AdminHandler extends ConnectionHandler {
 
 			super.run();
 
-			while (isRunning && verified) {
+			while (isRunning) {
 
 				String option = readMes();
 
@@ -72,8 +72,8 @@ public class AdminHandler extends ConnectionHandler {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Shutdown();
+			// e.printStackTrace();
+			close();
 		}
 
 	}

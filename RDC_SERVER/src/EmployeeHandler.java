@@ -16,7 +16,7 @@ public class EmployeeHandler extends ConnectionHandler {
 			
 			super.run();
 			
-			while (isRunning && verified) {
+			while (isRunning) {
 				
 				String option = readMes();
 				
@@ -44,8 +44,8 @@ public class EmployeeHandler extends ConnectionHandler {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			Shutdown();
+			// e.printStackTrace();
+			close();
 		}
 		
 	}
