@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class Server {
 
-    private static final String DB_URL = "jdbc:mysql://127.0.0.2:3306/rdc";
+    private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/RDC";
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "";
     private static final Integer PORT = 6996;
