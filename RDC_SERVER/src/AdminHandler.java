@@ -61,6 +61,12 @@ public class AdminHandler extends ConnectionHandler {
 					
 					//..
 					
+				} else if (option.equals("/OnlineList")) {
+
+					writeMes(server.employees.keySet().size() + "");
+					for (String compID : server.employees.keySet())
+						writeMes(compID);
+
 				} else if (option.equals("/RemoteControl")) {
 					
 					//..

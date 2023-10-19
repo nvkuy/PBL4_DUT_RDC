@@ -1,0 +1,1 @@
+java -cp .:/home/osboxes/Desktop/PBL4/server/mysql-connector-java-8.0.28.jar Server

@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.net.Socket;
 import java.security.PublicKey;
 import java.security.spec.ECField;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientAdmin {
 
@@ -91,14 +93,26 @@ public class ClientAdmin {
 
     public void SendData() throws Exception {
 
-        isRunning = true;
-        while (isRunning) {
+//        isRunning = true;
+//        while (isRunning) {
+//
+//            // handler func..
+//
+//        }
 
-
-
+        String option = "/OnlineList";
+        writeMes(option);
+        int n = Integer.parseInt(readMes());
+        System.out.println(n + "");
+        List<String> onlineComps = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            String onlineComp = readMes();
+            onlineComps.add(onlineComp);
+            System.out.println(onlineComp);
         }
 
     }
+
 
     public void Shutdown() {
 

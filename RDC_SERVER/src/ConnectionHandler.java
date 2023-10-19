@@ -71,7 +71,7 @@ public class ConnectionHandler implements Runnable {
 		out.writeUTF(crypMes);
 		signMes = inp.readUTF();
 		if (!RSA.verify(testMes, signMes, clientPK))
-			throw new Exception();
+			throw new Exception("Can't verify exception!");
 		
 		// generate share key
 		aes = new AES();
