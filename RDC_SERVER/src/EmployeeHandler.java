@@ -15,6 +15,8 @@ public class EmployeeHandler extends ConnectionHandler {
 		try {
 			
 			super.run();
+
+			// System.out.println("Employee: " + ip);
 			
 			while (isRunning) {
 				

@@ -18,6 +18,8 @@ public class AdminHandler extends ConnectionHandler {
 
 			super.run();
 
+			// System.out.println("Admin: " + ip);
+
 			while (isRunning) {
 
 				String option = readMes();

@@ -25,8 +25,7 @@ public class ConnectionHandler implements Runnable {
 	public void run() {
 
 		try {
-			
-			isRunning = true;
+
 			inp = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
 			ip = socket.getInetAddress().getHostAddress();
@@ -38,6 +37,7 @@ public class ConnectionHandler implements Runnable {
 			verify();
 			// System.out.println(compID + " verified!");
 
+			isRunning = true;
 			if (server.adminIPs.contains(ip))
 				server.admins.put(compID, (AdminHandler) this);
 			else

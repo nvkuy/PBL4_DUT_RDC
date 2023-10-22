@@ -85,7 +85,7 @@ public class Server {
 
                 Socket socket = server.accept();
                 Thread handler = null;
-                if (adminIPs.contains(socket.getInetAddress().toString()))
+                if (adminIPs.contains(socket.getInetAddress().getHostAddress()))
                     handler = new Thread(new AdminHandler(this, socket));
                 else
                     handler = new Thread(new EmployeeHandler(this, socket));
