@@ -36,7 +36,9 @@ public class EmployeeHandler extends ConnectionHandler {
 					for (int i = 0; i < n; i++) {
 						String app = readMes();
 						preparedStmt.setString(3, app);
-						preparedStmt.executeUpdate();
+						try {
+							preparedStmt.executeUpdate();
+						} catch (Exception e) {}
 					}
 					
 				} else {
