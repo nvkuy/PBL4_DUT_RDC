@@ -29,7 +29,7 @@ public class ClientEmployee {
 
             client.Init();
             client.Connect();
-            client.SendData();
+            client.Interact();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,7 +89,7 @@ public class ClientEmployee {
 
     }
 
-    public void SendData() throws Exception {
+    public void Interact() throws Exception {
 
         isRunning = true;
 //        while (isRunning) {

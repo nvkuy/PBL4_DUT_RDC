@@ -31,7 +31,7 @@ public class ClientAdmin {
 
             client.Init();
             client.Connect();
-            client.SendData();
+            client.Interact();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +91,7 @@ public class ClientAdmin {
 
     }
 
-    public void SendData() throws Exception {
+    public void Interact() throws Exception {
 
 //        isRunning = true;
 //        while (isRunning) {
