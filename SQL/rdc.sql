@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2023 at 11:49 AM
+-- Generation Time: Oct 24, 2023 at 12:23 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -48,15 +48,6 @@ CREATE TABLE `_COMP` (
   `CompID` varchar(69) NOT NULL,
   `PublicKey` varchar(333) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `_COMP`
---
-
-INSERT INTO `_COMP` (`CompID`, `PublicKey`) VALUES
-('admin1', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCZQgziSQiBlv0nG+BXwVa2tgtWOEe4SNgGP8Ap9QLtCwUeKY1fZjND0Kw3yGkQQ9HbaG2FF/d2W8+f3bZ/tyoF0JEKadQ7XrlrR0H/QhJKSteOWEM2i7mRc6A+3MQoA/gSCt5S6alB65uFENFzPMEqHyl75b2S3Hn+0mKK1uY7BQIDAQAB'),
-('employee1', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCM+ybApYu5AOl6OnxaZc0LlZgDCGKCEHqzVGTZyh77ZZVthc0e33KtXF9V6Pk6nPgM/8SR/kzNGMP5lcL4BuXavgKeSU4djWacuMmqroUlrwxzgAmRjFUFsngRQjgN5I8K9bvSqNB6HhVup6OuTh0jjQLEKD+WIIRIqLDCm9wJCQIDAQAB'),
-('root', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6prCDkPMqob5gp/R8/ZFGgM4RT/tOXoIgXJLTEw6CWKSECRTiMH/RqJSI2I92MNqQXnPM8DW8ixcne8OUtWt49CJiAbj6FdlzbY343WNy3sUlNbjypOXYK2Kwwt978lj1k3pYB2CUeJK2CG64XpOVKac5yV6oNiiPVmSGRLODvQIDAQAB');
 
 -- --------------------------------------------------------
 
@@ -138,7 +129,7 @@ ALTER TABLE `_NOT_ALLOW_APP`
 -- Constraints for table `_COMP_APP_HISTORY`
 --
 ALTER TABLE `_COMP_APP_HISTORY`
-  ADD CONSTRAINT `_COMP_APP_HISTORY_ibfk_1` FOREIGN KEY (`CompID`) REFERENCES `_COMP_INFO` (`CompID`);
+  ADD CONSTRAINT `_COMP_APP_HISTORY_ibfk_1` FOREIGN KEY (`CompID`) REFERENCES `_COMP` (`CompID`);
 
 --
 -- Constraints for table `_COMP_INFO`
