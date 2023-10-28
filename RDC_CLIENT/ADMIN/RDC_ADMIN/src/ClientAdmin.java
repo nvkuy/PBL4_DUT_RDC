@@ -101,16 +101,16 @@ public class ClientAdmin {
 //
 //        }
 
-//        String option = "/OnlineList";
-//        writeMes(option);
-//        int n = Integer.parseInt(readMes());
-//        System.out.println(n + "");
-//        List<String> onlineComps = new ArrayList<>();
-//        for (int i = 0; i < n; i++) {
-//            String onlineComp = readMes();
-//            onlineComps.add(onlineComp);
-//            System.out.println(onlineComp);
-//        }
+        String option = "/OnlineList";
+        writeMes(option);
+        int n = Integer.parseInt(readMes());
+        System.out.println(n + "");
+        List<String> onlineComps = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            String onlineComp = readMes();
+            onlineComps.add(onlineComp);
+            System.out.println(onlineComp);
+        }
 
         String option1 = "/AppHistory";
         writeMes(option1);
@@ -124,6 +124,7 @@ public class ClientAdmin {
             apps.add(Arrays.asList(appName, timeID));
             System.out.println(i+". "+appName+", "+timeID);
         }
+        RemoteControlView view = new RemoteControlView("Remote control", onlineComps,apps);
 
     }
 
