@@ -1,10 +1,9 @@
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
 import java.security.spec.ECField;
+import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class ClientEmployee {
 
@@ -91,12 +90,26 @@ public class ClientEmployee {
 
     public void Interact() throws Exception {
 
+        int check = 1;
         isRunning = true;
-//        while (isRunning) {
-//
-//
-//
-//        }
+        while (isRunning) {
+
+            LocalDateTime date = LocalDateTime.now();
+            if(date.getMinute() == 3) check = 1;
+            // Chuyển đổi mili giây sang thông tin ngày giờ hiện tại
+            if((date.getMinute() == 0 || date.getMinute() == 1) && (check==1)){
+                String datetime = String.format("%s_%s_%s_%s", date.getMonthValue(), date.getDayOfMonth(), date.getYear(), (date.getHour()-1));
+                String file = "D:\\Windowservice\\ServiceTestLog\\ServiceTestLog\\bin\\Debug\\Logs\\ServiceLog_"+datetime+".txt";
+                Scanner scanner = new Scanner(new File(file));
+                writeMes("/AppHistory");
+                while (scanner.hasNextLine()) {
+                    String data= scanner.nextLine();
+                    writeMes(data);
+                }
+                scanner.close();
+                check = 0;
+            }
+        }
 
     }
 
