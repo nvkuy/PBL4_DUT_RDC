@@ -1,6 +1,7 @@
 import java.net.Socket;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,22 +48,44 @@ public class AdminHandler extends ConnectionHandler {
 						writeMes(app_time.get(1));
 					}
 
-				} else if (option.equals("/NewCompInfo")) {
+				} else if (option.equals("/NotAllowApp")) {
+
+					List<String> notAllowApps = new ArrayList<>();
+					String readNotAllowAppSQL = "SELECT * FROM _NOT_ALLOW_APP";
+					Statement statement = server.conn.createStatement();
+					ResultSet rs = statement.executeQuery(readNotAllowAppSQL);
+					while (rs.next()) {
+						String app = rs.getString("AppName");
+						notAllowApps.add(app);
+						// System.out.println(app);
+					}
+
+					writeMes(notAllowApps.size() + "");
+					for (String app : notAllowApps)
+						writeMes(app);
+
+				} else if (option.equals("/CompInfo")) {
 					
 					//..
 					
-				} else if (option.equals("/DelCompInfo")) {
-					
-					//..
-					
-				} else if (option.equals("/EditCompInfo")) {
-					
-					//..
-					
-				} else if (option.equals("/ReadCompInfo")) {
-					
-					//..
-					
+				} else if (option.equals("/AllCompID")) {
+
+					String readCompIDSQL = "SELECT CompID FROM _COMP";
+					Statement statement = server.conn.createStatement();
+					ResultSet rs = statement.executeQuery(readCompIDSQL);
+					List<String> allCompID = new ArrayList<>();
+
+					while (rs.next()) {
+
+						String compID = rs.getString("CompID");
+						allCompID.add(compID);
+
+					}
+
+					writeMes(allCompID.size() + "");
+					for (String ID : allCompID)
+						writeMes(ID);
+
 				} else if (option.equals("/OnlineList")) {
 
 					writeMes(server.employees.keySet().size() + "");

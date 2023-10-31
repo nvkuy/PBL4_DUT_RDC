@@ -20,7 +20,7 @@ public class Server {
 
     Connection conn;
     ServerSocket server;
-    Set<String> adminIPs, notAllowApps;
+    Set<String> adminIPs;
     Map<String, AdminHandler> admins;
     Map<String, EmployeeHandler> employees;
     volatile Boolean isRunning = false;
@@ -53,7 +53,6 @@ public class Server {
 
         conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
         adminIPs = new HashSet<>();
-        notAllowApps = new HashSet<>();
         admins = new HashMap<>();
         employees = new HashMap<>();
 
@@ -63,13 +62,6 @@ public class Server {
             String ip = rs.getString("IPComp");
             adminIPs.add(ip);
             // System.out.println(ip);
-        }
-
-        rs = stmt.executeQuery("SELECT * FROM _NOT_ALLOW_APP");
-        while (rs.next()) {
-            String app = rs.getString("AppName");
-            notAllowApps.add(app);
-            // System.out.println(app);
         }
 
     }
