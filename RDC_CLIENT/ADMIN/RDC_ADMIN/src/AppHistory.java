@@ -18,16 +18,35 @@ public class AppHistory extends JFrame implements ActionListener {
     private JScrollPane scrollPane;
     private List<List<String>> apps = new ArrayList<>();
     private List<List<Object>> data = new ArrayList<>();
-    public AppHistory(String s, List<List<String>> apps)  {
+    private ClientAdmin client = new ClientAdmin();
+    private String comp;
+    public AppHistory(String s, String comp)  {
         super(s);
-        for (int i = 0; i < apps.size(); i++) {
-            List<String> app = apps.get(i);
-            this.apps.add(Arrays.asList(app.get(0), app.get(1)));
+        this.comp = comp;
+        try {
+            client.Init();
+            client.Connect();
+            GetData();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+            client.Shutdown();
         }
 
-        GUI();
     }
-    public void ProcessData(){
+    public void GetData() throws Exception{
+        String option1 = "/AppHistory";
+        client.writeMes(option1);
+        client.writeMes(comp);
+        int n1 = Integer.parseInt(client.readMes());
+        apps = new ArrayList<>();
+        for(int i = 0; i < n1; i++){
+            String appName = client.readMes();
+            String timeID = client.readMes();
+            apps.add(Arrays.asList(appName, timeID));
+            System.out.println(i + appName);
+        }
         for(int i = 0;i<apps.size();i++){
             int check = 0;
             for(List<Object> row: data){
@@ -47,8 +66,10 @@ public class AppHistory extends JFrame implements ActionListener {
                 data.add(row);
             }
         }
+        GUI();
+
     }
-    public void GUI() {
+    public void GUI() throws Exception {
         setDefaultCloseOperation(3);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -60,11 +81,9 @@ public class AppHistory extends JFrame implements ActionListener {
         pn.setBounds(0, 0, 1000, 600);
         pn.setBackground(Color.BLACK);
 
-        lb1 = new JLabel("COMPUTER APP HISTORY");
+        lb1 = new JLabel("COMPUTER APP HISTORY FOR " + comp);
         lb1.setForeground(Color.WHITE);
         lb1.setFont(new Font("Arial", Font.BOLD, 20));
-
-        ProcessData();
         String[] columnNames = {"Time", "Not Allow", "All"};
         Object[][] data001 = new Object[data.size()][];
         for (int i = 0; i < data.size(); i++) {
@@ -111,11 +130,8 @@ public class AppHistory extends JFrame implements ActionListener {
                 if (selectedColumn > 0) {
                     String selectedDate = (String) table.getValueAt(selectedRow, 0);
                     String selectedColumnName = table.getColumnName(selectedColumn);
-                    List<String> list = new ArrayList<>();
-                    for(int i = 0; i< apps.size();i++){
-                        if(apps.get(i).get(1).equals(selectedDate)) list.add(apps.get(i).get(0));
-                    }
-                    DetailHistory detailHistory =new DetailHistory("Detail History", selectedDate, selectedColumnName, list);
+
+                    DetailHistory detailHistory =new DetailHistory("Detail History", selectedDate, selectedColumnName, comp);
                 }
             }
         });

@@ -14,21 +14,42 @@ public class RemoteControlView extends JFrame implements ActionListener {
     private ImageIcon btnSearch,btnLogout;
 
     private List<String> onlineComps = new ArrayList<>();
-    private List<List<String>> apps = new ArrayList<>();
 
-    public RemoteControlView(String s, List<String> onlineComps, List<List<String>> apps)  {
+    private ClientAdmin client = new ClientAdmin();
+
+    public RemoteControlView(String s)  {
         super(s);
-        for(int i = 0;i<onlineComps.size();i++){
-            this.onlineComps.add(onlineComps.get(i));
+        try {
+
+            client.Init();
+            client.Connect();
+            GetData();
+            GUI();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+            client.Shutdown();
         }
-        for (int i = 0; i < apps.size(); i++) {
-            List<String> app = apps.get(i);
-            this.apps.add(Arrays.asList(app.get(0), app.get(1)));
-        }
-        GUI();
+
+
 
     }
+    public void GetData(){
+        try{
+            String option = "/OnlineList";
+            client.writeMes(option);
+            int n = Integer.parseInt(client.readMes());
 
+            onlineComps = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                String onlineComp = client.readMes();
+                onlineComps.add(onlineComp);
+            }
+        } catch(Exception e){
+
+        }
+    }
     public void GUI(){
         setDefaultCloseOperation(3);
         setLocationRelativeTo(null);
@@ -114,7 +135,7 @@ public class RemoteControlView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==btnList1.get(0)){
-            DetailComputer detail = new DetailComputer("Detail Computer", apps, btnList1.get(0).getText());
+            DetailComputer detail = new DetailComputer("Detail Computer", btnList1.get(0).getText(),"ONLINE");
 
         }
     }
