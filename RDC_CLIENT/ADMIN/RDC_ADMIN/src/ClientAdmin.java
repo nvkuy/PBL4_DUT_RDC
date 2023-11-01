@@ -101,30 +101,7 @@ public class ClientAdmin {
 //
 //        }
 
-        String option = "/OnlineList";
-        writeMes(option);
-        int n = Integer.parseInt(readMes());
-        System.out.println(n + "");
-        List<String> onlineComps = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            String onlineComp = readMes();
-            onlineComps.add(onlineComp);
-            System.out.println(onlineComp);
-        }
-
-        String option1 = "/AppHistory";
-        writeMes(option1);
-        writeMes("employee1");
-        int n1 = Integer.parseInt(readMes());
-        System.out.println(n1);
-        List<List<String>> apps = new ArrayList<>();
-        for(int i = 0; i < n1; i++){
-            String appName = readMes();
-            String timeID = readMes();
-            apps.add(Arrays.asList(appName, timeID));
-            System.out.println(i+". "+appName+", "+timeID);
-        }
-        RemoteControlView view = new RemoteControlView("Remote control", onlineComps,apps);
+        RemoteControlView view = new RemoteControlView("Remote control");
 
     }
 

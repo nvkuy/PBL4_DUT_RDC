@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DetailHistory extends JFrame implements ActionListener {
@@ -13,15 +14,38 @@ public class DetailHistory extends JFrame implements ActionListener {
     private JPanel pn;
     private JTable table;
     private JScrollPane scrollPane;
-    private String date, state;
-    private List<String> apps = new ArrayList<>();
-    public DetailHistory(String s, String date, String state, List<String> apps)  {
+    private String date,state,  comp;
+    private List<List<String>> apps = new ArrayList<>();
+    private ClientAdmin client = new ClientAdmin();
+    public DetailHistory(String s, String date, String state, String comp)  {
         super(s);
-        for(int i = 0; i<apps.size();i++){
-            this.apps.add(apps.get(i));
-        }
+        this.comp = comp;
         this.date = date;
         this.state = state;
+        try {
+            client.Init();
+            client.Connect();
+            GetData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+            client.Shutdown();
+        }
+    }
+    public void GetData() throws Exception{
+
+        String option1 = "/AppHistory";
+        client.writeMes(option1);
+        client.writeMes(comp);
+        int n1 = Integer.parseInt(client.readMes());
+        apps = new ArrayList<>();
+        for(int i = 0; i < n1; i++){
+            String appName = client.readMes();
+            String timeID = client.readMes();
+            if(timeID.equals(date)){
+                apps.add(Arrays.asList(appName, timeID));
+            }
+        }
         GUI();
     }
     public void GUI() {
@@ -45,8 +69,8 @@ public class DetailHistory extends JFrame implements ActionListener {
         Object[][] data = new Object[apps.size()][];
         for(int i = 0;i< apps.size();i++){
             List<String> row = new ArrayList<>();
-            row.add(date);
-            row.add(apps.get(i));
+            row.add(apps.get(i).get(1));
+            row.add(apps.get(i).get(0));
             data[i] = row.toArray();
         }
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
