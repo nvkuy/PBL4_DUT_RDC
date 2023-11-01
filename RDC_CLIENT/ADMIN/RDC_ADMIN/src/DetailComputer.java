@@ -13,16 +13,21 @@ public class DetailComputer extends JFrame implements ActionListener {
     private JPanel pn;
     private String comp ="";
     private String state = "";
-    private List<List<String>> apps = new ArrayList<>();
+    private ClientAdmin client = new ClientAdmin();
 
-    public DetailComputer(String s, List<List<String>> apps, String name)  {
+    public DetailComputer(String s, String name, String state)  {
         super(s);
-        for (int i = 0; i < apps.size(); i++) {
-            List<String> app = apps.get(i);
-            this.apps.add(Arrays.asList(app.get(0), app.get(1)));
+        this.comp=name;
+        try {
+            client.Init();
+            client.Connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+            client.Shutdown();
         }
-        comp=name;
-        state="ONLINE";
+
+        this.state = state;
         GUI();
 
 
@@ -110,7 +115,7 @@ public class DetailComputer extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==btnHistory){
-            AppHistory history = new AppHistory("AppHistory", apps);
+            AppHistory history = new AppHistory("AppHistory",comp);
         }
     }
 }
