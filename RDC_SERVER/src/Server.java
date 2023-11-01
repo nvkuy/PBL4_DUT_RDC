@@ -19,6 +19,7 @@ public class Server {
     private static final String KEY_PATH = "Key.txt";
 
     Connection conn;
+    CompDataHelper compDataHelper;
     ServerSocket server;
     Set<String> adminIPs;
     Map<String, AdminHandler> admins;
@@ -52,17 +53,12 @@ public class Server {
         // rsa.printKeys();
 
         conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
+        compDataHelper = new CompDataHelper(conn);
         adminIPs = new HashSet<>();
         admins = new HashMap<>();
         employees = new HashMap<>();
 
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM _ADMIN_COMP");
-        while (rs.next()) {
-            String ip = rs.getString("IPComp");
-            adminIPs.add(ip);
-            // System.out.println(ip);
-        }
+        adminIPs = compDataHelper.getAdminIPs();
 
     }
 

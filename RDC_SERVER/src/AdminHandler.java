@@ -28,19 +28,7 @@ public class AdminHandler extends ConnectionHandler {
 				if (option.equals("/AppHistory")) {
 
 					String targetCompID = readMes();
-					String readAppHistorySQL = "SELECT * FROM _COMP_APP_HISTORY WHERE CompID = ?";
-					PreparedStatement preparedStmt = server.conn.prepareStatement(readAppHistorySQL);
-					preparedStmt.setString(1, targetCompID);
-					ResultSet rs = preparedStmt.executeQuery();
-					List<List<String>> apps = new ArrayList<>();
-					
-					while (rs.next()) {
-						
-						String timeID = rs.getString("TimeID");
-						String appName = rs.getString("AppName");
-						apps.add(Arrays.asList(appName, timeID));
-						
-					}
+					List<List<String>> apps = server.compDataHelper.readAppHistory(targetCompID);
 					
 					writeMes(String.valueOf(apps.size()));
 					for (var app_time : apps) {
@@ -50,15 +38,7 @@ public class AdminHandler extends ConnectionHandler {
 
 				} else if (option.equals("/NotAllowApp")) {
 
-					List<String> notAllowApps = new ArrayList<>();
-					String readNotAllowAppSQL = "SELECT * FROM _NOT_ALLOW_APP";
-					Statement statement = server.conn.createStatement();
-					ResultSet rs = statement.executeQuery(readNotAllowAppSQL);
-					while (rs.next()) {
-						String app = rs.getString("AppName");
-						notAllowApps.add(app);
-						// System.out.println(app);
-					}
+					List<String> notAllowApps = server.compDataHelper.readNotAllowApps();
 
 					writeMes(notAllowApps.size() + "");
 					for (String app : notAllowApps)
@@ -66,21 +46,20 @@ public class AdminHandler extends ConnectionHandler {
 
 				} else if (option.equals("/CompInfo")) {
 					
-					//..
+					option = readMes();
+					if (option.equals("/Read")) {
+
+					} else if (option.equals("/AddOrInsert")) {
+
+					} else if (option.equals("/Delete")) {
+
+					} else {
+						// more feature..
+					}
 					
 				} else if (option.equals("/AllCompID")) {
 
-					String readCompIDSQL = "SELECT CompID FROM _COMP";
-					Statement statement = server.conn.createStatement();
-					ResultSet rs = statement.executeQuery(readCompIDSQL);
-					List<String> allCompID = new ArrayList<>();
-
-					while (rs.next()) {
-
-						String compID = rs.getString("CompID");
-						allCompID.add(compID);
-
-					}
+					List<String> allCompID = server.compDataHelper.readAllCompID();
 
 					writeMes(allCompID.size() + "");
 					for (String ID : allCompID)

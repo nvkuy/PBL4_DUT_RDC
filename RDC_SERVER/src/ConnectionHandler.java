@@ -52,12 +52,7 @@ public class ConnectionHandler implements Runnable {
 	
 	public void verify() throws Exception {
 		
-		PublicKey clientPK = null;
-		String getKeySQL = "SELECT * FROM _COMP WHERE CompID = ?";
-		PreparedStatement preparedStmt = server.conn.prepareStatement(getKeySQL);
-		preparedStmt.setString(1, compID);
-		ResultSet rs = preparedStmt.executeQuery();
-		while (rs.next()) clientPK = RSA.getPublicKeyFromStr(rs.getString("PublicKey"));
+		PublicKey clientPK = RSA.getPublicKeyFromStr(server.compDataHelper.getPublicKeyStr(compID));
 		
 		// client verify server
 		String crypMes = inp.readUTF();

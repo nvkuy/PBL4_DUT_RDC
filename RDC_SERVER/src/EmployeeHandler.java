@@ -1,7 +1,9 @@
 import java.net.Socket;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EmployeeHandler extends ConnectionHandler {
 
@@ -23,23 +25,12 @@ public class EmployeeHandler extends ConnectionHandler {
 				String option = readMes();
 				
 				if (option.equals("/AppHistory")) {
-					
+
 					int n = Integer.valueOf(readMes());
-					Date date = new Date();
-					SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-					String curDate = formatter.format(date);
-					String insertAppHistorySQL = "INSERT INTO _COMP_APP_HISTORY VALUES (?, ?, ?)";
-					PreparedStatement preparedStmt = server.conn.prepareStatement(insertAppHistorySQL);
-					preparedStmt.setString(1, compID);
-					preparedStmt.setString(2, curDate);
-					
-					for (int i = 0; i < n; i++) {
-						String app = readMes();
-						preparedStmt.setString(3, app);
-						try {
-							preparedStmt.executeUpdate();
-						} catch (Exception e) {}
-					}
+					List<String> apps = new ArrayList<>();
+					for (int i = 0; i < n; i++)
+						apps.add(readMes());
+					server.compDataHelper.insertAppHistory(compID, apps);
 					
 				} else {
 					// more feature..
