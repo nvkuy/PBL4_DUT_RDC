@@ -32,12 +32,12 @@ public class ConnectionHandler implements Runnable {
 			
 			compID = inp.readUTF();
 			// System.out.println(ip);
-			// System.out.println(compID + " connected!");
 
 			verify();
 			// System.out.println(compID + " verified!");
 
 			isRunning = true;
+			System.out.println(compID + " connected!");
 			if (server.adminIPs.contains(ip))
 				server.admins.put(compID, (AdminHandler) this);
 			else
@@ -96,12 +96,13 @@ public class ConnectionHandler implements Runnable {
 	}
 	
 	public void close() {
-		
+
+		System.out.println(compID + " disconnected!");
 		isRunning = false;
 		if (server.adminIPs.contains(ip))
-			server.admins.remove(ip);
+			server.admins.remove(compID);
 		else
-			server.employees.remove(ip);
+			server.employees.remove(compID);
 		
 	}
 

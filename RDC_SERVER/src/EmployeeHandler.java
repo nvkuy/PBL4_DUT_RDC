@@ -21,7 +21,7 @@ public class EmployeeHandler extends ConnectionHandler {
 			// System.out.println("Employee: " + ip);
 			
 			while (isRunning) {
-				
+
 				String option = readMes();
 				
 				if (option.equals("/AppHistory")) {
