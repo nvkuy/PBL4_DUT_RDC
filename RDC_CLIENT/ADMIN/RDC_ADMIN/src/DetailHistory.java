@@ -14,14 +14,19 @@ public class DetailHistory extends JFrame implements ActionListener {
     private JPanel pn;
     private JTable table;
     private JScrollPane scrollPane;
-    private String date,state,  comp;
+    private String date,  comp, compstate;
+    private int state;
     private List<List<String>> apps = new ArrayList<>();
+    private List<List<String>> finalList = new ArrayList<>();
+    private List<String> notAllowApps = new ArrayList<>();
+    private JButton btnBack;
     private ClientAdmin client = new ClientAdmin();
-    public DetailHistory(String s, String date, String state, String comp)  {
+    public DetailHistory(String s, String date, int state, String comp, String compstate)  {
         super(s);
         this.comp = comp;
         this.date = date;
         this.state = state;
+        this.compstate = compstate;
         try {
             client.Init();
             client.Connect();
@@ -46,6 +51,31 @@ public class DetailHistory extends JFrame implements ActionListener {
                 apps.add(Arrays.asList(appName, timeID));
             }
         }
+
+        String option2 = "/NotAllowApp";
+        client.writeMes(option2);
+        int n = Integer.parseInt(client.readMes());
+        for(int i = 0;i < n;i++){
+            String appName = client.readMes();
+            notAllowApps.add(appName);
+        }
+        if(state == 1){
+            for(int i = 0;i < apps.size();i++){
+                for(int j = 0;j < notAllowApps.size();j++){
+                    if(apps.get(i).get(0).equals(notAllowApps.get(j))){
+                        finalList.add(Arrays.asList(apps.get(i).get(0),apps.get(i).get(1)));
+                        break;
+                    }
+                }
+
+            }
+        }
+        else{
+            for(int i = 0;i<apps.size();i++){
+                finalList.add(Arrays.asList(apps.get(i).get(0),apps.get(i).get(1)));
+            }
+        }
+
         GUI();
     }
     public void GUI() {
@@ -66,22 +96,22 @@ public class DetailHistory extends JFrame implements ActionListener {
 
         String[] columnNames = {"Time", "Log App"};
 
-        Object[][] data = new Object[apps.size()][];
-        for(int i = 0;i< apps.size();i++){
+        Object[][] data = new Object[finalList.size()][];
+        for(int i = 0;i< finalList.size();i++){
             List<String> row = new ArrayList<>();
-            row.add(apps.get(i).get(1));
-            row.add(apps.get(i).get(0));
+            row.add(finalList.get(i).get(1));
+            row.add(finalList.get(i).get(0));
             data[i] = row.toArray();
         }
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
         table = new JTable(model);
-        table.setFont(new Font("Arial", Font.PLAIN, 16));
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
 
         TableCellRenderer cellRenderer = new TableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = new JLabel(value.toString());
-                label.setFont(new Font("Arial", Font.PLAIN, 16));
+                label.setFont(new Font("Arial", Font.PLAIN, 14));
                 label.setPreferredSize(new Dimension(0, 100));
                 label.setVerticalAlignment(SwingConstants.TOP);
                 return label;
@@ -89,17 +119,23 @@ public class DetailHistory extends JFrame implements ActionListener {
         };
 
         table.setDefaultRenderer(Object.class, cellRenderer);
-
+        btnBack=new JButton("BACK");
+        btnBack.setFont(new Font("Arial",Font.BOLD,16));
+        btnBack.setBackground(Color.white);
+        btnBack.setForeground(Color.black);
+        btnBack.addActionListener(this);
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(800, 350));
+        btnBack.setBounds(770,500,200,60);
 
         table.setFillsViewportHeight(true);
 
-        scrollPane.setBounds(50, 120, 800, 400);
+        scrollPane.setBounds(50, 120, 800, 350);
         lb1.setBounds(50, 50, 400, 50);
 
         pn.add(lb1);
         pn.add(scrollPane);
+        pn.add(btnBack);
 
         add(pn);
 
@@ -111,6 +147,9 @@ public class DetailHistory extends JFrame implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(e.getSource()==btnBack){
+            new AppHistory("App history", comp, compstate);
+            dispose();
+        }
     }
 }

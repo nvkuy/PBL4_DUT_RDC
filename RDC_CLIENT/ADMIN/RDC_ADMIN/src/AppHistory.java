@@ -15,14 +15,17 @@ public class AppHistory extends JFrame implements ActionListener {
     private JLabel lb1;
     private JPanel pn;
     private JTable table;
+    private JButton btnBack;
     private JScrollPane scrollPane;
     private List<List<String>> apps = new ArrayList<>();
     private List<List<Object>> data = new ArrayList<>();
+    private List<String> notAllowApps = new ArrayList<>();
     private ClientAdmin client = new ClientAdmin();
-    private String comp;
-    public AppHistory(String s, String comp)  {
+    private String comp,state;
+    public AppHistory(String s, String comp, String state)  {
         super(s);
         this.comp = comp;
+        this.state = state;
         try {
             client.Init();
             client.Connect();
@@ -45,23 +48,45 @@ public class AppHistory extends JFrame implements ActionListener {
             String appName = client.readMes();
             String timeID = client.readMes();
             apps.add(Arrays.asList(appName, timeID));
+
+        }
+        String option2 = "/NotAllowApp";
+        client.writeMes(option2);
+        int n = Integer.parseInt(client.readMes());
+        for(int i = 0;i < n;i++){
+            String appName = client.readMes();
+            notAllowApps.add(appName);
             System.out.println(i + appName);
         }
+
         for(int i = 0;i<apps.size();i++){
             int check = 0;
+
             for(List<Object> row: data){
                 String date = String.valueOf(row.get(0));
                 if(date.equals(apps.get(i).get(1))){
                     int count = (int) row.get(2) + 1;
                     row.set(2, count);
                     check = 1;
+                    for(int j = 0;j<notAllowApps.size();j++){
+                        if(apps.get(i).get(0).equals(notAllowApps.get(j))){
+                            row.set(1, (int) row.get(1) + 1);
+                        }
+                    }
                     break;
                 }
             }
             if(check == 0){
+                int notAllow = 0;
                 List<Object> row = new ArrayList<>();
                 row.add(apps.get(i).get(1));
-                row.add(0);
+                for(int j = 0;j<notAllowApps.size();j++){
+                    if(apps.get(i).get(0).equals(notAllowApps.get(j))){
+                        notAllow = 1;
+                        break;
+                    }
+                }
+                row.add(notAllow);
                 row.add(1);
                 data.add(row);
             }
@@ -93,13 +118,13 @@ public class AppHistory extends JFrame implements ActionListener {
 
         DefaultTableModel model = new DefaultTableModel(data001,columnNames);
         table = new JTable(model);
-        table.setFont(new Font("Arial", Font.PLAIN, 16));
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
 
         TableCellRenderer cellRenderer = new TableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = new JLabel(value.toString());
-                label.setFont(new Font("Arial", Font.PLAIN, 16));
+                label.setFont(new Font("Arial", Font.PLAIN, 14));
                 label.setPreferredSize(new Dimension(0, 100));
                 label.setVerticalAlignment(SwingConstants.TOP);
                 return label;
@@ -109,12 +134,17 @@ public class AppHistory extends JFrame implements ActionListener {
         table.setDefaultRenderer(Object.class, cellRenderer);
 
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(800, 350));
 
         table.setFillsViewportHeight(true);
-
-        scrollPane.setBounds(50, 120, 800, 400);
-        lb1.setBounds(50, 50, 400, 50);
+        btnBack=new JButton("BACK");
+        btnBack.setFont(new Font("Arial",Font.BOLD,16));
+        btnBack.setBackground(Color.white);
+        btnBack.setForeground(Color.black);
+        btnBack.addActionListener(this);
+        scrollPane.setBounds(50, 120, 800, 350);
+        btnBack.setBounds(770,500,200,60);
+        lb1.setBounds(50, 50, 600, 50);
 
         // Thêm ListSelectionListener để xử lý sự kiện khi người dùng chọn ô
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -130,14 +160,17 @@ public class AppHistory extends JFrame implements ActionListener {
                 if (selectedColumn > 0) {
                     String selectedDate = (String) table.getValueAt(selectedRow, 0);
                     String selectedColumnName = table.getColumnName(selectedColumn);
-
-                    DetailHistory detailHistory =new DetailHistory("Detail History", selectedDate, selectedColumnName, comp);
+                    System.out.println("Column id: "+ selectedColumn);
+                    System.out.println("Column name: "+ selectedColumnName);
+                    new DetailHistory("Detail History", selectedDate, selectedColumn, comp, state);
+                    dispose();
                 }
             }
         });
 
         pn.add(lb1);
         pn.add(scrollPane);
+        pn.add(btnBack);
 
         add(pn);
 
@@ -149,6 +182,9 @@ public class AppHistory extends JFrame implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(e.getSource()==btnBack){
+            new DetailComputer("Detail computer", comp, state);
+            dispose();
+        }
     }
 }

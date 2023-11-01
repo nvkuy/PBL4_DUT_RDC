@@ -101,7 +101,7 @@ public class ClientAdmin {
 //
 //        }
 
-        RemoteControlView view = new RemoteControlView("Remote control");
+        new RemoteControlView("Remote control");
 
     }
 
