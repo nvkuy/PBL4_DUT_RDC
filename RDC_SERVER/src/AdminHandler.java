@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class AdminHandler extends ConnectionHandler {
 
@@ -49,10 +50,18 @@ public class AdminHandler extends ConnectionHandler {
 					option = readMes();
 					if (option.equals("/Read")) {
 
+						String targetCompID = readMes();
+						Map<String, String> info = server.compDataHelper.readCompInfo(targetCompID);
+						writeMes(info.get("CompID"));
+						writeMes(info.get("EmployeeID"));
+						writeMes(info.get("EmployeeName"));
+						writeMes(info.get("Mail"));
+						writeCompressMes(info.get("EmployeeImage"));
+
 					} else if (option.equals("/AddOrInsert")) {
-
+						//..
 					} else if (option.equals("/Delete")) {
-
+						//..
 					} else {
 						// more feature..
 					}

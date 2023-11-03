@@ -2,8 +2,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.security.PublicKey;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public class ConnectionHandler implements Runnable {
 
@@ -87,12 +85,37 @@ public class ConnectionHandler implements Runnable {
 	
 	public void writeMes(String mes) throws Exception {
 
+		if (mes == null || mes.equals(""))
+			mes = " ";
+
 		byte[] IV = aes.generateIV();
 		String crypMes = aes.encrypt(mes, IV);
 		String IVStr = AES.getIVStr(IV);
 		out.writeUTF(IVStr);
 		out.writeUTF(crypMes);
 		
+	}
+
+	public String readCompressMes() throws Exception {
+
+		String IVStr = Gzip.decompress(inp.readUTF());
+		String crypMes = Gzip.decompress(inp.readUTF());
+		byte[] IV = AES.getIVFromStr(IVStr);
+		return aes.decrypt(crypMes, IV);
+
+	}
+
+	public void writeCompressMes(String mes) throws Exception {
+
+		if (mes == null || mes.equals(""))
+			mes = " ";
+
+		byte[] IV = aes.generateIV();
+		String crypMes = aes.encrypt(mes, IV);
+		String IVStr = AES.getIVStr(IV);
+		out.writeUTF(Gzip.compress(IVStr));
+		out.writeUTF(Gzip.compress(crypMes));
+
 	}
 	
 	public void close() {

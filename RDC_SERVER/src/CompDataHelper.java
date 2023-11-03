@@ -1,3 +1,5 @@
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,6 +90,28 @@ public class CompDataHelper {
         return allCompID;
     }
 
-    
+    public Map<String, String> readCompInfo(String compID) throws Exception {
+        String readCompInfoSQL = "SELECT * FROM _COMP_INFO WHERE CompID = ?";
+        PreparedStatement preparedStmt = conn.prepareStatement(readCompInfoSQL);
+        preparedStmt.setString(1, compID);
+        ResultSet rs = preparedStmt.executeQuery();
+        Map<String, String> compInfo = new HashMap<>();
+        while (rs.next()) {
+            compInfo.put("CompID", rs.getString("CompID"));
+            compInfo.put("EmployeeID", rs.getString("EmployeeID"));
+            compInfo.put("EmployeeName", rs.getString("EmployeeName"));
+            compInfo.put("Mail", rs.getString("Mail"));
+            String img_file = rs.getString("EmployeeImage");
+            File fi = new File("/images/" + img_file);
+            byte[] img = Files.readAllBytes(fi.toPath());
+            compInfo.put("EmployeeImage", Base64.getEncoder().encodeToString(img));
+        }
+        return compInfo;
+    }
+
+    public boolean isCompExists(String compID) throws Exception {
+        Map<String, String> info = readCompInfo(compID);
+        return info.containsKey(compID);
+    }
 
 }
