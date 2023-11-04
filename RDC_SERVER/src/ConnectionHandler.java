@@ -55,12 +55,12 @@ public class ConnectionHandler implements Runnable {
 		String crypMes = inp.readLine();
 		String testMes = server.rsa.decrypt(crypMes);
 		String signMes = server.rsa.sign(testMes);
-		out.write(signMes);
+		out.write(signMes + "\n");
 		
 		// server verify client
 		testMes = String.valueOf((long)(Math.random() * 1e18));
 		crypMes = RSA.encrypt(testMes, clientPK);
-		out.write(crypMes);
+		out.write(crypMes + "\n");
 		signMes = inp.readLine();
 		if (!RSA.verify(testMes, signMes, clientPK))
 			throw new Exception("Can't verify exception!");
@@ -69,7 +69,7 @@ public class ConnectionHandler implements Runnable {
 		aes = new AES();
 		String key = aes.getKeyStr();
 		String crypKey = RSA.encrypt(key, clientPK);
-		out.write(crypKey);
+		out.write(crypKey + "\n");
 
 	}
 	
@@ -90,8 +90,8 @@ public class ConnectionHandler implements Runnable {
 		byte[] IV = aes.generateIV();
 		String crypMes = aes.encrypt(mes, IV);
 		String IVStr = AES.getIVStr(IV);
-		out.write(IVStr);
-		out.write(crypMes);
+		out.write(IVStr + "\n");
+		out.write(crypMes + "\n");
 		
 	}
 
@@ -111,9 +111,9 @@ public class ConnectionHandler implements Runnable {
 
 		byte[] IV = aes.generateIV();
 		String IVStr = AES.getIVStr(IV);
-		out.write(Gzip.compress(IVStr));
+		out.write(Gzip.compress(IVStr) + "\n");
 		String compressMes = Gzip.compress(mes);
-		out.write(aes.encrypt(compressMes, IV));
+		out.write(aes.encrypt(compressMes, IV) + "\n");
 
 	}
 	

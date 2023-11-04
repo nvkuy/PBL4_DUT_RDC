@@ -64,12 +64,12 @@ public class ClientAdmin {
 
     public void Connect() throws Exception {
 
-        out.write(compID);
+        out.write(compID + "\n");
 
         // client verify server
         String testMes = String.valueOf((long)(Math.random() * 1e18));
         String crypMes = RSA.encrypt(testMes, serverPublicKey);
-        out.write(crypMes);
+        out.write(crypMes + "\n");
         String signMes = inp.readLine();
         if (!RSA.verify(testMes, signMes, serverPublicKey))
             throw new Exception();
@@ -78,7 +78,7 @@ public class ClientAdmin {
         crypMes = inp.readLine();
         testMes = rsa.decrypt(crypMes);
         signMes = rsa.sign(testMes);
-        out.write(signMes);
+        out.write(signMes + "\n");
 
         // get share key
         String crypKey = inp.readLine();
@@ -130,8 +130,8 @@ public class ClientAdmin {
         byte[] IV = aes.generateIV();
         String crypMes = aes.encrypt(mes, IV);
         String IVStr = AES.getIVStr(IV);
-        out.write(IVStr);
-        out.write(crypMes);
+        out.write(IVStr + "\n");
+        out.write(crypMes + "\n");
 
     }
 
@@ -151,9 +151,9 @@ public class ClientAdmin {
 
         byte[] IV = aes.generateIV();
         String IVStr = AES.getIVStr(IV);
-        out.write(Gzip.compress(IVStr));
+        out.write(Gzip.compress(IVStr) + "\n");
         String compressMes = Gzip.compress(mes);
-        out.write(aes.encrypt(compressMes, IV));
+        out.write(aes.encrypt(compressMes, IV) + "\n");
 
     }
 
