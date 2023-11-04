@@ -94,12 +94,15 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
-//        isRunning = true;
-//        while (isRunning) {
-//
-//            // handler func..
-//
-//        }
+//        writeMes("/CompInfo");
+//        writeMes("/Read");
+//        writeMes("/employee1");
+//        String t1 = readMes();
+//        String t2 = readMes();
+//        String t3 = readMes();
+//        String t4 = readMes();
+//        String t5 = readCompressMes();
+//        System.out.println(t1 + ": " + t5);
 
         new RemoteControlView("Remote control");
 
@@ -129,6 +132,28 @@ public class ClientAdmin {
         String IVStr = AES.getIVStr(IV);
         out.writeUTF(IVStr);
         out.writeUTF(crypMes);
+
+    }
+
+    public String readCompressMes() throws Exception {
+
+        String IVStr = Gzip.decompress(inp.readUTF());
+        String crypMes = Gzip.decompress(inp.readUTF());
+        byte[] IV = AES.getIVFromStr(IVStr);
+        return aes.decrypt(crypMes, IV);
+
+    }
+
+    public void writeCompressMes(String mes) throws Exception {
+
+        if (mes == null || mes.equals(""))
+            mes = " ";
+
+        byte[] IV = aes.generateIV();
+        String crypMes = aes.encrypt(mes, IV);
+        String IVStr = AES.getIVStr(IV);
+        out.writeUTF(Gzip.compress(IVStr));
+        out.writeUTF(Gzip.compress(crypMes));
 
     }
 

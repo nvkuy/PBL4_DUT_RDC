@@ -139,4 +139,26 @@ public class ClientEmployee {
 
     }
 
+    public String readCompressMes() throws Exception {
+
+        String IVStr = Gzip.decompress(inp.readUTF());
+        String crypMes = Gzip.decompress(inp.readUTF());
+        byte[] IV = AES.getIVFromStr(IVStr);
+        return aes.decrypt(crypMes, IV);
+
+    }
+
+    public void writeCompressMes(String mes) throws Exception {
+
+        if (mes == null || mes.equals(""))
+            mes = " ";
+
+        byte[] IV = aes.generateIV();
+        String crypMes = aes.encrypt(mes, IV);
+        String IVStr = AES.getIVStr(IV);
+        out.writeUTF(Gzip.compress(IVStr));
+        out.writeUTF(Gzip.compress(crypMes));
+
+    }
+
 }
