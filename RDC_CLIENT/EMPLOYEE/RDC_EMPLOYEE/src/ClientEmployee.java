@@ -142,9 +142,9 @@ public class ClientEmployee {
     public String readCompressMes() throws Exception {
 
         String IVStr = Gzip.decompress(inp.readUTF());
-        String crypMes = Gzip.decompress(inp.readUTF());
         byte[] IV = AES.getIVFromStr(IVStr);
-        return aes.decrypt(crypMes, IV);
+        String compressMes = aes.decrypt(inp.readUTF(), IV);
+        return Gzip.decompress(compressMes);
 
     }
 
@@ -154,10 +154,10 @@ public class ClientEmployee {
             mes = " ";
 
         byte[] IV = aes.generateIV();
-        String crypMes = aes.encrypt(mes, IV);
         String IVStr = AES.getIVStr(IV);
         out.writeUTF(Gzip.compress(IVStr));
-        out.writeUTF(Gzip.compress(crypMes));
+        String compressMes = Gzip.compress(mes);
+        out.writeUTF(aes.encrypt(compressMes, IV));
 
     }
 
