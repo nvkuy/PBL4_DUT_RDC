@@ -84,7 +84,7 @@ public class ConnectionHandler implements Runnable {
 	
 	public void writeMes(String mes) throws Exception {
 
-		if (mes == null || mes.equals(""))
+		if (mes == null || mes.isEmpty())
 			mes = " ";
 
 		byte[] IV = aes.generateIV();
@@ -106,7 +106,7 @@ public class ConnectionHandler implements Runnable {
 
 	public void writeCompressMes(String mes) throws Exception {
 
-		if (mes == null || mes.equals(""))
+		if (mes == null || mes.isEmpty())
 			mes = " ";
 
 		byte[] IV = aes.generateIV();

@@ -99,7 +99,7 @@ public class ClientAdmin {
 //        String t3 = readMes();
 //        String t4 = readMes();
 //        String t5 = readCompressMes();
-//        System.out.println(t1 + ": " + t5);
+//        System.out.println(t5);
 
         new RemoteControlView("Remote control");
 

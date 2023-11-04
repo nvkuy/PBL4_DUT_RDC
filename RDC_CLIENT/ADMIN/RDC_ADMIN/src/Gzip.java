@@ -12,15 +12,17 @@ public class Gzip {
 
     private static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 
-    public static String encode(byte[] bytes) {
-        return new String(bytes, UTF8_CHARSET);
+    private static String encode(byte[] data) {
+        return Base64.getEncoder().encodeToString(data);
     }
 
-    public static byte[] decode(String string) {
-        return string.getBytes(UTF8_CHARSET);
+    private static byte[] decode(String data) {
+        return Base64.getDecoder().decode(data);
     }
 
     public static String compress(String str) throws Exception {
+        if (str == null || str.isEmpty())
+            return null;
         ByteArrayOutputStream obj = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(obj);
         gzip.write(str.getBytes(UTF8_CHARSET));
@@ -29,6 +31,9 @@ public class Gzip {
     }
 
     public static String decompress(String strData) throws Exception {
+        if (strData == null || strData.isEmpty()) {
+            return null;
+        }
         byte[] data = decode(strData);
         GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(data));
         BufferedReader bf = new BufferedReader(new InputStreamReader(gis, UTF8_CHARSET));
