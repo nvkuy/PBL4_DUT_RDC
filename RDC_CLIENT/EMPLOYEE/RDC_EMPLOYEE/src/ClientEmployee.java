@@ -63,12 +63,12 @@ public class ClientEmployee {
 
     public void Connect() throws Exception {
 
-        out.write(compID + "\n");
+        out.println(compID);
 
         // client verify server
         String testMes = String.valueOf((long)(Math.random() * 1e18));
         String crypMes = RSA.encrypt(testMes, serverPublicKey);
-        out.write(crypMes + "\n");
+        out.println(crypMes);
         String signMes = inp.readLine();
         if (!RSA.verify(testMes, signMes, serverPublicKey))
             throw new Exception();
@@ -77,7 +77,7 @@ public class ClientEmployee {
         crypMes = inp.readLine();
         testMes = rsa.decrypt(crypMes);
         signMes = rsa.sign(testMes);
-        out.write(signMes + "\n");
+        out.println(signMes);
 
         // get share key
         String crypKey = inp.readLine();
@@ -137,8 +137,8 @@ public class ClientEmployee {
         byte[] IV = aes.generateIV();
         String crypMes = aes.encrypt(mes, IV);
         String IVStr = AES.getIVStr(IV);
-        out.write(IVStr + "\n");
-        out.write(crypMes + "\n");
+        out.println(IVStr);
+        out.println(crypMes);
 
     }
 
@@ -158,9 +158,9 @@ public class ClientEmployee {
 
         byte[] IV = aes.generateIV();
         String IVStr = AES.getIVStr(IV);
-        out.write(Gzip.compress(IVStr) + "\n");
+        out.println(Gzip.compress(IVStr));
         String compressMes = Gzip.compress(mes);
-        out.write(aes.encrypt(compressMes, IV) + "\n");
+        out.println(aes.encrypt(compressMes, IV));
 
     }
 
