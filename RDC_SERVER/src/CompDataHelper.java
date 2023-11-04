@@ -102,7 +102,7 @@ public class CompDataHelper {
             compInfo.put("EmployeeName", rs.getString("EmployeeName"));
             compInfo.put("Mail", rs.getString("Mail"));
             String img_file = rs.getString("EmployeeImage");
-            File fi = new File("/images/" + img_file);
+            File fi = new File("images/" + img_file);
             byte[] img = Files.readAllBytes(fi.toPath());
             compInfo.put("EmployeeImage", Base64.getEncoder().encodeToString(img));
         }

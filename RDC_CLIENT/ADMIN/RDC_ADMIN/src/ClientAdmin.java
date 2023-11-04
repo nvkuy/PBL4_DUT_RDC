@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
 import java.security.spec.ECField;
@@ -21,8 +18,8 @@ public class ClientAdmin {
     String compID;
     RSA rsa;
     AES aes;
-    DataInputStream inp;
-    DataOutputStream out;
+    protected BufferedReader inp;
+    protected PrintWriter out;
     volatile Boolean isRunning = false;
 
     public static void main(String[] args) {
@@ -58,8 +55,8 @@ public class ClientAdmin {
         bf.close();
 
         Socket socket = new Socket(serverIP, serverPort);
-        inp = new DataInputStream(socket.getInputStream());
-        out = new DataOutputStream(socket.getOutputStream());
+        inp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
 
         System.out.println("Inited client");
 
@@ -67,24 +64,24 @@ public class ClientAdmin {
 
     public void Connect() throws Exception {
 
-        out.writeUTF(compID);
+        out.println(compID);
 
         // client verify server
         String testMes = String.valueOf((long)(Math.random() * 1e18));
         String crypMes = RSA.encrypt(testMes, serverPublicKey);
-        out.writeUTF(crypMes);
-        String signMes = inp.readUTF();
+        out.println(crypMes);
+        String signMes = inp.readLine();
         if (!RSA.verify(testMes, signMes, serverPublicKey))
             throw new Exception();
 
         // server verify client
-        crypMes = inp.readUTF();
+        crypMes = inp.readLine();
         testMes = rsa.decrypt(crypMes);
         signMes = rsa.sign(testMes);
-        out.writeUTF(signMes);
+        out.println(signMes);
 
         // get share key
-        String crypKey = inp.readUTF();
+        String crypKey = inp.readLine();
         String key = rsa.decrypt(crypKey);
         aes = new AES(key);
 
@@ -94,12 +91,15 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
-//        isRunning = true;
-//        while (isRunning) {
-//
-//            // handler func..
-//
-//        }
+//        writeMes("/CompInfo");
+//        writeMes("/Read");
+//        writeMes("employee1");
+//        String t1 = readMes();
+//        String t2 = readMes();
+//        String t3 = readMes();
+//        String t4 = readMes();
+//        String t5 = readCompressMes();
+//        System.out.println(t5);
 
         new RemoteControlView("Remote control");
 
@@ -115,8 +115,8 @@ public class ClientAdmin {
 
     public String readMes() throws Exception {
 
-        String IVStr = inp.readUTF();
-        String crypMes = inp.readUTF();
+        String IVStr = inp.readLine();
+        String crypMes = inp.readLine();
         byte[] IV = AES.getIVFromStr(IVStr);
         return aes.decrypt(crypMes, IV);
 
@@ -124,11 +124,36 @@ public class ClientAdmin {
 
     public void writeMes(String mes) throws Exception {
 
+        if (mes == null || mes.equals(""))
+            mes = " ";
+
         byte[] IV = aes.generateIV();
         String crypMes = aes.encrypt(mes, IV);
         String IVStr = AES.getIVStr(IV);
-        out.writeUTF(IVStr);
-        out.writeUTF(crypMes);
+        out.println(IVStr);
+        out.println(crypMes);
+
+    }
+
+    public String readCompressMes() throws Exception {
+
+        String IVStr = Gzip.decompress(inp.readLine());
+        byte[] IV = AES.getIVFromStr(IVStr);
+        String compressMes = aes.decrypt(inp.readLine(), IV);
+        return Gzip.decompress(compressMes);
+
+    }
+
+    public void writeCompressMes(String mes) throws Exception {
+
+        if (mes == null || mes.equals(""))
+            mes = " ";
+
+        byte[] IV = aes.generateIV();
+        String IVStr = AES.getIVStr(IV);
+        out.println(Gzip.compress(IVStr));
+        String compressMes = Gzip.compress(mes);
+        out.println(aes.encrypt(compressMes, IV));
 
     }
 
