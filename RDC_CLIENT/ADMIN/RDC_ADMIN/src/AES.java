@@ -13,6 +13,8 @@ public class AES {
     private final int KEY_SIZE = 128;
     private final int T_LEN = 128;
 
+    // Note: IV size always 16 characters (128 bit)
+
     public AES() throws Exception {
 
         KeyGenerator generator = KeyGenerator.getInstance("AES");

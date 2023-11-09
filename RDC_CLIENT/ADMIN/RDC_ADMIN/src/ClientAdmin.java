@@ -91,6 +91,7 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
+        // TODO: Make read comp profile..
 //        writeMes("/CompInfo");
 //        writeMes("/Read");
 //        writeMes("employee1");

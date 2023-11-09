@@ -24,8 +24,15 @@ public class RemoteControlView extends JFrame implements ActionListener {
 
             client.Init();
             client.Connect();
-            GetData();
-            GUI();
+//            GetData();
+//            GUI();
+
+            client.writeMes("/RemoteControl");
+            client.writeMes("employee1");
+            String key = client.readMes();
+            String targetIP = client.readMes();
+            Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, getGraphics()));
+            remoteControlHandler.start();
 
         } catch (Exception e) {
             e.printStackTrace();
