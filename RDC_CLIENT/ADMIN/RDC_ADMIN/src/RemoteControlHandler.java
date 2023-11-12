@@ -41,12 +41,6 @@ public class RemoteControlHandler implements Runnable {
 
             Thread screenRender = new Thread(new ScreenRender());
             screenRender.start();
-<<<<<<< HEAD
-=======
-
-            Thread controlSignalSender = new Thread(new ControlSignalSender());
-            controlSignalSender.start();
->>>>>>> 1cf1911409efd32a7c497748fee53007dc345f10
 
             Thread controlSignalSender = new Thread(new ControlSignalSender());
             controlSignalSender.start();
@@ -95,13 +89,9 @@ public class RemoteControlHandler implements Runnable {
                     testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
                     testRemoteControl.repaint();
                     frameQueue.remove(frameID);
-<<<<<<< HEAD
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-=======
-                } catch (Exception e) { }
->>>>>>> 1cf1911409efd32a7c497748fee53007dc345f10
 
             }
 
@@ -126,13 +116,10 @@ public class RemoteControlHandler implements Runnable {
                     Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData()));
                     packageDataProcessor.start();
 
-<<<<<<< HEAD
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-=======
-                } catch (Exception e) { }
->>>>>>> 1cf1911409efd32a7c497748fee53007dc345f10
+
 
             }
 

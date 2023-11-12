@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/TestRemoteControl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ClientAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ClientAdmin.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlView.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,6 +99,7 @@
       <workItem from="1699091841660" duration="3278000" />
       <workItem from="1699611125411" duration="1495000" />
       <workItem from="1699776486312" duration="236000" />
+      <workItem from="1699783433015" duration="29000" />
     </task>
     <servers />
   </component>
