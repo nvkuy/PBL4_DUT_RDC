@@ -6,24 +6,24 @@ import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.TreeMap;
 
 public class RemoteControlHandler implements Runnable {
 
     private AES aes;
     private String targetIP;
-    private Graphics g;
     private final Integer PORT = 6969;
+    private static final int PACKAGE_SIZE = 256;
+    private static final int MAX_DELAY = 500;
+    private volatile TreeMap<Long, ImageData> frameQueue;
+    private DatagramSocket adminSocket;
+    private InetAddress inetAddress;
+    private TestRemoteControl testRemoteControl;
 
-    byte[] receiveData;
-    byte[] sendData;
-
-    DatagramSocket adminSocket;
-    DatagramPacket receivePacket;
-
-    public RemoteControlHandler(String key, String ip, Graphics g) throws Exception {
+    public RemoteControlHandler(String key, String ip, TestRemoteControl testRemoteControl) throws Exception {
         this.aes = new AES(key);
         this.targetIP = ip;
-        this.g = g;
+        this.testRemoteControl = testRemoteControl;
     }
 
     @Override
@@ -31,43 +31,116 @@ public class RemoteControlHandler implements Runnable {
 
         try {
 
-            // TODO: Divide package and send.. will do if have time..
-            receiveData = new byte[1 << 18];
-            sendData = new byte[1 << 8];
-
             adminSocket = new DatagramSocket(PORT);
-            receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            inetAddress = InetAddress.getByName(targetIP);
 
-            while (true) {
+            frameQueue = new TreeMap<>();
 
-                adminSocket.receive(receivePacket);
-                if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
-                Thread screenHandler = new Thread(new ScreenHandler());
-                screenHandler.start();
+            Thread screenReceiver = new Thread(new ScreenReceiver());
+            screenReceiver.start();
 
-            }
+            Thread screenRender = new Thread(new ScreenRender());
+            screenRender.start();
+
+            Thread controlSignalSender = new Thread(new ControlSignalSender());
+            controlSignalSender.start();
 
         } catch (Exception e) { }
 
     }
 
-    private class ScreenHandler implements Runnable {
+    private class ControlSignalSender implements Runnable {
 
         @Override
         public void run() {
 
-            try {
-                String rawData = new String(receivePacket.getData());
-                String IVStr = rawData.substring(0, 16);
-                byte[] IV = AES.getIVFromStr(IVStr);
-                String crypImg = rawData.substring(16);
-                String imgStr = aes.decrypt(crypImg, IV);
-                InputStream is = new ByteArrayInputStream(imgStr.getBytes());
-                BufferedImage img = ImageIO.read(is);
-                g.drawImage(img, 0, 0, null);
-            } catch (Exception e) { }
+            // TODO: capture mouse position and action, send to employee..
 
         }
+    }
+
+    private class ScreenRender implements Runnable {
+
+        @Override
+        public void run() {
+
+            while (true) {
+
+                try {
+                    Thread.sleep(7);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                long curTime = System.currentTimeMillis();
+                while (!frameQueue.isEmpty()) {
+                    long id = frameQueue.firstKey();
+                    if (curTime - id > MAX_DELAY)
+                        frameQueue.remove(id);
+                }
+
+                if (frameQueue.isEmpty()) continue;
+                long frameID = frameQueue.firstKey();
+                if (!frameQueue.get(frameID).isCompleted()) continue;
+
+                try {
+                    testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
+                    testRemoteControl.repaint();
+                    frameQueue.remove(frameID);
+                } catch (Exception e) { }
+
+            }
+
+        }
+    }
+
+    private class ScreenReceiver implements Runnable {
+
+        @Override
+        public void run() {
+
+            while (true) {
+
+                try {
+
+                    byte[] receiveData = new byte[PACKAGE_SIZE];
+                    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
+                    adminSocket.receive(receivePacket);
+                    if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
+
+                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData()));
+                    packageDataProcessor.start();
+
+                } catch (Exception e) { }
+
+            }
+
+        }
+
+        private class PackageDataProcessor implements Runnable {
+
+            private String rawData;
+
+            public PackageDataProcessor(byte[] rawData) {
+                this.rawData = new String(rawData);
+            }
+
+            @Override
+            public void run() {
+
+                long curTimeID = System.currentTimeMillis();
+                long timeID = Long.parseLong(rawData.substring(0, 18));
+                if (curTimeID - timeID > MAX_DELAY) return;
+
+                if (!frameQueue.containsKey(timeID))
+                    frameQueue.put(timeID, new ImageData());
+                frameQueue.get(timeID).add(rawData.substring(18));
+
+            }
+
+        }
+
     }
 
 }
