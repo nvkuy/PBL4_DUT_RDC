@@ -8,7 +8,7 @@ public class TestRemoteControl extends JFrame {
 
     // TODO: Rename class later..
 
-    BufferedImage screen;
+    volatile BufferedImage screen;
 
     public TestRemoteControl(String key, String targetIP) throws Exception {
 

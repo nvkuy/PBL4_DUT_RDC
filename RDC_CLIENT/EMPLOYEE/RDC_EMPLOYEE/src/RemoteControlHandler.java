@@ -45,6 +45,8 @@ public class RemoteControlHandler implements Runnable {
             employeeSocket = new DatagramSocket(PORT);
             inetAddress = InetAddress.getByName(targetIP);
 
+            System.out.println("RDC: " + inetAddress.getHostAddress());
+
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             area = new Rectangle(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
 
@@ -78,11 +80,7 @@ public class RemoteControlHandler implements Runnable {
                     // TODO: handle control signals from admin..
 
                 } catch (Exception e) {
-<<<<<<< HEAD
                     e.printStackTrace();
-=======
-                    throw new RuntimeException(e);
->>>>>>> 1cf1911409efd32a7c497748fee53007dc345f10
                 }
 
             }
@@ -155,28 +153,6 @@ public class RemoteControlHandler implements Runnable {
                     byte[] IV = aes.generateIV();
                     String crypImgStr = aes.encrypt(imgStr, IV);
                     String IVStr = AES.getIVStr(IV);
-<<<<<<< HEAD
-=======
-
-                    byte[] imgData = crypImgStr.getBytes();
-                    int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
-
-                    String header = curTimeID + numberEncode(0, 3) + numberEncode(numOfPart, 3) + IVStr;
-                    sendImagePart(header);
-
-                    for (int id = 1; id <= numOfPart; id++) {
-                        int start = (id - 1) * DATA_SIZE;
-                        int end = Math.min(imgData.length, start + DATA_SIZE);
-                        byte[] part = Arrays.copyOfRange(imgData, start, end);
-                        String partStr = Base64.getEncoder().encodeToString(part);
-                        String packageStr = curTimeID + numberEncode(id, 3) + partStr;
-                        // TODO: Implement thread pool later..
-                        sendImagePart(packageStr);
-                    }
-
-                    // TODO: Try garbage collector later..
-                    // System.gc();
->>>>>>> 1cf1911409efd32a7c497748fee53007dc345f10
 
                     byte[] imgData = crypImgStr.getBytes();
                     int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
@@ -220,26 +196,6 @@ public class RemoteControlHandler implements Runnable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                }
-
-            }
-
-            private class ImagePartSender implements Runnable {
-
-                byte[] data;
-
-                public ImagePartSender(byte[] data) {
-                    this.data = data;
-                }
-
-                @Override
-                public void run() {
-
-                    try {
-                        DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, PORT);
-                        employeeSocket.send(sendPacket);
-                    } catch (Exception e) { }
 
                 }
 
