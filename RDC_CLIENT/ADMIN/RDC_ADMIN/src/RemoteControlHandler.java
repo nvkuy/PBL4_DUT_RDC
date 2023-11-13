@@ -77,10 +77,13 @@ public class RemoteControlHandler implements Runnable {
                 }
 
                 long curTime = System.currentTimeMillis();
-                while (!frameQueue.isEmpty()) {
+                while (true) {
+                    if (frameQueue.isEmpty()) break;
                     long id = frameQueue.firstKey();
                     if (curTime - id > MAX_DELAY)
                         frameQueue.remove(id);
+                    else
+                        break;
                 }
 
                 if (frameQueue.isEmpty()) continue;
@@ -92,6 +95,7 @@ public class RemoteControlHandler implements Runnable {
                     testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
                     testRemoteControl.repaint();
                     frameQueue.remove(frameID);
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
