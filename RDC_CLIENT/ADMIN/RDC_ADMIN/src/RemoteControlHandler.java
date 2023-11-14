@@ -14,7 +14,7 @@ public class RemoteControlHandler implements Runnable {
     private String targetIP;
     private final Integer PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
-    private static final int MAX_DELAY = 1000;
+    private static final int MAX_DELAY = 2000;
     private volatile TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
