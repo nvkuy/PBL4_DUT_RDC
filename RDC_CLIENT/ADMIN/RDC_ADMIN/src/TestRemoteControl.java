@@ -27,7 +27,7 @@ public class TestRemoteControl extends JFrame {
     public void paint(Graphics g) {
         super.paint(g);
 
-        g.drawImage(screen, 0, 0, null);
+        g.drawImage(screen, 0, 0, screen.getWidth(), screen.getHeight(), null);
 
     }
 

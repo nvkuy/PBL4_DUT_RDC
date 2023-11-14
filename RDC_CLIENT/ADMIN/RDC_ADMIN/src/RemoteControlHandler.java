@@ -13,7 +13,7 @@ public class RemoteControlHandler implements Runnable {
     private AES aes;
     private String targetIP;
     private final Integer PORT = 6969;
-    private static final int PACKAGE_SIZE = 256;
+    private static final int PACKAGE_SIZE = 1 << 15;
     private static final int MAX_DELAY = 500;
     private volatile TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
