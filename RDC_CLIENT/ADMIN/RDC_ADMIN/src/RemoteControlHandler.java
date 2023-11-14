@@ -135,7 +135,7 @@ public class RemoteControlHandler implements Runnable {
             private String rawData;
 
             public PackageDataProcessor(byte[] rawData) {
-                this.rawData = AES.encode(rawData);
+                this.rawData = new String(rawData);
             }
 
             @Override
@@ -147,7 +147,7 @@ public class RemoteControlHandler implements Runnable {
 
                 if (!frameQueue.containsKey(timeID))
                     frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18).trim());
+                frameQueue.get(timeID).add(rawData.substring(18));
 
             }
 
