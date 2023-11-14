@@ -123,7 +123,7 @@ public class RemoteControlHandler implements Runnable {
 
             private void sendImagePart(String data) {
 
-                Thread imagePartSender = new Thread(new ImagePartSender(data.getBytes()));
+                Thread imagePartSender = new Thread(new ImagePartSender(AES.decode(data)));
                 imagePartSender.start();
 
             }
@@ -153,7 +153,7 @@ public class RemoteControlHandler implements Runnable {
                     String crypImgStr = aes.encrypt(imgStr, IV);
                     String IVStr = AES.getIVStr(IV);
 
-                    byte[] imgData = crypImgStr.getBytes();
+                    byte[] imgData = AES.decode(crypImgStr);
                     int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
 
                     String header = curTimeID + numberEncode(0, 3) + numberEncode(numOfPart, 3) + IVStr;
