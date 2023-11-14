@@ -123,7 +123,7 @@ public class RemoteControlHandler implements Runnable {
 
             private void sendImagePart(String data) {
 
-                Thread imagePartSender = new Thread(new ImagePartSender(data.getBytes()));
+                Thread imagePartSender = new Thread(new ImagePartSender(AES.decode(data)));
                 imagePartSender.start();
 
             }

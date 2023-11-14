@@ -135,7 +135,7 @@ public class RemoteControlHandler implements Runnable {
             private String rawData;
 
             public PackageDataProcessor(byte[] rawData) {
-                this.rawData = new String(rawData);
+                this.rawData = AES.encode(rawData);
             }
 
             @Override
