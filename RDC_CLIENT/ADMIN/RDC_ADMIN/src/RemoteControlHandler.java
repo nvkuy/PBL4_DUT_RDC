@@ -72,8 +72,6 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    Thread.sleep(7);
-
                     long curTime = System.currentTimeMillis();
                     while (true) {
                         if (frameQueue.isEmpty()) break;
