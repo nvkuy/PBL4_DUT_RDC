@@ -82,7 +82,14 @@ public class AdminHandler extends ConnectionHandler {
 
 				} else if (option.equals("/RemoteControl")) {
 					
-					//..
+					String targetCompID = readMes();
+					AES rdcAES = new AES();
+					ConnectionHandler connectionHandler = server.employees.get(targetCompID);
+					writeMes(rdcAES.getKeyStr());
+					writeMes(connectionHandler.ip);
+					connectionHandler.writeMes("/RemoteControl");
+					connectionHandler.writeMes(rdcAES.getKeyStr());
+					connectionHandler.writeMes(ip);
 					
 				} else {
 					// more feature..
