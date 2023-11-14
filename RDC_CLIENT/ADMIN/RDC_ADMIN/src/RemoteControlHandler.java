@@ -71,24 +71,20 @@ public class RemoteControlHandler implements Runnable {
             while (true) {
 
                 try {
+
                     Thread.sleep(7);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
 
-                long curTime = System.currentTimeMillis();
-                while (true) {
-                    if (frameQueue.isEmpty()) break;
-                    long id = frameQueue.firstKey();
-                    if (curTime - id <= MAX_DELAY) break;
-                    frameQueue.remove(id);
-                }
+                    long curTime = System.currentTimeMillis();
+                    while (true) {
+                        if (frameQueue.isEmpty()) break;
+                        long id = frameQueue.firstKey();
+                        if (curTime - id <= MAX_DELAY) break;
+                        frameQueue.remove(id);
+                    }
 
-                if (frameQueue.isEmpty()) continue;
-                long frameID = frameQueue.firstKey();
-                if (!frameQueue.get(frameID).isCompleted()) continue;
-
-                try {
+                    if (frameQueue.isEmpty()) continue;
+                    long frameID = frameQueue.firstKey();
+                    if (!frameQueue.get(frameID).isCompleted()) continue;
 
                     testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
                     testRemoteControl.repaint();
@@ -143,13 +139,17 @@ public class RemoteControlHandler implements Runnable {
             @Override
             public void run() {
 
-                long curTimeID = System.currentTimeMillis();
-                long timeID = Long.parseLong(rawData.substring(0, 18));
-                if (curTimeID - timeID > MAX_DELAY) return;
+                try {
+                    long curTimeID = System.currentTimeMillis();
+                    long timeID = Long.parseLong(rawData.substring(0, 18));
+                    if (curTimeID - timeID > MAX_DELAY) return;
 
-                if (!frameQueue.containsKey(timeID))
-                    frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18, length));
+                    if (!frameQueue.containsKey(timeID))
+                        frameQueue.put(timeID, new ImageData());
+                    frameQueue.get(timeID).add(rawData.substring(18, length));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
 

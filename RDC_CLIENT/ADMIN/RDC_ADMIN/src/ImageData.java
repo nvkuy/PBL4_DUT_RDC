@@ -5,12 +5,11 @@ import java.io.InputStream;
 import java.util.TreeMap;
 
 public class ImageData {
-    private int numOfPart;
-
-    private int imgByteLen;
-    private boolean haveHeader;
-    private byte[] IV;
-    private TreeMap<Integer, byte[]> imagePart;
+    private volatile int numOfPart;
+    private volatile int imgByteLen;
+    private volatile boolean haveHeader;
+    private volatile byte[] IV;
+    private volatile TreeMap<Integer, byte[]> imagePart;
 
     public ImageData() {
         haveHeader = false;
