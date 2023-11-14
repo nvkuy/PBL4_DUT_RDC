@@ -118,7 +118,7 @@ public class RemoteControlHandler implements Runnable {
                     adminSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
-                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData()));
+                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData(), receivePacket.getLength()));
                     packageDataProcessor.start();
 
                 } catch (Exception e) {
@@ -133,9 +133,11 @@ public class RemoteControlHandler implements Runnable {
         private class PackageDataProcessor implements Runnable {
 
             private String rawData;
+            private int length;
 
-            public PackageDataProcessor(byte[] rawData) {
+            public PackageDataProcessor(byte[] rawData, int length) {
                 this.rawData = new String(rawData);
+                this.length = length;
             }
 
             @Override
@@ -147,7 +149,7 @@ public class RemoteControlHandler implements Runnable {
 
                 if (!frameQueue.containsKey(timeID))
                     frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18).trim());
+                frameQueue.get(timeID).add(rawData.substring(18, length));
 
             }
 
