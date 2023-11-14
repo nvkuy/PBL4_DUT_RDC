@@ -8,10 +8,12 @@ public class ImageData {
     private int numOfPart;
 
     private int imgByteLen;
+    private boolean header;
     private byte[] IV;
     private TreeMap<Integer, byte[]> imagePart;
 
     public ImageData() {
+        header = false;
         imgByteLen = 0;
         imagePart = new TreeMap<>();
     }
@@ -23,6 +25,7 @@ public class ImageData {
 
             numOfPart = Integer.parseInt(raw_data.substring(3, 6));
             IV = AES.getIVFromStr(raw_data.substring(6));
+            header = true;
 
         } else { // normal image part
 
@@ -37,7 +40,7 @@ public class ImageData {
     }
 
     public boolean isCompleted() {
-        return imagePart.size() == numOfPart;
+        return (imagePart.size() == numOfPart) & header;
     }
 
     public BufferedImage getImage(AES aes) throws Exception {
