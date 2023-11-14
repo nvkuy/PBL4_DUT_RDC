@@ -8,7 +8,7 @@ public class TestRemoteControl extends JFrame {
 
     // TODO: Rename class later..
 
-    volatile BufferedImage screen;
+    public volatile BufferedImage screen;
 
     public TestRemoteControl(String key, String targetIP) throws Exception {
 
@@ -27,7 +27,8 @@ public class TestRemoteControl extends JFrame {
     public void paint(Graphics g) {
         super.paint(g);
 
-        g.drawImage(screen, 0, 0, screen.getWidth(), screen.getHeight(), null);
+        if (screen != null)
+            g.drawImage(screen, 0, 0, screen.getWidth(), screen.getHeight(), null);
 
     }
 
