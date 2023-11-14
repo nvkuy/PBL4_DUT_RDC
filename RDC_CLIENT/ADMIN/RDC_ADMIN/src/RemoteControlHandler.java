@@ -13,7 +13,7 @@ public class RemoteControlHandler implements Runnable {
     private AES aes;
     private String targetIP;
     private final Integer PORT = 6969;
-    private static final int PACKAGE_SIZE = 400;
+    private static final int PACKAGE_SIZE = 256;
     private static final int MAX_DELAY = 500;
     private volatile TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
@@ -147,7 +147,7 @@ public class RemoteControlHandler implements Runnable {
 
                 if (!frameQueue.containsKey(timeID))
                     frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18));
+                frameQueue.get(timeID).add(rawData.substring(18).trim());
 
             }
 

@@ -18,8 +18,8 @@ import java.util.Iterator;
 public class RemoteControlHandler implements Runnable {
 
     private static final int PORT = 6969;
-    private static final int PACKAGE_SIZE = 400;
-    private static final int DATA_SIZE = 200;
+    private static final int PACKAGE_SIZE = 256;
+    private static final int DATA_SIZE = 150;
     private static final long FPS = 30;
     private static final long SLEEP_TIME = (long)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
@@ -164,6 +164,7 @@ public class RemoteControlHandler implements Runnable {
                         int end = Math.min(imgData.length, start + DATA_SIZE);
                         byte[] part = Arrays.copyOfRange(imgData, start, end);
                         String partStr = AES.encode(part);
+
                         String packageStr = curTimeID + numberEncode(id, 3) + partStr;
 
                         // TODO: Implement thread pool later..
