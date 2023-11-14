@@ -57,7 +57,7 @@ public class ImageData {
             }
         }
 
-        String crypImgStr = new String(data);
+        String crypImgStr = AES.encode(data);
         String imgStr = aes.decrypt(crypImgStr, IV);
 
         InputStream is = new ByteArrayInputStream(AES.decode(imgStr));
