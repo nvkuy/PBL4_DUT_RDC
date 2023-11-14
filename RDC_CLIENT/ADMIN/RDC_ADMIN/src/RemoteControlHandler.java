@@ -13,7 +13,7 @@ public class RemoteControlHandler implements Runnable {
     private AES aes;
     private String targetIP;
     private final Integer PORT = 6969;
-    private static final int PACKAGE_SIZE = 256;
+    private static final int PACKAGE_SIZE = 400;
     private static final int MAX_DELAY = 500;
     private volatile TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
@@ -80,10 +80,8 @@ public class RemoteControlHandler implements Runnable {
                 while (true) {
                     if (frameQueue.isEmpty()) break;
                     long id = frameQueue.firstKey();
-                    if (curTime - id > MAX_DELAY)
-                        frameQueue.remove(id);
-                    else
-                        break;
+                    if (curTime - id <= MAX_DELAY) break;
+                    frameQueue.remove(id);
                 }
 
                 if (frameQueue.isEmpty()) continue;
@@ -95,7 +93,7 @@ public class RemoteControlHandler implements Runnable {
                     testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
                     testRemoteControl.repaint();
                     frameQueue.remove(frameID);
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

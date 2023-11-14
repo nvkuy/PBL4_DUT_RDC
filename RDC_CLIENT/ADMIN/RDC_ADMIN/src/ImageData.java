@@ -3,7 +3,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class ImageData {
@@ -11,7 +10,7 @@ public class ImageData {
 
     private int imgByteLen;
     private byte[] IV;
-    private Map<Integer, byte[]> imagePart;
+    private TreeMap<Integer, byte[]> imagePart;
 
     public ImageData() {
         imgByteLen = 0;
