@@ -147,7 +147,7 @@ public class RemoteControlHandler implements Runnable {
 
                 if (!frameQueue.containsKey(timeID))
                     frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18));
+                frameQueue.get(timeID).add(rawData.substring(18).trim());
 
             }
 
