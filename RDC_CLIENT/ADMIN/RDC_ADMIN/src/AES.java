@@ -53,11 +53,11 @@ public class AES {
         return new String(decryptedBytes);
     }
 
-    private static String encode(byte[] data) {
+    public static String encode(byte[] data) {
         return Base64.getEncoder().encodeToString(data);
     }
 
-    private static byte[] decode(String data) {
+    public static byte[] decode(String data) {
         return Base64.getDecoder().decode(data);
     }
 

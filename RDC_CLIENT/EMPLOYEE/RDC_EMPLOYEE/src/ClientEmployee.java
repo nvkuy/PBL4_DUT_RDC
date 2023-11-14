@@ -92,6 +92,10 @@ public class ClientEmployee {
 
         int check = 1;
         isRunning = true;
+
+        Thread serverCmdHandler = new Thread(new ServerCmdHandler());
+        serverCmdHandler.start();
+
         while (isRunning) {
 
             LocalDateTime date = LocalDateTime.now();
@@ -162,6 +166,34 @@ public class ClientEmployee {
         String compressMes = Gzip.compress(mes);
         out.println(aes.encrypt(compressMes, IV));
 
+    }
+
+    private class ServerCmdHandler implements Runnable {
+
+        @Override
+        public void run() {
+
+            while (isRunning) {
+
+                try {
+                    String option = readMes();
+                    if (option.equals("/RemoteControl")) {
+
+                        String key = readMes();
+                        String targetIP = readMes();
+                        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP));
+                        remoteControlHandler.start();
+
+                    } else {
+                        // ..
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
     }
 
 }
