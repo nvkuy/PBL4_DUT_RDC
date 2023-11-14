@@ -13,7 +13,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Iterator;
 
 public class RemoteControlHandler implements Runnable {
@@ -149,7 +148,7 @@ public class RemoteControlHandler implements Runnable {
                     BufferedImage image = robot.createScreenCapture(area);
                     writer.write(null, new IIOImage(image, null, null), param);
                     byte[] data = os.toByteArray();
-                    String imgStr = Base64.getEncoder().encodeToString(data);
+                    String imgStr = AES.encode(data);
                     byte[] IV = aes.generateIV();
                     String crypImgStr = aes.encrypt(imgStr, IV);
                     String IVStr = AES.getIVStr(IV);
@@ -164,7 +163,7 @@ public class RemoteControlHandler implements Runnable {
                         int start = (id - 1) * DATA_SIZE;
                         int end = Math.min(imgData.length, start + DATA_SIZE);
                         byte[] part = Arrays.copyOfRange(imgData, start, end);
-                        String partStr = Base64.getEncoder().encodeToString(part);
+                        String partStr = AES.encode(part);
                         String packageStr = curTimeID + numberEncode(id, 3) + partStr;
 
                         // TODO: Implement thread pool later..

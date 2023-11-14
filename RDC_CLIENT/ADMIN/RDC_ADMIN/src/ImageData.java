@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.TreeMap;
 
 public class ImageData {
@@ -29,7 +28,7 @@ public class ImageData {
 
             if (imagePart.containsKey(partID)) return;
             String partStr = raw_data.substring(3);
-            byte[] part = Base64.getDecoder().decode(partStr);
+            byte[] part = AES.decode(partStr);
             imagePart.put(partID, part);
             imgByteLen += part.length;
 
@@ -58,7 +57,7 @@ public class ImageData {
         String crypImgStr = new String(data);
         String imgStr = aes.decrypt(crypImgStr, IV);
 
-        InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(imgStr));
+        InputStream is = new ByteArrayInputStream(AES.decode(imgStr));
         return ImageIO.read(is);
 
 
