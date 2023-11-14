@@ -20,9 +20,9 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
-    private static final long FPS = 20;
+    private static final long FPS = 30;
     private static final long SLEEP_TIME = (long)(1000.0 / FPS);
-    private static final float IMAGE_QUALITY = 0.1f;
+    private static final float IMAGE_QUALITY = 0.3f;
 
     private AES aes;
     private String targetIP;
@@ -153,7 +153,7 @@ public class RemoteControlHandler implements Runnable {
                     String crypImgStr = aes.encrypt(imgStr, IV);
                     String IVStr = AES.getIVStr(IV);
 
-                    byte[] imgData = crypImgStr.getBytes();
+                    byte[] imgData = AES.decode(crypImgStr);
                     int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
 
                     String header = curTimeID + numberEncode(0, 3) + numberEncode(numOfPart, 3) + IVStr;

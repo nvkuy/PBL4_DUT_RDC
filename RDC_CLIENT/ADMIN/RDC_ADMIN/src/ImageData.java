@@ -5,13 +5,14 @@ import java.io.InputStream;
 import java.util.TreeMap;
 
 public class ImageData {
-    private int numOfPart;
-
-    private int imgByteLen;
-    private byte[] IV;
-    private TreeMap<Integer, byte[]> imagePart;
+    private volatile int numOfPart;
+    private volatile int imgByteLen;
+    private volatile boolean haveHeader;
+    private volatile byte[] IV;
+    private volatile TreeMap<Integer, byte[]> imagePart;
 
     public ImageData() {
+        haveHeader = false;
         imgByteLen = 0;
         imagePart = new TreeMap<>();
     }
@@ -23,6 +24,7 @@ public class ImageData {
 
             numOfPart = Integer.parseInt(raw_data.substring(3, 6));
             IV = AES.getIVFromStr(raw_data.substring(6));
+            haveHeader = true;
 
         } else { // normal image part
 
@@ -37,7 +39,7 @@ public class ImageData {
     }
 
     public boolean isCompleted() {
-        return imagePart.size() == numOfPart;
+        return (imagePart.size() == numOfPart) && haveHeader;
     }
 
     public BufferedImage getImage(AES aes) throws Exception {
@@ -54,7 +56,7 @@ public class ImageData {
             }
         }
 
-        String crypImgStr = new String(data);
+        String crypImgStr = AES.encode(data);
         String imgStr = aes.decrypt(crypImgStr, IV);
 
         InputStream is = new ByteArrayInputStream(AES.decode(imgStr));

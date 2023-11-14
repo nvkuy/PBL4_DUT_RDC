@@ -14,7 +14,7 @@ public class RemoteControlHandler implements Runnable {
     private String targetIP;
     private final Integer PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
-    private static final int MAX_DELAY = 1000;
+    private static final int MAX_DELAY = 2000;
     private volatile TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
@@ -71,24 +71,18 @@ public class RemoteControlHandler implements Runnable {
             while (true) {
 
                 try {
-                    Thread.sleep(7);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
 
-                long curTime = System.currentTimeMillis();
-                while (true) {
-                    if (frameQueue.isEmpty()) break;
-                    long id = frameQueue.firstKey();
-                    if (curTime - id <= MAX_DELAY) break;
-                    frameQueue.remove(id);
-                }
+                    long curTime = System.currentTimeMillis();
+                    while (true) {
+                        if (frameQueue.isEmpty()) break;
+                        long id = frameQueue.firstKey();
+                        if (curTime - id <= MAX_DELAY) break;
+                        frameQueue.remove(id);
+                    }
 
-                if (frameQueue.isEmpty()) continue;
-                long frameID = frameQueue.firstKey();
-                if (!frameQueue.get(frameID).isCompleted()) continue;
-
-                try {
+                    if (frameQueue.isEmpty()) continue;
+                    long frameID = frameQueue.firstKey();
+                    if (!frameQueue.get(frameID).isCompleted()) continue;
 
                     testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
                     testRemoteControl.repaint();
@@ -118,7 +112,7 @@ public class RemoteControlHandler implements Runnable {
                     adminSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
-                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData()));
+                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData(), receivePacket.getLength()));
                     packageDataProcessor.start();
 
                 } catch (Exception e) {
@@ -133,21 +127,27 @@ public class RemoteControlHandler implements Runnable {
         private class PackageDataProcessor implements Runnable {
 
             private String rawData;
+            private int length;
 
-            public PackageDataProcessor(byte[] rawData) {
+            public PackageDataProcessor(byte[] rawData, int length) {
                 this.rawData = new String(rawData);
+                this.length = length;
             }
 
             @Override
             public void run() {
 
-                long curTimeID = System.currentTimeMillis();
-                long timeID = Long.parseLong(rawData.substring(0, 18));
-                if (curTimeID - timeID > MAX_DELAY) return;
+                try {
+                    long curTimeID = System.currentTimeMillis();
+                    long timeID = Long.parseLong(rawData.substring(0, 18));
+                    if (curTimeID - timeID > MAX_DELAY) return;
 
-                if (!frameQueue.containsKey(timeID))
-                    frameQueue.put(timeID, new ImageData());
-                frameQueue.get(timeID).add(rawData.substring(18).trim());
+                    if (!frameQueue.containsKey(timeID))
+                        frameQueue.put(timeID, new ImageData());
+                    frameQueue.get(timeID).add(rawData.substring(18, length));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
 
