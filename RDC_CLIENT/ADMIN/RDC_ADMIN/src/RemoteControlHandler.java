@@ -15,7 +15,7 @@ public class RemoteControlHandler implements Runnable {
     private InetAddress inetAddress;
     private TestRemoteControl testRemoteControl;
 
-    public RemoteControlHandler(String key, String ip, TestRemoteControl testRemoteControl) throws Exception {
+    public RemoteControlHandler(String key, String ip, TestRemoteControl testRemoteControl) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.testRemoteControl = testRemoteControl;
@@ -85,8 +85,10 @@ public class RemoteControlHandler implements Runnable {
                     testRemoteControl.repaint();
                     frameQueue.remove(frameID);
 
+                    Thread.sleep(5);
+
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -113,7 +115,7 @@ public class RemoteControlHandler implements Runnable {
                     packageDataProcessor.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
 
@@ -143,7 +145,7 @@ public class RemoteControlHandler implements Runnable {
                         frameQueue.put(timeID, new ImageData());
                     frameQueue.get(timeID).add(rawData.substring(18, length));
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }

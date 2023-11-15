@@ -27,7 +27,7 @@ public class RemoteControlHandler implements Runnable {
     private InetAddress inetAddress;
     private Rectangle area;
 
-    public RemoteControlHandler(String key, String ip) throws Exception {
+    public RemoteControlHandler(String key, String ip) {
         this.aes = new AES(key);
         this.targetIP = ip;
     }
@@ -53,7 +53,7 @@ public class RemoteControlHandler implements Runnable {
             controlSignalHandler.start();
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
     }
@@ -76,7 +76,7 @@ public class RemoteControlHandler implements Runnable {
                     // TODO: handle control signals from admin..
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -100,7 +100,7 @@ public class RemoteControlHandler implements Runnable {
                     screenSender.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -172,7 +172,7 @@ public class RemoteControlHandler implements Runnable {
                     // System.gc();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -193,7 +193,7 @@ public class RemoteControlHandler implements Runnable {
                         DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, PORT);
                         employeeSocket.send(sendPacket);
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
 
                 }

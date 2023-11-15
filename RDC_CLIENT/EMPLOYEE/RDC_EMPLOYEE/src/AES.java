@@ -1,4 +1,3 @@
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -21,7 +20,7 @@ public class AES {
 
     }
 
-    public AES(String secretKeyStr) throws Exception {
+    public AES(String secretKeyStr) {
 
         key = new SecretKeySpec(decode(secretKeyStr),"AES");
 
