@@ -68,12 +68,14 @@ public class RemoteControlHandler implements Runnable {
         @Override
         public void run() {
 
-            try {
-                Thread.sleep(1000);
-                System.out.println(sendFPS);
-                sendFPS = 0;
-            } catch (Exception e) {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                    System.out.println(sendFPS);
+                    sendFPS = 0;
+                } catch (Exception e) {
 
+                }
             }
 
         }
@@ -191,9 +193,6 @@ public class RemoteControlHandler implements Runnable {
                     }
 
                     sendFPS++;
-
-                    // TODO: Try garbage collector later..
-                    // System.gc();
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
