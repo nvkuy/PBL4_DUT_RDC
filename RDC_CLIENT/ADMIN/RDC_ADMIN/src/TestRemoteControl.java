@@ -8,9 +8,9 @@ public class TestRemoteControl extends JFrame {
 
     // TODO: Rename class later..
 
-    public volatile BufferedImage screen;
+    public BufferedImage screen;
 
-    public TestRemoteControl(String key, String targetIP) throws Exception {
+    public TestRemoteControl(String key, String targetIP) {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

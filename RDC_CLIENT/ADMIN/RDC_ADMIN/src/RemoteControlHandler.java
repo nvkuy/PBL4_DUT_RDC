@@ -85,7 +85,7 @@ public class RemoteControlHandler implements Runnable {
                     testRemoteControl.repaint();
                     frameQueue.remove(frameID);
 
-                    Thread.sleep(5);
+                    Thread.sleep(4);
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
