@@ -7,14 +7,17 @@ import java.util.TreeMap;
 public class ImageData {
     private int numOfPart;
     private int imgByteLen;
+    private int partReceived;
     private boolean haveHeader;
     private byte[] IV;
-    private TreeMap<Integer, byte[]> imagePart;
+
+    private byte[][] imagePart;
 
     public ImageData() {
         haveHeader = false;
         imgByteLen = 0;
-        imagePart = new TreeMap<>();
+        partReceived = 0;
+        imagePart = new byte[16][];
     }
 
     public void add(String raw_data) {
@@ -28,30 +31,31 @@ public class ImageData {
 
         } else { // normal image part
 
-            if (imagePart.containsKey(partID)) return;
+            if (imagePart[partID] != null) return;
             String partStr = raw_data.substring(3);
             byte[] part = AES.decode(partStr);
-            imagePart.put(partID, part);
+            imagePart[partID] = part;
             imgByteLen += part.length;
+            partReceived++;
 
         }
 
     }
 
     public boolean isCompleted() {
-        return (imagePart.size() == numOfPart) && haveHeader;
+        return (partReceived == numOfPart) && haveHeader;
     }
 
     public BufferedImage getImage(AES aes) throws Exception {
 
         if (!isCompleted())
-            throw new Exception("Not completed image!");
+            return null;
 
         byte[] data = new byte[imgByteLen];
         int i = 0;
-        for (byte[] part : imagePart.values()) {
-            for (int j = 0; j < part.length; j++) {
-                data[i] = part[j];
+        for (int k = 1; k <= numOfPart; k++) {
+            for (int j = 0; j < imagePart[k].length; j++) {
+                data[i] = imagePart[k][j];
                 i++;
             }
         }

@@ -176,6 +176,7 @@ public class RemoteControlHandler implements Runnable {
 
                     byte[] imgData = AES.decode(crypImgStr);
                     int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
+//                    System.out.println("Packet: " + numOfPart + " " + data.length);
 
                     String header = curTimeID + numberEncode(0, 3) + numberEncode(numOfPart, 3) + IVStr;
                     sendImagePart(header);
@@ -205,6 +206,8 @@ public class RemoteControlHandler implements Runnable {
                 byte[] data;
 
                 public ImagePartSender(byte[] data) {
+//                    if (data.length >= PACKET_SIZE)
+//                        System.out.println(data.length);
                     this.data = data;
                 }
 
