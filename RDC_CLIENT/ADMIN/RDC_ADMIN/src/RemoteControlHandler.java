@@ -10,7 +10,7 @@ public class RemoteControlHandler implements Runnable {
     private final Integer PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
     private static final int MAX_DELAY = 2000;
-    private volatile TreeMap<Long, ImageData> frameQueue;
+    private TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
     private TestRemoteControl testRemoteControl;
@@ -66,6 +66,8 @@ public class RemoteControlHandler implements Runnable {
             while (true) {
 
                 try {
+
+                    Thread.sleep(1);
 
                     long curTime = System.currentTimeMillis();
                     while (true) {
