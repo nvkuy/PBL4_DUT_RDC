@@ -7,13 +7,15 @@ public class RemoteControlHandler implements Runnable {
 
     private AES aes;
     private String targetIP;
-    private final Integer PORT = 6969;
+    private final int PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
     private static final int MAX_DELAY = 2000;
     private TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
     private TestRemoteControl testRemoteControl;
+
+    private int paintFPS = 0;
 
     public RemoteControlHandler(String key, String ip, TestRemoteControl testRemoteControl) {
         this.aes = new AES(key);
@@ -42,8 +44,28 @@ public class RemoteControlHandler implements Runnable {
             Thread controlSignalSender = new Thread(new ControlSignalSender());
             controlSignalSender.start();
 
+            Thread benchmarkFPS = new Thread(new BenchmarkFPS());
+            benchmarkFPS.start();
+
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+    private class BenchmarkFPS implements Runnable {
+
+        @Override
+        public void run() {
+
+            try {
+                Thread.sleep(1000);
+                System.out.println(paintFPS);
+                paintFPS = 0;
+            } catch (Exception e) {
+
+            }
+
         }
 
     }
@@ -82,6 +104,7 @@ public class RemoteControlHandler implements Runnable {
                     if (!frameQueue.get(frameID).isCompleted()) continue;
 
                     testRemoteControl.screen.display(frameQueue.get(frameID).getImage(aes));
+                    paintFPS++;
                     frameQueue.remove(frameID);
 
                     Thread.sleep(4);

@@ -17,8 +17,8 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKAGE_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
-    private static final long FPS = 30;
-    private static final long SLEEP_TIME = (long)(1000.0 / FPS);
+    private static final int FPS = 24;
+    private static final int SLEEP_TIME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
 
     private AES aes;
@@ -26,6 +26,8 @@ public class RemoteControlHandler implements Runnable {
     private DatagramSocket employeeSocket;
     private InetAddress inetAddress;
     private Rectangle area;
+
+    private int sendFPS = 0;
 
     public RemoteControlHandler(String key, String ip) {
         this.aes = new AES(key);
@@ -52,8 +54,28 @@ public class RemoteControlHandler implements Runnable {
             Thread controlSignalHandler = new Thread(new ControlSignalHandler());
             controlSignalHandler.start();
 
+            Thread benchmarkFPS = new Thread(new BenchmarkFPS());
+            benchmarkFPS.start();
+
         } catch (Exception e) {
 //            e.printStackTrace();
+        }
+
+    }
+
+    private class BenchmarkFPS implements Runnable {
+
+        @Override
+        public void run() {
+
+            try {
+                Thread.sleep(1000);
+                System.out.println(sendFPS);
+                sendFPS = 0;
+            } catch (Exception e) {
+
+            }
+
         }
 
     }
@@ -168,6 +190,8 @@ public class RemoteControlHandler implements Runnable {
                         sendImagePart(packageStr);
                     }
 
+                    sendFPS++;
+
                     // TODO: Try garbage collector later..
                     // System.gc();
 
@@ -183,7 +207,8 @@ public class RemoteControlHandler implements Runnable {
 
                 public ImagePartSender(byte[] data) {
                     this.data = data;
-//                    System.out.println(data.length);
+//                    if (data.length > PACKAGE_SIZE)
+//                        System.out.println(data.length);
                 }
 
                 @Override
