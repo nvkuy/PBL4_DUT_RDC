@@ -15,7 +15,7 @@ import java.util.Iterator;
 public class RemoteControlHandler implements Runnable {
 
     private static final int PORT = 6969;
-    private static final int PACKAGE_SIZE = 1 << 15;
+    private static final int PACKET_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_TIME = (int)(1000.0 / FPS);
@@ -91,7 +91,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    byte[] receiveData = new byte[PACKAGE_SIZE];
+                    byte[] receiveData = new byte[PACKET_SIZE];
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
                     employeeSocket.receive(receivePacket);
@@ -186,10 +186,10 @@ public class RemoteControlHandler implements Runnable {
                         byte[] part = Arrays.copyOfRange(imgData, start, end);
                         String partStr = AES.encode(part);
 
-                        String packageStr = curTimeID + numberEncode(id, 3) + partStr;
+                        String packetStr = curTimeID + numberEncode(id, 3) + partStr;
 
                         // TODO: Implement thread pool later..
-                        sendImagePart(packageStr);
+                        sendImagePart(packetStr);
                     }
 
                     sendFPS++;
@@ -206,8 +206,6 @@ public class RemoteControlHandler implements Runnable {
 
                 public ImagePartSender(byte[] data) {
                     this.data = data;
-//                    if (data.length > PACKAGE_SIZE)
-//                        System.out.println(data.length);
                 }
 
                 @Override

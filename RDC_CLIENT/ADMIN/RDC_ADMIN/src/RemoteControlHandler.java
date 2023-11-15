@@ -8,7 +8,7 @@ public class RemoteControlHandler implements Runnable {
     private AES aes;
     private String targetIP;
     private final int PORT = 6969;
-    private static final int PACKAGE_SIZE = 1 << 15;
+    private static final int PACKET_SIZE = 1 << 15;
     private static final int MAX_DELAY = 2000;
     private TreeMap<Long, ImageData> frameQueue;
     private DatagramSocket adminSocket;
@@ -134,14 +134,14 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    byte[] receiveData = new byte[PACKAGE_SIZE];
+                    byte[] receiveData = new byte[PACKET_SIZE];
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
                     adminSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
-                    Thread packageDataProcessor = new Thread(new PackageDataProcessor(receivePacket.getData(), receivePacket.getLength()));
-                    packageDataProcessor.start();
+                    Thread packetDataProcessor = new Thread(new PacketDataProcessor(receivePacket.getData(), receivePacket.getLength()));
+                    packetDataProcessor.start();
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
@@ -152,12 +152,12 @@ public class RemoteControlHandler implements Runnable {
 
         }
 
-        private class PackageDataProcessor implements Runnable {
+        private class PacketDataProcessor implements Runnable {
 
             private String rawData;
             private int length;
 
-            public PackageDataProcessor(byte[] rawData, int length) {
+            public PacketDataProcessor(byte[] rawData, int length) {
                 this.rawData = new String(rawData);
                 this.length = length;
             }
