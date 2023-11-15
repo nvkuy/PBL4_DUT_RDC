@@ -7,15 +7,17 @@ import java.awt.image.BufferedImage;
 public class TestRemoteControl extends JFrame {
 
     // TODO: Rename class later..
-
-    public BufferedImage screen;
+    public ScreenDisplayer screen;
 
     public TestRemoteControl(String key, String targetIP) {
+
+        screen = new ScreenDisplayer();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(1000, 600);
         setResizable(false);
+        add(screen);
         setVisible(true);
 
         Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, this));
@@ -23,12 +25,25 @@ public class TestRemoteControl extends JFrame {
 
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public class ScreenDisplayer extends JPanel {
+        private BufferedImage screenFrame;
 
-        if (screen != null)
-            g.drawImage(screen, 0, 0, screen.getWidth(), screen.getHeight(), null);
+        public ScreenDisplayer() {
+            setSize(1000, 600);
+        }
+
+        @Override
+        public void paint(Graphics g) {
+
+            if (screenFrame != null)
+                g.drawImage(screenFrame, 0, 0, null);
+
+        }
+
+        public void display(BufferedImage screenFrame) {
+            this.screenFrame = screenFrame;
+            repaint();
+        }
 
     }
 

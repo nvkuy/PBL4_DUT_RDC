@@ -81,11 +81,8 @@ public class RemoteControlHandler implements Runnable {
                     long frameID = frameQueue.firstKey();
                     if (!frameQueue.get(frameID).isCompleted()) continue;
 
-                    testRemoteControl.screen = frameQueue.get(frameID).getImage(aes);
-                    testRemoteControl.repaint();
+                    testRemoteControl.screen.display(frameQueue.get(frameID).getImage(aes));
                     frameQueue.remove(frameID);
-
-                    Thread.sleep(4);
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
