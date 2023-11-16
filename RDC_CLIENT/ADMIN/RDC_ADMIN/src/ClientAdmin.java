@@ -91,16 +91,10 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
-//        new RemoteControlView("Remote control");
+       new RemoteControlView("Remote control");
 
 
-        // TODO: Read target screen width, height later to resize display region..
-        writeMes("/RemoteControl");
-        writeMes("employee1");
-        String key = readMes();
-        String targetIP = readMes();
 
-        new TestRemoteControl(key, targetIP);
 
 
     }

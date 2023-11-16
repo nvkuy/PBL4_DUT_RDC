@@ -1,8 +1,11 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.security.PublicKey;
 import java.security.spec.ECField;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ClientEmployee {
@@ -153,26 +156,34 @@ public class ClientEmployee {
 
     private class AppHistoryLog implements Runnable {
 
-
+        String data = "";
+        List<String> listData = new ArrayList<String>();
+        int num = 0;
         @Override
         public void run() {
 
             int check = 1;
+
             while (isRunning) {
                 try {
                     LocalDateTime date = LocalDateTime.now();
-                    if (date.getMinute() == 3) check = 1;
+
+                    if(check == 1){
+                        GetData();
+                        Thread.sleep(120000);
+                    }
+                    if (date.getMinute() == 1) check = 1;
                     // Chuyển đổi mili giây sang thông tin ngày giờ hiện tại
-                    if ((date.getMinute() == 0 || date.getMinute() == 1) && (check == 1)) {
-                        String datetime = String.format("%s_%s_%s_%s", date.getMonthValue(), date.getDayOfMonth(), date.getYear(), (date.getHour() - 1));
-                        String file = "D:\\Windowservice\\ServiceTestLog\\ServiceTestLog\\bin\\Debug\\Logs\\ServiceLog_" + datetime + ".txt";
-                        Scanner scanner = new Scanner(new File(file));
+                    if ((date.getMinute() == 58 || date.getMinute() == 59) && (check == 1)) {
+                        data = (num + System.lineSeparator()) + data;
+                        String[] lines = data.split(System.lineSeparator());
                         writeMes("/AppHistory");
-                        while (scanner.hasNextLine()) {
-                            String data = scanner.nextLine();
-                            writeMes(data);
+                        for (String line : lines) {
+                            writeMes(line);
                         }
-                        scanner.close();
+                        data = "";
+                        num = 0;
+                        listData.clear();
                         check = 0;
                     }
                 } catch (Exception e) {
@@ -180,6 +191,28 @@ public class ClientEmployee {
                 }
             }
 
+        }
+        public void GetData() throws Exception{
+            String machineName = InetAddress.getLocalHost().getHostName();
+            Process[] list = null;
+            if (machineName == null || machineName.isEmpty())
+                list = ProcessHandle.allProcesses().toArray(Process[]::new);
+            else
+                list = ProcessHandle.allProcesses().filter(p -> p.info().command().isPresent() && p.info().command().get().contains(machineName)).toArray(Process[]::new);
+            for (Process p : list) {
+                int a = 0;
+                for (int i = 0; i < listData.size(); i++) {
+                    if (p.info().command().isPresent() && p.info().command().get().equals(listData.get(i))) {
+                        a = 1;
+                        break;
+                    }
+                }
+                if (a == 0) {
+                    data += (p.info().command().orElse("") + System.lineSeparator());
+                    num++;
+                    listData.add(p.info().command().orElse(""));
+                }
+            }
         }
     }
 
