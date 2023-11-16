@@ -168,6 +168,8 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     long curTimeID = System.currentTimeMillis();
                     long timeID = Long.parseLong(rawData.substring(0, 18));
+
+//                    System.out.println(curTimeID - timeID);
                     if (curTimeID - timeID > MAX_DELAY) return;
 
                     if (!frameQueue.containsKey(timeID))

@@ -26,6 +26,12 @@ public class AES {
 
     }
 
+    public AES(byte[] secretKeyByte) {
+
+        key = new SecretKeySpec(secretKeyByte, "AES");
+
+    }
+
     public byte[] generateIV() throws Exception {
 
         Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -35,7 +41,7 @@ public class AES {
     }
 
     public String encrypt(String message, byte[] IV) throws Exception {
-        byte[] messageInBytes = message.getBytes();
+        byte[] messageInBytes = decode(message);
         Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         encryptionCipher.init(Cipher.ENCRYPT_MODE, key, spec);
@@ -49,7 +55,7 @@ public class AES {
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
         byte[] decryptedBytes = decryptionCipher.doFinal(messageInBytes);
-        return new String(decryptedBytes);
+        return encode(decryptedBytes);
     }
 
     public static String encode(byte[] data) {

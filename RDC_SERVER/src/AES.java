@@ -1,4 +1,3 @@
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -21,9 +20,15 @@ public class AES {
 
     }
 
-    public AES(String secretKeyStr) throws Exception {
+    public AES(String secretKeyStr) {
 
         key = new SecretKeySpec(decode(secretKeyStr),"AES");
+
+    }
+
+    public AES(byte[] secretKeyByte) {
+
+        key = new SecretKeySpec(secretKeyByte, "AES");
 
     }
 
@@ -36,7 +41,7 @@ public class AES {
     }
 
     public String encrypt(String message, byte[] IV) throws Exception {
-        byte[] messageInBytes = message.getBytes();
+        byte[] messageInBytes = decode(message);
         Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         encryptionCipher.init(Cipher.ENCRYPT_MODE, key, spec);
@@ -50,14 +55,14 @@ public class AES {
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
         byte[] decryptedBytes = decryptionCipher.doFinal(messageInBytes);
-        return new String(decryptedBytes);
+        return encode(decryptedBytes);
     }
 
-    private static String encode(byte[] data) {
+    public static String encode(byte[] data) {
         return Base64.getEncoder().encodeToString(data);
     }
 
-    private static byte[] decode(String data) {
+    public static byte[] decode(String data) {
         return Base64.getDecoder().decode(data);
     }
 
