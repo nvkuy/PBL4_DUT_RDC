@@ -10,12 +10,12 @@ public class RemoteControlHandler implements Runnable {
     private final String targetIP;
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
-    private static final int TIME_RANGE = 1 << 16;
+    private static final long TIME_RANGE = 1 << 16;
     private static final int MAX_DELAY = 2000;
     private TreeMap<Integer, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
-    private TestRemoteControl testRemoteControl;
+    private final TestRemoteControl testRemoteControl;
 
     private int paintFramePerSecond = 0;
     private int lateFramePerSecond = 0;
@@ -115,7 +115,7 @@ public class RemoteControlHandler implements Runnable {
                     long curTime = System.currentTimeMillis();
                     while (true) {
                         if (frameQueue.isEmpty()) break;
-                        long id = frameQueue.firstKey();
+                        int id = frameQueue.firstKey();
                         if (curTime - id <= MAX_DELAY) break;
                         lateFramePerSecond++;
                         frameQueue.remove(id);
@@ -190,7 +190,7 @@ public class RemoteControlHandler implements Runnable {
             public void run() {
 
                 try {
-                    int curTimeID = (int)System.currentTimeMillis() % TIME_RANGE;
+                    int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
                     int timeID = bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
 
 //                    System.out.println(curTimeID - timeID);

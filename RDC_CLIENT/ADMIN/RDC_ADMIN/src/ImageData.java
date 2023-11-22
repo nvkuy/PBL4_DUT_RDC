@@ -12,7 +12,7 @@ public class ImageData {
     private boolean haveHeader;
     private byte[] IV;
 
-    private byte[][] imagePart;
+    private final byte[][] imagePart;
 
     public ImageData() {
         haveHeader = false;

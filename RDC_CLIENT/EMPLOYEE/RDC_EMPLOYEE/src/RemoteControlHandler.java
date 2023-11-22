@@ -17,7 +17,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
-    private static final int TIME_RANGE = 1 << 16;
+    private static final long TIME_RANGE = 1 << 16;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
@@ -186,7 +186,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    byte[] curTimeID = intToBytes((int)System.currentTimeMillis() % TIME_RANGE);
+                    byte[] curTimeID = intToBytes((int)(System.currentTimeMillis() % TIME_RANGE));
 
                     Robot robot = new Robot();
                     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -202,9 +202,9 @@ public class RemoteControlHandler implements Runnable {
                     writer.write(null, new IIOImage(image, null, null), param);
                     byte[] data = os.toByteArray();
                     byte[] IV = aes.generateIV();
-                    byte[] crypImg = aes.encrypt(data, IV);
+                    byte[] cryptImg = aes.encrypt(data, IV);
 
-                    int numOfPart = (crypImg.length + DATA_SIZE - 1) / DATA_SIZE;
+                    int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
 //                    System.out.println("Packet: " + numOfPart + " " + data.length);
 
                     byte[] header = concat(curTimeID, intToBytes(0), intToBytes(numOfPart), IV);
@@ -212,8 +212,8 @@ public class RemoteControlHandler implements Runnable {
 
                     for (int id = 1; id <= numOfPart; id++) {
                         int start = (id - 1) * DATA_SIZE;
-                        int end = Math.min(crypImg.length, start + DATA_SIZE);
-                        byte[] part = Arrays.copyOfRange(crypImg, start, end);
+                        int end = Math.min(cryptImg.length, start + DATA_SIZE);
+                        byte[] part = Arrays.copyOfRange(cryptImg, start, end);
                         byte[] packetData = concat(curTimeID, intToBytes(id), part);
 
                         // TODO: Implement thread pool later..
