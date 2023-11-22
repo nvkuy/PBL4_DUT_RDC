@@ -2,7 +2,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.TreeMap;
+import java.util.Comparator;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class RemoteControlHandler implements Runnable {
 
@@ -11,8 +12,8 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final long TIME_RANGE = 1 << 16;
-    private static final int MAX_DELAY = 2000;
-    private TreeMap<Integer, ImageData> frameQueue;
+    private static final int MAX_DELAY = 500;
+    private ConcurrentSkipListMap<Integer, ImageData> frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
     private final TestRemoteControl testRemoteControl;
@@ -49,12 +50,12 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            frameQueue = new TreeMap<>();
+            frameQueue = new ConcurrentSkipListMap<>(Comparator.comparingInt(o -> o));
 
-            Thread screenReceiver = new Thread(new ScreenReceiver());
+            Thread screenReceiver = new Thread(new ScreenReceiver(this));
             screenReceiver.start();
 
-            Thread screenRender = new Thread(new ScreenRender());
+            Thread screenRender = new Thread(new ScreenRender(this));
             screenRender.start();
 
             Thread controlSignalSender = new Thread(new ControlSignalSender());
@@ -103,6 +104,11 @@ public class RemoteControlHandler implements Runnable {
 
     private class ScreenRender implements Runnable {
 
+        private final RemoteControlHandler remoteControlHandler;
+        public ScreenRender(RemoteControlHandler remoteControlHandler) {
+            this.remoteControlHandler = remoteControlHandler;
+        }
+
         @Override
         public void run() {
 
@@ -114,20 +120,20 @@ public class RemoteControlHandler implements Runnable {
 
                     long curTime = System.currentTimeMillis();
                     while (true) {
-                        if (frameQueue.isEmpty()) break;
-                        int id = frameQueue.firstKey();
+                        if (remoteControlHandler.frameQueue.isEmpty()) break;
+                        int id = remoteControlHandler.frameQueue.firstKey();
                         if (curTime - id <= MAX_DELAY) break;
                         lateFramePerSecond++;
-                        frameQueue.remove(id);
+                        remoteControlHandler.frameQueue.remove(id);
                     }
 
-                    if (frameQueue.isEmpty()) continue;
-                    int frameID = frameQueue.firstKey();
-                    if (!frameQueue.get(frameID).isCompleted()) continue;
+                    if (remoteControlHandler.frameQueue.isEmpty()) continue;
+                    int frameID = remoteControlHandler.frameQueue.firstKey();
+                    if (!remoteControlHandler.frameQueue.get(frameID).isCompleted()) continue;
 
-                    testRemoteControl.screen.display(frameQueue.get(frameID).getImage(aes));
+                    testRemoteControl.screen.display(remoteControlHandler.frameQueue.get(frameID).getImage(aes));
                     paintFramePerSecond++;
-                    frameQueue.remove(frameID);
+                    remoteControlHandler.frameQueue.remove(frameID);
 
                     Thread.sleep(4);
 
@@ -142,6 +148,12 @@ public class RemoteControlHandler implements Runnable {
 
     private class ScreenReceiver implements Runnable {
 
+        private final RemoteControlHandler remoteControlHandler;
+
+        public ScreenReceiver(RemoteControlHandler remoteControlHandler) {
+            this.remoteControlHandler = remoteControlHandler;
+        }
+
         @Override
         public void run() {
 
@@ -155,7 +167,7 @@ public class RemoteControlHandler implements Runnable {
                     adminSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
-                    Thread packetDataProcessor = new Thread(new PacketDataProcessor(receivePacket.getData(), receivePacket.getLength()));
+                    Thread packetDataProcessor = new Thread(new PacketDataProcessor(remoteControlHandler, receivePacket.getData(), receivePacket.getLength()));
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
@@ -169,6 +181,7 @@ public class RemoteControlHandler implements Runnable {
 
         private class PacketDataProcessor implements Runnable {
 
+            private final RemoteControlHandler remoteControlHandler;
             private final byte[] rawData;
             private final int length;
 
@@ -181,9 +194,10 @@ public class RemoteControlHandler implements Runnable {
                 return result;
             }
 
-            public PacketDataProcessor(byte[] rawData, int length) {
+            public PacketDataProcessor(RemoteControlHandler remoteControlHandler, byte[] rawData, int length) {
                 this.rawData = rawData;
                 this.length = length;
+                this.remoteControlHandler = remoteControlHandler;
             }
 
             @Override
@@ -196,9 +210,10 @@ public class RemoteControlHandler implements Runnable {
 //                    System.out.println(curTimeID - timeID);
                     if (curTimeID - timeID > MAX_DELAY) return;
 
-                    if (!frameQueue.containsKey(timeID))
-                        frameQueue.put(timeID, new ImageData());
-                    frameQueue.get(timeID).add(Arrays.copyOfRange(rawData, 2, length));
+                    if (!remoteControlHandler.frameQueue.containsKey(timeID))
+                        remoteControlHandler.frameQueue.put(timeID, new ImageData());
+                    remoteControlHandler.frameQueue.get(timeID).add(Arrays.copyOfRange(rawData, 2, length));
+
                 } catch (Exception e) {
 //                    e.printStackTrace();
                 }
