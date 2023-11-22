@@ -28,7 +28,7 @@ public class RemoteControlHandler implements Runnable {
     - next 2 bytes: partID (0 if it is header)
     - if packet is header:
         + next 2 bytes: number of parts which image was divided
-        + next 16 bytes: IV
+        + other bytes: IV
     - else: image part data
 
      */
@@ -196,8 +196,6 @@ public class RemoteControlHandler implements Runnable {
 //                    System.out.println(curTimeID - timeID);
                     if (curTimeID - timeID > MAX_DELAY) return;
 
-                    if (!frameQueue.containsKey(timeID))
-                        frameQueue.put(timeID, new ImageData());
                     frameQueue.get(timeID).add(Arrays.copyOfRange(rawData, 2, length));
                 } catch (Exception e) {
 //                    e.printStackTrace();
