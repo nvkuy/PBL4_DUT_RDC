@@ -196,6 +196,8 @@ public class RemoteControlHandler implements Runnable {
 //                    System.out.println(curTimeID - timeID);
                     if (curTimeID - timeID > MAX_DELAY) return;
 
+                    if (!frameQueue.containsKey(timeID))
+                        frameQueue.put(timeID, new ImageData());
                     frameQueue.get(timeID).add(Arrays.copyOfRange(rawData, 2, length));
                 } catch (Exception e) {
 //                    e.printStackTrace();

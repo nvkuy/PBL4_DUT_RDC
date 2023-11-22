@@ -12,9 +12,8 @@ public class ImageData {
     private byte[] IV;
 
     private final byte[][] imagePart;
-    private ImageData instance;
 
-    private ImageData() {
+    public ImageData() {
         haveHeader = false;
         imgByteLen = 0;
         partReceived = 0;
@@ -32,42 +31,39 @@ public class ImageData {
 
     public void add(byte[] raw_data) {
 
-        if (instance == null)
-            instance = new ImageData();
-
         int partID = bytesToInt(Arrays.copyOfRange(raw_data, 0, 2));
         if (partID == 0) { // header
 
-            instance.numOfPart = bytesToInt(Arrays.copyOfRange(raw_data, 2, 4));
-            instance.IV = Arrays.copyOfRange(raw_data, 4, raw_data.length);
-            instance.haveHeader = true;
+            numOfPart = bytesToInt(Arrays.copyOfRange(raw_data, 2, 4));
+            IV = Arrays.copyOfRange(raw_data, 4, raw_data.length);
+            haveHeader = true;
 
         } else { // normal image part
 
-            if (instance.imagePart[partID] != null) return;
+            if (imagePart[partID] != null) return;
             byte[] part = Arrays.copyOfRange(raw_data, 2, raw_data.length);
-            instance.imagePart[partID] = part;
-            instance.imgByteLen += part.length;
-            instance.partReceived++;
+            imagePart[partID] = part;
+            imgByteLen += part.length;
+            partReceived++;
 
         }
 
     }
 
     public boolean isCompleted() {
-        return (instance.partReceived == instance.numOfPart) && instance.haveHeader;
+        return (partReceived == numOfPart) && haveHeader;
     }
 
     public BufferedImage getImage(AES aes) throws Exception {
 
-        if (!instance.isCompleted())
+        if (!isCompleted())
             return null;
 
         byte[] data = new byte[imgByteLen];
         int i = 0;
-        for (int k = 1; k <= instance.numOfPart; k++) {
-            for (int j = 0; j < instance.imagePart[k].length; j++) {
-                data[i] = instance.imagePart[k][j];
+        for (int k = 1; k <= numOfPart; k++) {
+            for (int j = 0; j < imagePart[k].length; j++) {
+                data[i] = imagePart[k][j];
                 i++;
             }
         }
