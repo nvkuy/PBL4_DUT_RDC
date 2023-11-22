@@ -17,17 +17,31 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
+    private static final int TIME_RANGE = 1 << 16;
     private static final int FPS = 24;
-    private static final int SLEEP_TIME = (int)(1000.0 / FPS);
+    private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
 
-    private AES aes;
-    private String targetIP;
+    private final AES aes;
+    private final String targetIP;
     private DatagramSocket employeeSocket;
     private InetAddress inetAddress;
     private Rectangle area;
 
     private int sendFPS = 0;
+
+    /*
+
+    image packet structure:
+
+    - first 2 bytes: timeID (current time millisecond % TIME_RANGE)
+    - next 2 bytes: partID (0 if it is header)
+    - if packet is header:
+        + next 2 bytes: number of parts which image was divided
+        + next 16 bytes: IV
+    - else: image part data
+
+     */
 
     public RemoteControlHandler(String key, String ip) {
         this.aes = new AES(key);
@@ -118,7 +132,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    Thread.sleep(SLEEP_TIME);
+                    Thread.sleep(SLEEP_BETWEEN_FRAME);
 
                     Thread screenSender = new Thread(new ScreenSender());
                     screenSender.start();
@@ -133,18 +147,36 @@ public class RemoteControlHandler implements Runnable {
 
         private class ScreenSender implements Runnable {
 
-            private String numberEncode(long num, int digit) {
+            private static byte[] intToBytes(int num) {
+                byte[] result = new byte[2];
+                for (int i = 1; i >= 0; i--) {
+                    result[i] = (byte)(num & 0xFF);
+                    num >>= 8;
+                }
+                return result;
+            }
 
-                StringBuilder tmp = new StringBuilder(num + "");
-                while (tmp.length() < digit)
-                    tmp.insert(0, '0');
-                return tmp.toString();
+            private static byte[] concat(byte[]... arrs) {
+
+                int length = 0;
+                for (byte[] arr : arrs)
+                    length += arr.length;
+                byte[] res = new byte[length];
+                int i = 0;
+                for (byte[] arr : arrs) {
+                    for (byte b : arr) {
+                        res[i] = b;
+                        i++;
+                    }
+                }
+
+                return res;
 
             }
 
-            private void sendImagePart(String data) {
+            private void sendImagePart(byte[] data) {
 
-                Thread imagePartSender = new Thread(new ImagePartSender(data.getBytes()));
+                Thread imagePartSender = new Thread(new ImagePartSender(data));
                 imagePartSender.start();
 
             }
@@ -154,7 +186,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    String curTimeID = numberEncode(System.currentTimeMillis(), 18);
+                    byte[] curTimeID = intToBytes((int)System.currentTimeMillis() % TIME_RANGE);
 
                     Robot robot = new Robot();
                     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -169,28 +201,23 @@ public class RemoteControlHandler implements Runnable {
                     BufferedImage image = robot.createScreenCapture(area);
                     writer.write(null, new IIOImage(image, null, null), param);
                     byte[] data = os.toByteArray();
-                    String imgStr = AES.encode(data);
                     byte[] IV = aes.generateIV();
-                    String crypImgStr = aes.encrypt(imgStr, IV);
-                    String IVStr = AES.getIVStr(IV);
+                    byte[] crypImg = aes.encrypt(data, IV);
 
-                    byte[] imgData = AES.decode(crypImgStr);
-                    int numOfPart = (imgData.length + DATA_SIZE - 1) / DATA_SIZE;
+                    int numOfPart = (crypImg.length + DATA_SIZE - 1) / DATA_SIZE;
 //                    System.out.println("Packet: " + numOfPart + " " + data.length);
 
-                    String header = curTimeID + numberEncode(0, 3) + numberEncode(numOfPart, 3) + IVStr;
+                    byte[] header = concat(curTimeID, intToBytes(0), intToBytes(numOfPart), IV);
                     sendImagePart(header);
 
                     for (int id = 1; id <= numOfPart; id++) {
                         int start = (id - 1) * DATA_SIZE;
-                        int end = Math.min(imgData.length, start + DATA_SIZE);
-                        byte[] part = Arrays.copyOfRange(imgData, start, end);
-                        String partStr = AES.encode(part);
-
-                        String packetStr = curTimeID + numberEncode(id, 3) + partStr;
+                        int end = Math.min(crypImg.length, start + DATA_SIZE);
+                        byte[] part = Arrays.copyOfRange(crypImg, start, end);
+                        byte[] packetData = concat(curTimeID, intToBytes(id), part);
 
                         // TODO: Implement thread pool later..
-                        sendImagePart(packetStr);
+                        sendImagePart(packetData);
                     }
 
                     sendFPS++;

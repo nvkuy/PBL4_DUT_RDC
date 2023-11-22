@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.TreeMap;
 
 public class ImageData {
@@ -20,20 +21,28 @@ public class ImageData {
         imagePart = new byte[16][];
     }
 
-    public void add(String raw_data) {
+    private static int bytesToInt(final byte[] b) {
+        int result = 0;
+        for (int i = 0; i <= 1; i++) {
+            result <<= 8;
+            result |= (b[i] & 0xFF);
+        }
+        return result;
+    }
 
-        int partID = Integer.parseInt(raw_data.substring(0, 3));
+    public void add(byte[] raw_data) {
+
+        int partID = bytesToInt(Arrays.copyOfRange(raw_data, 0, 2));
         if (partID == 0) { // header
 
-            numOfPart = Integer.parseInt(raw_data.substring(3, 6));
-            IV = AES.getIVFromStr(raw_data.substring(6));
+            numOfPart = bytesToInt(Arrays.copyOfRange(raw_data, 2, 4));
+            IV = Arrays.copyOfRange(raw_data, 4, raw_data.length);
             haveHeader = true;
 
         } else { // normal image part
 
             if (imagePart[partID] != null) return;
-            String partStr = raw_data.substring(3);
-            byte[] part = AES.decode(partStr);
+            byte[] part = Arrays.copyOfRange(raw_data, 2, raw_data.length);
             imagePart[partID] = part;
             imgByteLen += part.length;
             partReceived++;

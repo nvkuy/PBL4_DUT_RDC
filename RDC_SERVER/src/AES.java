@@ -9,8 +9,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class AES {
 
     private SecretKey key;
-    private final int KEY_SIZE = 128;
-    private final int T_LEN = 128;
+    private static final int KEY_SIZE = 128;
+    private static final int T_LEN = 128;
 
     public AES() throws Exception {
 
@@ -40,22 +40,28 @@ public class AES {
 
     }
 
-    public String encrypt(String message, byte[] IV) throws Exception {
-        byte[] messageInBytes = decode(message);
+    public byte[] encrypt(byte[] message, byte[] IV) throws Exception {
         Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         encryptionCipher.init(Cipher.ENCRYPT_MODE, key, spec);
-        byte[] encryptedBytes = encryptionCipher.doFinal(messageInBytes);
-        return encode(encryptedBytes);
+        return encryptionCipher.doFinal(message);
+    }
+
+    public String encrypt(String message, byte[] IV) throws Exception {
+        byte[] messageInBytes = message.getBytes();
+        return encode(encrypt(messageInBytes, IV));
+    }
+
+    public byte[] decrypt(byte[] encryptedMessage, byte[] IV) throws Exception {
+        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
+        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
+        return decryptionCipher.doFinal(encryptedMessage);
     }
 
     public String decrypt(String encryptedMessage, byte[] IV) throws Exception {
         byte[] messageInBytes = decode(encryptedMessage);
-        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
-        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-        byte[] decryptedBytes = decryptionCipher.doFinal(messageInBytes);
-        return encode(decryptedBytes);
+        return new String(decrypt(messageInBytes, IV));
     }
 
     public static String encode(byte[] data) {
@@ -66,8 +72,11 @@ public class AES {
         return Base64.getDecoder().decode(data);
     }
 
+    public byte[] getKeyByte() {
+        return key.getEncoded();
+    }
     public String getKeyStr() {
-        return encode(key.getEncoded());
+        return encode(getKeyByte());
     }
 
     public static String getIVStr(byte[] IV) {

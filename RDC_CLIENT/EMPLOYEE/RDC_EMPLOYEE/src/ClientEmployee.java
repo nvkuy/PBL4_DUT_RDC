@@ -118,7 +118,7 @@ public class ClientEmployee {
 
     public void writeMes(String mes) throws Exception {
 
-        if (mes == null || mes.equals(""))
+        if (mes == null || mes.isEmpty())
             mes = " ";
 
         byte[] IV = aes.generateIV();
