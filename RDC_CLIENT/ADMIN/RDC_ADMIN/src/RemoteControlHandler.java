@@ -2,8 +2,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 public class RemoteControlHandler implements Runnable {
 
@@ -13,7 +11,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int PACKET_SIZE = 1 << 15;
     private static final long TIME_RANGE = 1 << 16;
     private static final int MAX_DELAY = 500;
-    private ConcurrentSkipListMap<Integer, ImageData> frameQueue;
+    private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
     private final TestRemoteControl testRemoteControl;
@@ -50,12 +48,12 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            frameQueue = new ConcurrentSkipListMap<>(Comparator.comparingInt(o -> o));
+            frameQueue = new ImageQueue();
 
-            Thread screenReceiver = new Thread(new ScreenReceiver(this));
+            Thread screenReceiver = new Thread(new ScreenReceiver());
             screenReceiver.start();
 
-            Thread screenRender = new Thread(new ScreenRender(this));
+            Thread screenRender = new Thread(new ScreenRender());
             screenRender.start();
 
             Thread controlSignalSender = new Thread(new ControlSignalSender());
@@ -79,12 +77,11 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     Thread.sleep(1000);
                     System.out.println("FPS: " + paintFramePerSecond
-                            + " - LATE: " + lateFramePerSecond
-                            + " - ERROR: " + (24 - paintFramePerSecond - lateFramePerSecond));
+                            + " - LATE: " + lateFramePerSecond);
                     lateFramePerSecond = 0;
                     paintFramePerSecond = 0;
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
 
@@ -104,11 +101,6 @@ public class RemoteControlHandler implements Runnable {
 
     private class ScreenRender implements Runnable {
 
-        private final RemoteControlHandler remoteControlHandler;
-        public ScreenRender(RemoteControlHandler remoteControlHandler) {
-            this.remoteControlHandler = remoteControlHandler;
-        }
-
         @Override
         public void run() {
 
@@ -120,25 +112,25 @@ public class RemoteControlHandler implements Runnable {
 
                     long curTime = System.currentTimeMillis();
                     while (true) {
-                        if (remoteControlHandler.frameQueue.isEmpty()) break;
-                        int id = remoteControlHandler.frameQueue.firstKey();
+                        if (frameQueue.isEmpty()) break;
+                        int id = frameQueue.getLatestTimeID();
                         if (curTime - id <= MAX_DELAY) break;
                         lateFramePerSecond++;
-                        remoteControlHandler.frameQueue.remove(id);
+                        frameQueue.pop();
                     }
 
-                    if (remoteControlHandler.frameQueue.isEmpty()) continue;
-                    int frameID = remoteControlHandler.frameQueue.firstKey();
-                    if (!remoteControlHandler.frameQueue.get(frameID).isCompleted()) continue;
+                    if (frameQueue.isEmpty()) continue;
+                    int frameID = frameQueue.getLatestTimeID();
+                    if (!frameQueue.isCompleted(frameID)) continue;
 
-                    testRemoteControl.screen.display(remoteControlHandler.frameQueue.get(frameID).getImage(aes));
+                    testRemoteControl.screen.display(frameQueue.getImage(frameID, aes));
                     paintFramePerSecond++;
-                    remoteControlHandler.frameQueue.remove(frameID);
+                    frameQueue.pop();
 
                     Thread.sleep(4);
 
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }
@@ -147,12 +139,6 @@ public class RemoteControlHandler implements Runnable {
     }
 
     private class ScreenReceiver implements Runnable {
-
-        private final RemoteControlHandler remoteControlHandler;
-
-        public ScreenReceiver(RemoteControlHandler remoteControlHandler) {
-            this.remoteControlHandler = remoteControlHandler;
-        }
 
         @Override
         public void run() {
@@ -167,11 +153,11 @@ public class RemoteControlHandler implements Runnable {
                     adminSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
-                    Thread packetDataProcessor = new Thread(new PacketDataProcessor(remoteControlHandler, receivePacket.getData(), receivePacket.getLength()));
+                    Thread packetDataProcessor = new Thread(new PacketDataProcessor(receivePacket.getData(), receivePacket.getLength()));
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
 
@@ -181,7 +167,6 @@ public class RemoteControlHandler implements Runnable {
 
         private class PacketDataProcessor implements Runnable {
 
-            private final RemoteControlHandler remoteControlHandler;
             private final byte[] rawData;
             private final int length;
 
@@ -194,10 +179,9 @@ public class RemoteControlHandler implements Runnable {
                 return result;
             }
 
-            public PacketDataProcessor(RemoteControlHandler remoteControlHandler, byte[] rawData, int length) {
+            public PacketDataProcessor(byte[] rawData, int length) {
                 this.rawData = rawData;
                 this.length = length;
-                this.remoteControlHandler = remoteControlHandler;
             }
 
             @Override
@@ -207,15 +191,12 @@ public class RemoteControlHandler implements Runnable {
                     int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
                     int timeID = bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
 
-//                    System.out.println(curTimeID - timeID);
+//                    System.out.println("Delay: " + (curTimeID - timeID));
                     if (curTimeID - timeID > MAX_DELAY) return;
-
-                    if (!remoteControlHandler.frameQueue.containsKey(timeID))
-                        remoteControlHandler.frameQueue.put(timeID, new ImageData());
-                    remoteControlHandler.frameQueue.get(timeID).add(Arrays.copyOfRange(rawData, 2, length));
+                    frameQueue.push(rawData);
 
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }
