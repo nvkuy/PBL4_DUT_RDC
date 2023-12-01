@@ -37,7 +37,7 @@ public class ImageQueue {
         imgByteLen = new int[MAX_SIZE + 1];
         partReceived = new int[MAX_SIZE + 1];
 
-        imagePart = new byte[MAX_SIZE + 1][][];
+        imagePart = new byte[MAX_SIZE + 1][16][];
         IVpart = new byte[MAX_SIZE + 1][];
 
         timeIDHeap[0] = Integer.MIN_VALUE;
@@ -105,7 +105,6 @@ public class ImageQueue {
             } finally {
                 lock.unlock();
             }
-            imagePart[timeID] = new byte[16][];
         }
 
         int partID = bytesToInt(Arrays.copyOfRange(rawData, 2, 4));
@@ -145,17 +144,23 @@ public class ImageQueue {
         }
 
         numOfPart[timeID] = imgByteLen[timeID] = partReceived[timeID] = 0;
+        for (int i = 0; i < 16; i++)
+            imagePart[timeID][i] = null;
         IVpart[timeID] = null;
-        imagePart[timeID] = null;
 
     }
 
     public boolean isCompleted(int timeID) {
+//        System.out.println(partReceived[timeID] + "/" + numOfPart[timeID]);
         return (numOfPart[timeID] > 0) && (numOfPart[timeID] == partReceived[timeID]);
     }
 
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public BufferedImage getImage(int timeID, AES aes) throws Exception {

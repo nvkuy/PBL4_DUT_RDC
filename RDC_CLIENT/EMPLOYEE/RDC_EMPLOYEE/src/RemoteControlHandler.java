@@ -29,6 +29,7 @@ public class RemoteControlHandler implements Runnable {
     private Rectangle area;
 
     private int sendFPS = 0;
+    private static final boolean BENCHMARK = true;
 
     /*
 
@@ -68,8 +69,10 @@ public class RemoteControlHandler implements Runnable {
             Thread controlSignalHandler = new Thread(new ControlSignalHandler());
             controlSignalHandler.start();
 
-            Thread benchmarkFPS = new Thread(new BenchmarkFPS());
-            benchmarkFPS.start();
+            if (BENCHMARK) {
+                Thread benchmarkFPS = new Thread(new BenchmarkFPS());
+                benchmarkFPS.start();
+            }
 
         } catch (Exception e) {
 //            e.printStackTrace();

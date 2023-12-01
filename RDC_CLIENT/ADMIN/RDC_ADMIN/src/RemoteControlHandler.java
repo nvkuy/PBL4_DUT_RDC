@@ -18,6 +18,7 @@ public class RemoteControlHandler implements Runnable {
 
     private int paintFramePerSecond = 0;
     private int lateFramePerSecond = 0;
+    private static final boolean BENCHMARK = true;
 
     /*
 
@@ -59,8 +60,10 @@ public class RemoteControlHandler implements Runnable {
             Thread controlSignalSender = new Thread(new ControlSignalSender());
             controlSignalSender.start();
 
-            Thread benchmarkFPS = new Thread(new BenchmarkFPS());
-            benchmarkFPS.start();
+            if (BENCHMARK) {
+                Thread benchmarkFPS = new Thread(new BenchmarkFPS());
+                benchmarkFPS.start();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +113,7 @@ public class RemoteControlHandler implements Runnable {
 
                     Thread.sleep(1);
 
-                    long curTime = System.currentTimeMillis();
+                    long curTime = (System.currentTimeMillis() % TIME_RANGE);
                     while (true) {
                         if (frameQueue.isEmpty()) break;
                         int id = frameQueue.getLatestTimeID();
