@@ -1,22 +1,37 @@
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.TreeMap;
+import java.util.Arrays;
 
 public class RemoteControlHandler implements Runnable {
 
-    private AES aes;
-    private String targetIP;
-    private final int PORT = 6969;
+    private final AES aes;
+    private final String targetIP;
+    private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
-    private static final int MAX_DELAY = 2000;
-    private TreeMap<Long, ImageData> frameQueue;
+    private static final long TIME_RANGE = 1 << 16;
+    private static final int MAX_DELAY = 1500;
+    private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
     private RemoteControlDetail mRemoteControl;
 
     private int paintFramePerSecond = 0;
     private int lateFramePerSecond = 0;
+    private static final boolean BENCHMARK = true;
+
+    /*
+
+    image packet structure:
+
+    - first 2 bytes: timeID (current time millisecond % TIME_RANGE)
+    - next 2 bytes: partID (0 if it is header)
+    - if packet is header:
+        + next 2 bytes: number of parts which image was divided
+        + other bytes: IV
+    - else: image part data
+
+     */
 
     public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl) {
         this.aes = new AES(key);
@@ -34,7 +49,7 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            frameQueue = new TreeMap<>();
+            frameQueue = new ImageQueue();
 
             Thread screenReceiver = new Thread(new ScreenReceiver());
             screenReceiver.start();
@@ -45,8 +60,10 @@ public class RemoteControlHandler implements Runnable {
             Thread controlSignalSender = new Thread(new ControlSignalSender());
             controlSignalSender.start();
 
-            Thread benchmarkFPS = new Thread(new BenchmarkFPS());
-            benchmarkFPS.start();
+            if (BENCHMARK) {
+                Thread benchmarkFPS = new Thread(new BenchmarkFPS());
+                benchmarkFPS.start();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,12 +80,11 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     Thread.sleep(1000);
                     System.out.println("FPS: " + paintFramePerSecond
-                            + " - LATE: " + lateFramePerSecond
-                            + " - ERROR: " + (24 - paintFramePerSecond - lateFramePerSecond));
+                            + " - LATE: " + lateFramePerSecond);
                     lateFramePerSecond = 0;
                     paintFramePerSecond = 0;
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
 
@@ -97,27 +113,28 @@ public class RemoteControlHandler implements Runnable {
 
                     Thread.sleep(1);
 
-                    long curTime = System.currentTimeMillis();
+                    long curTime = (System.currentTimeMillis() % TIME_RANGE);
                     while (true) {
                         if (frameQueue.isEmpty()) break;
-                        long id = frameQueue.firstKey();
+                        int id = frameQueue.getLatestTimeID();
                         if (curTime - id <= MAX_DELAY) break;
                         lateFramePerSecond++;
-                        frameQueue.remove(id);
+                        frameQueue.pop();
                     }
 
                     if (frameQueue.isEmpty()) continue;
-                    long frameID = frameQueue.firstKey();
-                    if (!frameQueue.get(frameID).isCompleted()) continue;
+                    int frameID = frameQueue.getLatestTimeID();
+                    if (!frameQueue.isCompleted(frameID)) continue;
 
-                    mRemoteControl.screen.display(frameQueue.get(frameID).getImage(aes));
+                    mRemoteControl.screen.display(frameQueue.getImage(frameID, aes));
+
                     paintFramePerSecond++;
-                    frameQueue.remove(frameID);
+                    frameQueue.pop();
 
                     Thread.sleep(4);
 
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }
@@ -144,7 +161,7 @@ public class RemoteControlHandler implements Runnable {
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
 
@@ -154,11 +171,20 @@ public class RemoteControlHandler implements Runnable {
 
         private class PacketDataProcessor implements Runnable {
 
-            private String rawData;
-            private int length;
+            private final byte[] rawData;
+            private final int length;
+
+            private static int bytesToInt(final byte[] b) {
+                int result = 0;
+                for (int i = 0; i <= 1; i++) {
+                    result <<= 8;
+                    result |= (b[i] & 0xFF);
+                }
+                return result;
+            }
 
             public PacketDataProcessor(byte[] rawData, int length) {
-                this.rawData = new String(rawData);
+                this.rawData = rawData;
                 this.length = length;
             }
 
@@ -166,15 +192,15 @@ public class RemoteControlHandler implements Runnable {
             public void run() {
 
                 try {
-                    long curTimeID = System.currentTimeMillis();
-                    long timeID = Long.parseLong(rawData.substring(0, 18));
-                    if (curTimeID - timeID > MAX_DELAY) return;
+                    int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
+                    int timeID = bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
 
-                    if (!frameQueue.containsKey(timeID))
-                        frameQueue.put(timeID, new ImageData());
-                    frameQueue.get(timeID).add(rawData.substring(18, length));
+//                    System.out.println("Delay: " + (curTimeID - timeID));
+                    if (curTimeID - timeID > MAX_DELAY) return;
+                    frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
+
                 } catch (Exception e) {
-//                    e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }
