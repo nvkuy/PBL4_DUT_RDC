@@ -10,7 +10,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final long TIME_RANGE = 1 << 16;
-    private static final int MAX_DELAY = 1500;
+    private static final int MAX_DELAY = 2000;
     private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;

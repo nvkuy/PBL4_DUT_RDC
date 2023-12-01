@@ -21,8 +21,9 @@ public class AppHistory extends JFrame implements ActionListener {
     private List<List<Object>> data = new ArrayList<>();
     private List<String> notAllowApps = new ArrayList<>();
     private ClientAdmin client = new ClientAdmin();
-    private String comp,state;
-    public AppHistory(String s, String comp, String state)  {
+    private String comp, state;
+
+    public AppHistory(String s, String comp, String state) {
         super(s);
         this.comp = comp;
         this.state = state;
@@ -38,13 +39,14 @@ public class AppHistory extends JFrame implements ActionListener {
         }
 
     }
-    public void GetData() throws Exception{
+
+    public void GetData() throws Exception {
         String option1 = "/AppHistory";
         client.writeMes(option1);
         client.writeMes(comp);
         int n1 = Integer.parseInt(client.readMes());
         apps = new ArrayList<>();
-        for(int i = 0; i < n1; i++){
+        for (int i = 0; i < n1; i++) {
             String appName = client.readMes();
             String timeID = client.readMes();
             apps.add(Arrays.asList(appName, timeID));
@@ -53,35 +55,35 @@ public class AppHistory extends JFrame implements ActionListener {
         String option2 = "/NotAllowApp";
         client.writeMes(option2);
         int n = Integer.parseInt(client.readMes());
-        for(int i = 0;i < n;i++){
+        for (int i = 0; i < n; i++) {
             String appName = client.readMes();
             notAllowApps.add(appName);
             System.out.println(i + appName);
         }
 
-        for(int i = 0;i<apps.size();i++){
+        for (int i = 0; i < apps.size(); i++) {
             int check = 0;
 
-            for(List<Object> row: data){
+            for (List<Object> row : data) {
                 String date = String.valueOf(row.get(0));
-                if(date.equals(apps.get(i).get(1))){
+                if (date.equals(apps.get(i).get(1))) {
                     int count = (int) row.get(2) + 1;
                     row.set(2, count);
                     check = 1;
-                    for(int j = 0;j<notAllowApps.size();j++){
-                        if(apps.get(i).get(0).equals(notAllowApps.get(j))){
+                    for (int j = 0; j < notAllowApps.size(); j++) {
+                        if (apps.get(i).get(0).equals(notAllowApps.get(j))) {
                             row.set(1, (int) row.get(1) + 1);
                         }
                     }
                     break;
                 }
             }
-            if(check == 0){
+            if (check == 0) {
                 int notAllow = 0;
                 List<Object> row = new ArrayList<>();
                 row.add(apps.get(i).get(1));
-                for(int j = 0;j<notAllowApps.size();j++){
-                    if(apps.get(i).get(0).equals(notAllowApps.get(j))){
+                for (int j = 0; j < notAllowApps.size(); j++) {
+                    if (apps.get(i).get(0).equals(notAllowApps.get(j))) {
                         notAllow = 1;
                         break;
                     }
@@ -94,6 +96,7 @@ public class AppHistory extends JFrame implements ActionListener {
         GUI();
 
     }
+
     public void GUI() throws Exception {
         setDefaultCloseOperation(3);
         setLocationRelativeTo(null);
@@ -116,7 +119,7 @@ public class AppHistory extends JFrame implements ActionListener {
             data001[i] = row.toArray();
         }
 
-        DefaultTableModel model = new DefaultTableModel(data001,columnNames);
+        DefaultTableModel model = new DefaultTableModel(data001, columnNames);
         table = new JTable(model);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
 
@@ -137,13 +140,13 @@ public class AppHistory extends JFrame implements ActionListener {
         scrollPane.setPreferredSize(new Dimension(800, 350));
 
         table.setFillsViewportHeight(true);
-        btnBack=new JButton("BACK");
-        btnBack.setFont(new Font("Arial",Font.BOLD,16));
+        btnBack = new JButton("BACK");
+        btnBack.setFont(new Font("Arial", Font.BOLD, 16));
         btnBack.setBackground(Color.white);
         btnBack.setForeground(Color.black);
         btnBack.addActionListener(this);
         scrollPane.setBounds(50, 120, 800, 350);
-        btnBack.setBounds(770,500,200,60);
+        btnBack.setBounds(770, 500, 200, 60);
         lb1.setBounds(50, 50, 600, 50);
 
         // Thêm ListSelectionListener để xử lý sự kiện khi người dùng chọn ô
@@ -160,8 +163,8 @@ public class AppHistory extends JFrame implements ActionListener {
                 if (selectedColumn > 0) {
                     String selectedDate = (String) table.getValueAt(selectedRow, 0);
                     String selectedColumnName = table.getColumnName(selectedColumn);
-                    System.out.println("Column id: "+ selectedColumn);
-                    System.out.println("Column name: "+ selectedColumnName);
+                    System.out.println("Column id: " + selectedColumn);
+                    System.out.println("Column name: " + selectedColumnName);
                     new DetailHistory("Detail History", selectedDate, selectedColumn, comp, state);
                     dispose();
                 }
@@ -176,13 +179,15 @@ public class AppHistory extends JFrame implements ActionListener {
 
         setVisible(true);
     }
+
     public void windowClosing(WindowEvent we) {
         dispose();
         System.exit(0);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==btnBack){
+        if (e.getSource() == btnBack) {
             new DetailComputer("Detail computer", comp, state);
             dispose();
         }
