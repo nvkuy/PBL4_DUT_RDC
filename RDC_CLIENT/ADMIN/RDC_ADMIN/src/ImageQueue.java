@@ -115,7 +115,7 @@ public class ImageQueue {
 
         } else { // normal image part
 
-            if (imagePart[timeID][partID] != null) return;
+            if (imagePart[timeID][partID] != null) return; // udp package can be duplicate
             byte[] part = Arrays.copyOfRange(rawData, 4, rawData.length);
             imagePart[timeID][partID] = part;
             try {
@@ -179,7 +179,6 @@ public class ImageQueue {
 
         InputStream is = new ByteArrayInputStream(aes.decrypt(data, IVpart[timeID]));
         return ImageIO.read(is);
-
 
     }
 
