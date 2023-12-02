@@ -185,10 +185,10 @@ public class ImageQueue {
     public int getLatestTimeID() {
 
         try {
-//            lock.lock();
+            lock.lock();
             return timeIDHeap[FRONT];
         } finally {
-//            lock.unlock();
+            lock.unlock();
         }
 
     }

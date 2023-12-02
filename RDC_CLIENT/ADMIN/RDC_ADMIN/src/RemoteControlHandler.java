@@ -10,7 +10,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final long TIME_RANGE = 1 << 16;
-    private static final int MAX_DELAY = 2000;
+    private static final int MAX_DELAY = 2500;
     private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
@@ -117,7 +117,8 @@ public class RemoteControlHandler implements Runnable {
                     while (true) {
                         if (frameQueue.isEmpty()) break;
                         int id = frameQueue.getLatestTimeID();
-                        if (curTime - id <= MAX_DELAY) break;
+                        int delay = (int)((curTime - id + TIME_RANGE) % TIME_RANGE);
+                        if (delay <= MAX_DELAY) break;
                         lateFramePerSecond++;
                         frameQueue.pop();
                     }
@@ -194,9 +195,10 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
                     int timeID = bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
+                    int delay = (int)((curTimeID - timeID + TIME_RANGE) % TIME_RANGE);
 
-//                    System.out.println("Delay: " + (curTimeID - timeID));
-                    if (curTimeID - timeID > MAX_DELAY) return;
+//                    System.out.println("Delay: " + delay);
+                    if (delay > MAX_DELAY) return;
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {

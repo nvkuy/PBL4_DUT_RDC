@@ -13,40 +13,40 @@ public class AES {
     private static final int KEY_SIZE = 128;
     private static final int T_LEN = 128;
 
-//    private ReentrantLock lock;
+    private ReentrantLock lock;
 
     public AES() throws Exception {
 
         KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(KEY_SIZE);
         key = generator.generateKey();
-//        lock = new ReentrantLock(true);
+        lock = new ReentrantLock(true);
 
     }
 
     public AES(String secretKeyStr) {
 
         key = new SecretKeySpec(decode(secretKeyStr),"AES");
-//        lock = new ReentrantLock(true);
+        lock = new ReentrantLock(true);
 
     }
 
     public AES(byte[] secretKeyByte) {
 
         key = new SecretKeySpec(secretKeyByte, "AES");
-//        lock = new ReentrantLock(true);
+        lock = new ReentrantLock(true);
 
     }
 
     public byte[] generateIV() throws Exception {
 
         try {
-//            lock.lock();
+            lock.lock();
             Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
             encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
             return encryptionCipher.getIV();
         } finally {
-//            lock.unlock();
+            lock.unlock();
         }
 
     }
@@ -54,13 +54,13 @@ public class AES {
     public byte[] encrypt(byte[] message, byte[] IV) throws Exception {
 
         try {
-//            lock.lock();
+            lock.lock();
             Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
             encryptionCipher.init(Cipher.ENCRYPT_MODE, key, spec);
             return encryptionCipher.doFinal(message);
         } finally {
-//            lock.unlock();
+            lock.unlock();
         }
 
     }
@@ -72,13 +72,13 @@ public class AES {
 
     public byte[] decrypt(byte[] encryptedMessage, byte[] IV) throws Exception {
         try {
-//            lock.lock();
+            lock.lock();
             Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
             decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
             return decryptionCipher.doFinal(encryptedMessage);
         } finally {
-//            lock.unlock();
+            lock.unlock();
         }
     }
 
