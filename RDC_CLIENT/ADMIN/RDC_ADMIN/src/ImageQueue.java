@@ -1,10 +1,5 @@
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ImageQueue {
@@ -33,7 +28,7 @@ public class ImageQueue {
     public ImageQueue(long maxDelay) {
 
         MAX_DELAY = maxDelay;
-        TIME_SPACE = 4 * maxDelay + 1;
+        TIME_SPACE = 2 * maxDelay + 1;
 
         data = new ImageData[(int)TIME_SPACE];
         timeIDHeap = new TimeIDHeap((int)TIME_SPACE);
@@ -71,26 +66,34 @@ public class ImageQueue {
 
             if (timeIDHeap.isEmpty()) break;
             long id = timeIDHeap.getLatestTimeID();
-            if (curTime - id <= MAX_DELAY) break;
-            timeIDHeap.pop();
             int hashID = (int)(id % TIME_SPACE);
-            data[hashID] = null;
+            if (curTime - id <= MAX_DELAY) break;
+
+            try {
+                lock.lock();
+                timeIDHeap.pop();
+                data[hashID] = null;
+            } finally {
+                lock.unlock();
+            }
 
         }
 
         if (timeIDHeap.isEmpty()) return null;
+
         long id = timeIDHeap.getLatestTimeID();
-        int hashID = (int)(id % TIME_SPACE);
+        int hashID = (int) (id % TIME_SPACE);
 
-        BufferedImage img = null;
-
-        if (data[hashID].isCompleted()) {
-            img = data[hashID].getImage(aes);
-            data[hashID] = null;
-            timeIDHeap.pop();
-
+        BufferedImage img = data[hashID].getImage(aes);
+        if (img != null) {
+            try {
+                lock.lock();
+                timeIDHeap.pop();
+                data[hashID] = null;
+            } finally {
+                lock.unlock();
+            }
         }
-
         return img;
 
     }

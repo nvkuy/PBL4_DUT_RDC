@@ -76,7 +76,12 @@ public class TimeIDHeap {
     }
 
     public long getLatestTimeID() {
-        return timeIDHeap[FRONT];
+        try {
+            lock.lock();
+            return timeIDHeap[FRONT];
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void push(long timeID) {

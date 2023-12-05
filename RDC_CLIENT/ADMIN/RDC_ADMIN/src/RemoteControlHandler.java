@@ -17,7 +17,6 @@ public class RemoteControlHandler implements Runnable {
     private RemoteControlDetail mRemoteControl;
 
     private int paintFramePerSecond = 0;
-    private int lateFramePerSecond = 0;
     private static final boolean BENCHMARK = true;
 
     /*
@@ -79,9 +78,7 @@ public class RemoteControlHandler implements Runnable {
             while (true) {
                 try {
                     Thread.sleep(1000);
-                    System.out.println("FPS: " + paintFramePerSecond
-                            + " - LATE: " + lateFramePerSecond);
-                    lateFramePerSecond = 0;
+                    System.out.println("FPS: " + paintFramePerSecond);
                     paintFramePerSecond = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -170,7 +167,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-//                    System.out.println("Received a packet at: " + System.currentTimeMillis());
+//                    System.out.println("Delay: " + (System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8))));
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {
