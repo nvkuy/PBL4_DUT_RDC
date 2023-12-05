@@ -3,25 +3,17 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ImageQueue {
-
-    private static final int MAX_SIZE = 1 << 16;
-
-    private static final int FRONT = 1;
-
-    private int[] timeIDHeap, numOfPart, imgByteLen, partReceived;
-    private byte[][] IVpart;
-    private byte[][][] imagePart;
-    private int size;
-    private ReentrantLock lock;
 
     /*
 
     image packet structure:
 
-    - first 2 bytes: timeID (current time millisecond % TIME_RANGE)
+    - first 8 bytes: timeID
     - next 2 bytes: partID (0 if it is header)
     - if packet is header:
         + next 2 bytes: number of parts which image was divided
@@ -30,195 +22,76 @@ public class ImageQueue {
 
      */
 
-    public ImageQueue() {
+    private final long MAX_DELAY;
+    private final long TIME_SPACE;
 
-        timeIDHeap = new int[MAX_SIZE + 1];
-        numOfPart = new int[MAX_SIZE + 1];
-        imgByteLen = new int[MAX_SIZE + 1];
-        partReceived = new int[MAX_SIZE + 1];
+    private ImageData[] data;
+    private TimeIDHeap timeIDHeap;
 
-        imagePart = new byte[MAX_SIZE + 1][][];
-        IVpart = new byte[MAX_SIZE + 1][];
+    private ReentrantLock lock;
 
-        timeIDHeap[0] = Integer.MIN_VALUE;
-        size = 0;
+    public ImageQueue(long maxDelay) {
+
+        MAX_DELAY = maxDelay;
+        TIME_SPACE = 4 * maxDelay + 1;
+
+        data = new ImageData[(int)TIME_SPACE];
+        timeIDHeap = new TimeIDHeap((int)TIME_SPACE);
 
         lock = new ReentrantLock(true);
 
     }
 
-    private static int parent(int pos) {
-        return pos / 2;
-    }
-
-    private static int leftChild(int pos) {
-        return (2 * pos);
-    }
-
-    private static int rightChild(int pos) {
-        return (2 * pos) + 1;
-    }
-
-    private boolean isLeaf(int pos) {
-        try {
-            lock.lock();
-            return pos > (size / 2);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void swap(int pos1, int pos2) {
-        try {
-            lock.lock();
-            int tmp = timeIDHeap[pos1];
-            timeIDHeap[pos1] = timeIDHeap[pos2];
-            timeIDHeap[pos2] = tmp;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void minHeapify(int pos) {
-
-        if (!isLeaf(pos)) {
-
-            int swapPos = pos;
-            if (rightChild(pos) <= size)
-                swapPos = timeIDHeap[leftChild(pos)] < timeIDHeap[rightChild(pos)] ? leftChild(pos) : rightChild(pos);
-            else
-                swapPos = leftChild(pos);
-
-            if (timeIDHeap[pos] > timeIDHeap[leftChild(pos)] || timeIDHeap[pos] > timeIDHeap[rightChild(pos)]) {
-                swap(pos, swapPos);
-                minHeapify(swapPos);
-            }
-
-        }
-    }
-
     public void push(byte[] rawData) {
 
+        long timeID = Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8));
+        long curTime = System.currentTimeMillis();
+
+        if (curTime - timeID > MAX_DELAY) return;
+
+        int hashID = (int)(timeID % TIME_SPACE);
         try {
-
             lock.lock();
-
-            if (size >= MAX_SIZE)
-                return;
-
-            int timeID = Util.bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
-
-            if (imagePart[timeID] == null) { // not in heap
-                timeIDHeap[++size] = timeID;
-                int current = size;
-
-                while (timeIDHeap[current] < timeIDHeap[parent(current)]) {
-                    swap(current, parent(current));
-                    current = parent(current);
-                }
-                imagePart[timeID] = new byte[16][];
-
-                int partID = Util.bytesToInt(Arrays.copyOfRange(rawData, 2, 4));
-                if (partID == 0) { // header
-
-                    numOfPart[timeID] = Util.bytesToInt(Arrays.copyOfRange(rawData, 4, 6));
-                    IVpart[timeID] = Arrays.copyOfRange(rawData, 6, rawData.length);
-
-                } else { // normal image part
-
-                    if (imagePart[timeID][partID] != null) return; // udp package can be duplicate
-                    byte[] part = Arrays.copyOfRange(rawData, 4, rawData.length);
-                    imagePart[timeID][partID] = part;
-                    imgByteLen[timeID] += part.length;
-                    partReceived[timeID]++;
-
-                }
-
+            if (data[hashID] == null) {
+                data[hashID] = new ImageData();
+                timeIDHeap.push(timeID);
             }
         } finally {
             lock.unlock();
         }
 
-    }
-
-    public void pop() {
-
-        try {
-            lock.lock();
-            int timeID = timeIDHeap[FRONT];
-            timeIDHeap[FRONT] = timeIDHeap[size--];
-            minHeapify(FRONT);
-            numOfPart[timeID] = imgByteLen[timeID] = partReceived[timeID] = 0;
-            imagePart[timeID] = null;
-            IVpart[timeID] = null;
-        } finally {
-            lock.unlock();
-        }
+        data[hashID].addPart(rawData);
 
     }
 
-    public boolean isCompleted(int timeID) {
-//        System.out.println(partReceived[timeID] + "/" + numOfPart[timeID]);
-        try {
-            lock.lock();
-            return (numOfPart[timeID] > 0) && (numOfPart[timeID] == partReceived[timeID]);
-        } finally {
-            lock.unlock();
-        }
-    }
+    public BufferedImage getNextImage(AES aes) throws Exception {
 
-    public boolean isEmpty() {
-        try {
-            lock.lock();
-            return size == 0;
-        } finally {
-            lock.unlock();
-        }
-    }
+        long curTime = System.currentTimeMillis();
+        while (true) {
 
-    public int getSize() {
-        try {
-            lock.lock();
-            return size;
-        } finally {
-            lock.unlock();
-        }
-    }
+            if (timeIDHeap.isEmpty()) break;
+            long id = timeIDHeap.getLatestTimeID();
+            if (curTime - id <= MAX_DELAY) break;
+            timeIDHeap.pop();
+            int hashID = (int)(id % TIME_SPACE);
+            data[hashID] = null;
 
-    public BufferedImage getImage(int timeID, AES aes) throws Exception {
-
-        try {
-
-            lock.lock();
-
-            if (!isCompleted(timeID))
-                return null;
-
-            byte[] data = new byte[imgByteLen[timeID]];
-            int i = 0;
-            for (int k = 1; k <= numOfPart[timeID]; k++) {
-                for (int j = 0; j < imagePart[timeID][k].length; j++) {
-                    data[i] = imagePart[timeID][k][j];
-                    i++;
-                }
-            }
-
-            InputStream is = new ByteArrayInputStream(aes.decrypt(data, IVpart[timeID]));
-            return ImageIO.read(is);
-        } finally {
-            lock.unlock();
         }
 
-    }
+        if (timeIDHeap.isEmpty()) return null;
+        long id = timeIDHeap.getLatestTimeID();
+        int hashID = (int)(id % TIME_SPACE);
 
-    public int getLatestTimeID() {
+        BufferedImage img = null;
 
-        try {
-            lock.lock();
-            return timeIDHeap[FRONT];
-        } finally {
-            lock.unlock();
+        if (data[hashID].isCompleted()) {
+            img = data[hashID].getImage(aes);
+            data[hashID] = null;
+            timeIDHeap.pop();
+
         }
+
+        return img;
 
     }
 

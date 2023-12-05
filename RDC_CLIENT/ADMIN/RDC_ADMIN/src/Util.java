@@ -10,9 +10,9 @@ public class Util {
         return Base64.getDecoder().decode(data);
     }
 
-    public static int bytesToInt(final byte[] b) {
-        int result = 0;
-        for (int i = 0; i <= 1; i++) {
+    public static long bytesToLong(final byte[] b) {
+        long result = 0;
+        for (int i = 0; i < b.length; i++) {
             result <<= 8;
             result |= (b[i] & 0xFF);
         }

@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -9,8 +10,7 @@ public class RemoteControlHandler implements Runnable {
     private final String targetIP;
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
-    private static final long TIME_RANGE = 1 << 16;
-    private static final int MAX_DELAY = 2500;
+    private static final long MAX_DELAY = 1000;
     private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
     private InetAddress inetAddress;
@@ -49,7 +49,7 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            frameQueue = new ImageQueue();
+            frameQueue = new ImageQueue(MAX_DELAY);
 
             Thread screenReceiver = new Thread(new ScreenReceiver());
             screenReceiver.start();
@@ -111,29 +111,14 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    Thread.sleep(1);
+                    Thread.sleep(2);
 
-                    long curTime = (System.currentTimeMillis() % TIME_RANGE);
-                    while (true) {
-                        if (frameQueue.isEmpty()) break;
-                        int id = frameQueue.getLatestTimeID();
-                        int delay = (int)((curTime - id + TIME_RANGE) % TIME_RANGE);
-                        if (delay <= MAX_DELAY) break;
-                        lateFramePerSecond++;
-                        frameQueue.pop();
-                    }
+                    BufferedImage img = frameQueue.getNextImage(aes);
+                    if (img == null) continue;
 
-                    if (frameQueue.isEmpty()) continue;
-                    int frameID = frameQueue.getLatestTimeID();
-                    if (!frameQueue.isCompleted(frameID)) continue;
-
-                    mRemoteControl.screen.display(frameQueue.getImage(frameID, aes));
-
+                    mRemoteControl.screen.display(img);
                     paintFramePerSecond++;
-                    frameQueue.pop();
-
-                    Thread.sleep(4);
-
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -184,12 +169,8 @@ public class RemoteControlHandler implements Runnable {
             public void run() {
 
                 try {
-                    int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
-                    int timeID = Util.bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
-                    int delay = (int)((curTimeID - timeID + TIME_RANGE) % TIME_RANGE);
 
-//                    System.out.println("Delay: " + delay);
-                    if (delay > MAX_DELAY) return;
+//                    System.out.println("Received a packet at: " + System.currentTimeMillis());
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {
