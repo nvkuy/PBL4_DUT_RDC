@@ -36,8 +36,8 @@ public class RSA {
         String priKeyStr = bf.readLine();
         bf.close();
 
-        X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(decode(pubKeyStr));
-        PKCS8EncodedKeySpec keySpecPrivate = new PKCS8EncodedKeySpec(decode(priKeyStr));
+        X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(Util.strToByte(pubKeyStr));
+        PKCS8EncodedKeySpec keySpecPrivate = new PKCS8EncodedKeySpec(Util.strToByte(priKeyStr));
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
@@ -47,30 +47,22 @@ public class RSA {
     }
 
     public static PublicKey getPublicKeyFromStr(String publicKeyStr) throws Exception {
-        X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(decode(publicKeyStr));
+        X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(Util.strToByte(publicKeyStr));
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(keySpecPublic);
     }
 
-    private static String encode(byte[] data) {
-        return Base64.getEncoder().encodeToString(data);
-    }
-
-    private static byte[] decode(String data) {
-        return Base64.getDecoder().decode(data);
-    }
-
     public void printKeys(){
-        System.out.println("Public key: " + encode(publicKey.getEncoded()));
-        System.out.println("Private key: " + encode(privateKey.getEncoded()));
+        System.out.println("Public key: " + Util.byteToStr(publicKey.getEncoded()));
+        System.out.println("Private key: " + Util.byteToStr(privateKey.getEncoded()));
     }
 
     public String getPrivateKeyStr() {
-        return encode(privateKey.getEncoded());
+        return Util.byteToStr(privateKey.getEncoded());
     }
 
     public String getPublicKeyStr() {
-        return encode(publicKey.getEncoded());
+        return Util.byteToStr(publicKey.getEncoded());
     }
 
     public PublicKey getPublicKey() {
@@ -86,7 +78,7 @@ public class RSA {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encryptedBytes = cipher.doFinal(messageToBytes);
-        return encode(encryptedBytes);
+        return Util.byteToStr(encryptedBytes);
     }
 
     public static String encrypt(String message, PublicKey key) throws Exception {
@@ -94,11 +86,11 @@ public class RSA {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encryptedBytes = cipher.doFinal(messageToBytes);
-        return encode(encryptedBytes);
+        return Util.byteToStr(encryptedBytes);
     }
 
     public String decrypt(String encryptedMessage) throws Exception {
-        byte[] encryptedBytes = decode(encryptedMessage);
+        byte[] encryptedBytes = Util.strToByte(encryptedMessage);
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
@@ -106,7 +98,7 @@ public class RSA {
     }
 
     public static String decrypt(String encryptedMessage, PrivateKey key) throws Exception {
-        byte[] encryptedBytes = decode(encryptedMessage);
+        byte[] encryptedBytes = Util.strToByte(encryptedMessage);
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] decryptedMessage = cipher.doFinal(encryptedBytes);

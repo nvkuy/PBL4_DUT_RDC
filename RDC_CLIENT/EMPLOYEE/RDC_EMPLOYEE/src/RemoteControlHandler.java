@@ -17,7 +17,6 @@ public class RemoteControlHandler implements Runnable {
     private static final int PORT = 6969;
     private static final int PACKET_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
-    private static final long TIME_RANGE = 1 << 16;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
@@ -35,7 +34,7 @@ public class RemoteControlHandler implements Runnable {
 
     image packet structure:
 
-    - first 2 bytes: timeID (current time millisecond % TIME_RANGE)
+    - first 8 bytes: timeID
     - next 2 bytes: partID (0 if it is header)
     - if packet is header:
         + next 2 bytes: number of parts which image was divided
@@ -150,33 +149,6 @@ public class RemoteControlHandler implements Runnable {
 
         private class ScreenSender implements Runnable {
 
-            private static byte[] intToBytes(int num) {
-                byte[] result = new byte[2];
-                for (int i = 1; i >= 0; i--) {
-                    result[i] = (byte)(num & 0xFF);
-                    num >>= 8;
-                }
-                return result;
-            }
-
-            private static byte[] concat(byte[]... arrs) {
-
-                int length = 0;
-                for (byte[] arr : arrs)
-                    length += arr.length;
-                byte[] res = new byte[length];
-                int i = 0;
-                for (byte[] arr : arrs) {
-                    for (byte b : arr) {
-                        res[i] = b;
-                        i++;
-                    }
-                }
-
-                return res;
-
-            }
-
             private void sendImagePart(byte[] data) {
 
                 Thread imagePartSender = new Thread(new ImagePartSender(data));
@@ -189,7 +161,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    byte[] curTimeID = intToBytes((int)(System.currentTimeMillis() % TIME_RANGE));
+                    byte[] curTimeID = Util.longToBytes(System.currentTimeMillis(), 8);
 
                     Robot robot = new Robot();
                     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -210,14 +182,14 @@ public class RemoteControlHandler implements Runnable {
                     int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
 //                    System.out.println("Packet: " + numOfPart + " " + data.length);
 
-                    byte[] header = concat(curTimeID, intToBytes(0), intToBytes(numOfPart), IV);
+                    byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
                     sendImagePart(header);
 
                     for (int id = 1; id <= numOfPart; id++) {
                         int start = (id - 1) * DATA_SIZE;
                         int end = Math.min(cryptImg.length, start + DATA_SIZE);
                         byte[] part = Arrays.copyOfRange(cryptImg, start, end);
-                        byte[] packetData = concat(curTimeID, intToBytes(id), part);
+                        byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
 
                         // TODO: Implement thread pool later..
                         sendImagePart(packetData);

@@ -114,7 +114,7 @@ public class DetailComputer extends JFrame implements ActionListener {
         pn.add(btnHistory);
 
         if(!computer.getCompress().equals("")){
-            byte[] decodedBytes = AES.decode(computer.getCompress());
+            byte[] decodedBytes = Util.strToByte(computer.getCompress());
             ImageIcon imageIcon = new ImageIcon(decodedBytes);
             Image image = imageIcon.getImage();
             Image resizedImage = image.getScaledInstance(400, 300, Image.SCALE_SMOOTH);

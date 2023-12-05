@@ -114,7 +114,7 @@ public class ClientEmployee {
 
         String IVStr = inp.readLine();
         String crypMes = inp.readLine();
-        byte[] IV = AES.getIVFromStr(IVStr);
+        byte[] IV = Util.strToByte(IVStr);
         return aes.decrypt(crypMes, IV);
 
     }
@@ -126,7 +126,7 @@ public class ClientEmployee {
 
         byte[] IV = aes.generateIV();
         String crypMes = aes.encrypt(mes, IV);
-        String IVStr = AES.getIVStr(IV);
+        String IVStr = Util.byteToStr(IV);
         out.println(IVStr);
         out.println(crypMes);
 
@@ -135,7 +135,7 @@ public class ClientEmployee {
     public String readCompressMes() throws Exception {
 
         String IVStr = Gzip.decompress(inp.readLine());
-        byte[] IV = AES.getIVFromStr(IVStr);
+        byte[] IV = Util.strToByte(IVStr);
         String compressMes = aes.decrypt(inp.readLine(), IV);
         return Gzip.decompress(compressMes);
 
@@ -147,7 +147,7 @@ public class ClientEmployee {
             mes = " ";
 
         byte[] IV = aes.generateIV();
-        String IVStr = AES.getIVStr(IV);
+        String IVStr = Util.byteToStr(IV);
         out.println(Gzip.compress(IVStr));
         String compressMes = Gzip.compress(mes);
         out.println(aes.encrypt(compressMes, IV));

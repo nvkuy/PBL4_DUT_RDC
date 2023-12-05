@@ -26,7 +26,7 @@ public class AES {
 
     public AES(String secretKeyStr) {
 
-        key = new SecretKeySpec(decode(secretKeyStr),"AES");
+        key = new SecretKeySpec(Util.strToByte(secretKeyStr),"AES");
         lock = new ReentrantLock(true);
 
     }
@@ -66,8 +66,13 @@ public class AES {
     }
 
     public String encrypt(String message, byte[] IV) throws Exception {
-        byte[] messageInBytes = message.getBytes();
-        return encode(encrypt(messageInBytes, IV));
+        try {
+            lock.lock();
+            byte[] messageInBytes = message.getBytes();
+            return Util.byteToStr(encrypt(messageInBytes, IV));
+        } finally {
+            lock.unlock();
+        }
     }
 
     public byte[] decrypt(byte[] encryptedMessage, byte[] IV) throws Exception {
@@ -83,31 +88,30 @@ public class AES {
     }
 
     public String decrypt(String encryptedMessage, byte[] IV) throws Exception {
-        byte[] messageInBytes = decode(encryptedMessage);
-        return new String(decrypt(messageInBytes, IV));
-    }
-
-    public static String encode(byte[] data) {
-        return Base64.getEncoder().encodeToString(data);
-    }
-
-    public static byte[] decode(String data) {
-        return Base64.getDecoder().decode(data);
+        try {
+            lock.lock();
+            byte[] messageInBytes = Util.strToByte(encryptedMessage);
+            return new String(decrypt(messageInBytes, IV));
+        } finally {
+            lock.unlock();
+        }
     }
 
     public byte[] getKeyByte() {
-        return key.getEncoded();
+        try {
+            lock.lock();
+            return key.getEncoded();
+        } finally {
+            lock.unlock();
+        }
     }
     public String getKeyStr() {
-        return encode(getKeyByte());
-    }
-
-    public static String getIVStr(byte[] IV) {
-        return encode(IV);
-    }
-
-    public static byte[] getIVFromStr(String IVStr) {
-        return decode(IVStr);
+        try {
+            lock.lock();
+            return Util.byteToStr(getKeyByte());
+        } finally {
+            lock.unlock();
+        }
     }
 
 }
