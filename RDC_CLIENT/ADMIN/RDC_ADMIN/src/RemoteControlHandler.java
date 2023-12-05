@@ -175,15 +175,6 @@ public class RemoteControlHandler implements Runnable {
             private final byte[] rawData;
             private final int length;
 
-            private static int bytesToInt(final byte[] b) {
-                int result = 0;
-                for (int i = 0; i <= 1; i++) {
-                    result <<= 8;
-                    result |= (b[i] & 0xFF);
-                }
-                return result;
-            }
-
             public PacketDataProcessor(byte[] rawData, int length) {
                 this.rawData = rawData;
                 this.length = length;
@@ -194,7 +185,7 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
                     int curTimeID = (int)(System.currentTimeMillis() % TIME_RANGE);
-                    int timeID = bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
+                    int timeID = Util.bytesToInt(Arrays.copyOfRange(rawData, 0, 2));
                     int delay = (int)((curTimeID - timeID + TIME_RANGE) % TIME_RANGE);
 
 //                    System.out.println("Delay: " + delay);
