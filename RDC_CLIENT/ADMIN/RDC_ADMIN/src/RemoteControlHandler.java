@@ -17,6 +17,8 @@ public class RemoteControlHandler implements Runnable {
     private RemoteControlDetail mRemoteControl;
 
     private int paintFramePerSecond = 0;
+    private long sumDelay = 0;
+    private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
 
     /*
@@ -78,8 +80,11 @@ public class RemoteControlHandler implements Runnable {
             while (true) {
                 try {
                     Thread.sleep(1000);
-                    System.out.println("FPS: " + paintFramePerSecond);
+                    System.out.println("FPS: " + paintFramePerSecond
+                            + " - AVG DELAY: " + (sumDelay / packetCnt));
                     paintFramePerSecond = 0;
+                    sumDelay = 0;
+                    packetCnt = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -114,7 +119,10 @@ public class RemoteControlHandler implements Runnable {
                     if (img == null) continue;
 
                     mRemoteControl.screen.display(img);
-                    paintFramePerSecond++;
+                    if (BENCHMARK)
+                        paintFramePerSecond++;
+
+                    Thread.sleep(2);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -167,7 +175,10 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-//                    System.out.println("Delay: " + (System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8))));
+                    if (BENCHMARK) {
+                        sumDelay += System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8));
+                        packetCnt++;
+                    }
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {

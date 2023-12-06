@@ -18,7 +18,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int PACKET_SIZE = 1 << 15;
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
-    private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
+    private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
     private static final float IMAGE_QUALITY = 0.01f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
@@ -193,19 +193,9 @@ public class RemoteControlHandler implements Runnable {
 
                     try {
 
-                        ByteArrayOutputStream os = new ByteArrayOutputStream();
-                        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
-                        ImageWriter writer = writers.next();
-                        ImageOutputStream ios = ImageIO.createImageOutputStream(os);
-                        writer.setOutput(ios);
-                        ImageWriteParam param = writer.getDefaultWriteParam();
-                        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                        param.setCompressionQuality(IMAGE_QUALITY);
-
                         BufferedImage resizedImg = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
-                        writer.write(null, new IIOImage(resizedImg, null, null), param);
+                        byte[] data = Util.compressImgToByte(resizedImg, IMAGE_QUALITY);
 
-                        byte[] data = os.toByteArray();
                         byte[] IV = aes.generateIV();
                         byte[] cryptImg = aes.encrypt(data, IV);
 
@@ -225,7 +215,8 @@ public class RemoteControlHandler implements Runnable {
                             sendImagePart(packetData);
                         }
 
-                        sendFPS++;
+                        if (BENCHMARK)
+                            sendFPS++;
 
                     } catch (Exception e) {
 //                        e.printStackTrace();
