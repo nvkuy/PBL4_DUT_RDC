@@ -229,7 +229,9 @@ public class ClientEmployee {
 
                         String key = readMes();
                         String targetIP = readMes();
-                        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP));
+                        Integer targetScreenWidth = Integer.valueOf(readMes());
+                        Integer targetScreenHeight = Integer.valueOf(readMes());
+                        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, targetScreenWidth, targetScreenHeight));
                         remoteControlHandler.start();
 
                     } else {

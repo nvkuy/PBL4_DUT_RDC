@@ -20,6 +20,8 @@ public class RemoteControlHandler implements Runnable {
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
+    private final int TARGET_SCREEN_WIDTH;
+    private final int TARGET_SCREEN_HEIGHT;
 
     private final AES aes;
     private final String targetIP;
@@ -43,9 +45,11 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip) {
+    public RemoteControlHandler(String key, String ip, Integer targetScreenWidth, Integer targetScreenHeight) {
         this.aes = new AES(key);
         this.targetIP = ip;
+        this.TARGET_SCREEN_WIDTH = targetScreenWidth;
+        this.TARGET_SCREEN_HEIGHT = targetScreenHeight;
     }
 
     @Override
@@ -149,19 +153,10 @@ public class RemoteControlHandler implements Runnable {
 
         private class ScreenSender implements Runnable {
 
-            private void sendImagePart(byte[] data) {
-
-                Thread imagePartSender = new Thread(new ImagePartSender(data));
-                imagePartSender.start();
-
-            }
-
             @Override
             public void run() {
 
                 try {
-
-                    byte[] curTimeID = Util.longToBytes(System.currentTimeMillis(), 8);
 
                     Robot robot = new Robot();
                     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -173,29 +168,15 @@ public class RemoteControlHandler implements Runnable {
                     param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                     param.setCompressionQuality(IMAGE_QUALITY);
 
+                    long curTimeID = System.currentTimeMillis();
+
                     BufferedImage image = robot.createScreenCapture(area);
-                    writer.write(null, new IIOImage(image, null, null), param);
+                    BufferedImage resizedImg = Util.resizeImage(image, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
+                    writer.write(null, new IIOImage(resizedImg, null, null), param);
+
                     byte[] data = os.toByteArray();
-                    byte[] IV = aes.generateIV();
-                    byte[] cryptImg = aes.encrypt(data, IV);
-
-                    int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
-//                    System.out.println("Packet: " + numOfPart + " " + data.length);
-
-                    byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
-                    sendImagePart(header);
-
-                    for (int id = 1; id <= numOfPart; id++) {
-                        int start = (id - 1) * DATA_SIZE;
-                        int end = Math.min(cryptImg.length, start + DATA_SIZE);
-                        byte[] part = Arrays.copyOfRange(cryptImg, start, end);
-                        byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
-
-                        // TODO: Implement thread pool later..
-                        sendImagePart(packetData);
-                    }
-
-                    sendFPS++;
+                    Thread imageSender = new Thread(new ImageSender(curTimeID, data));
+                    imageSender.start();
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
@@ -203,24 +184,75 @@ public class RemoteControlHandler implements Runnable {
 
             }
 
-            private class ImagePartSender implements Runnable {
+            private class ImageSender implements Runnable {
 
-                byte[] data;
+                private byte[] data;
+                private byte[] curTimeID;
 
-                public ImagePartSender(byte[] data) {
-//                    if (data.length >= PACKET_SIZE)
-//                        System.out.println(data.length);
+                public ImageSender(long curTimeID, byte[] data) {
                     this.data = data;
+                    this.curTimeID = Util.longToBytes(curTimeID, 8);
+                }
+
+                private void sendImagePart(byte[] data) {
+
+                    Thread imagePartSender = new Thread(new ImagePartSender(data));
+                    imagePartSender.start();
+
                 }
 
                 @Override
                 public void run() {
 
                     try {
-                        DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, PORT);
-                        employeeSocket.send(sendPacket);
+
+                        byte[] IV = aes.generateIV();
+                        byte[] cryptImg = aes.encrypt(data, IV);
+
+                        int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
+//                    System.out.println("Packet: " + numOfPart + " " + data.length);
+
+                        byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
+                        sendImagePart(header);
+
+                        for (int id = 1; id <= numOfPart; id++) {
+                            int start = (id - 1) * DATA_SIZE;
+                            int end = Math.min(cryptImg.length, start + DATA_SIZE);
+                            byte[] part = Arrays.copyOfRange(cryptImg, start, end);
+                            byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
+
+                            // TODO: Implement thread pool later..
+                            sendImagePart(packetData);
+                        }
+
+                        sendFPS++;
+
                     } catch (Exception e) {
 //                        e.printStackTrace();
+                    }
+
+                }
+
+                private class ImagePartSender implements Runnable {
+
+                    private byte[] data;
+
+                    public ImagePartSender(byte[] data) {
+//                    if (data.length >= PACKET_SIZE)
+//                        System.out.println(data.length);
+                        this.data = data;
+                    }
+
+                    @Override
+                    public void run() {
+
+                        try {
+                            DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, PORT);
+                            employeeSocket.send(sendPacket);
+                        } catch (Exception e) {
+//                        e.printStackTrace();
+                        }
+
                     }
 
                 }

@@ -84,6 +84,8 @@ public class ImageQueue {
         long id = timeIDHeap.getLatestTimeID();
         int hashID = (int) (id % TIME_SPACE);
 
+        if (data[hashID] == null) return null;
+
         BufferedImage img = data[hashID].getImage(aes);
         if (img != null) {
             try {
