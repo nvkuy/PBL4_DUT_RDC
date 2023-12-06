@@ -9,7 +9,7 @@ public class RemoteControlHandler implements Runnable {
     private final AES aes;
     private final String targetIP;
     private static final int PORT = 6969;
-    private static final int PACKET_SIZE = 1 << 15;
+    private static final int PACKET_SIZE = 60000;
     private static final long MAX_DELAY = 1000;
     private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
@@ -23,7 +23,7 @@ public class RemoteControlHandler implements Runnable {
 
     image packet structure:
 
-    - first 2 bytes: timeID (current time millisecond % TIME_RANGE)
+    - first 8 bytes: timeID
     - next 2 bytes: partID (0 if it is header)
     - if packet is header:
         + next 2 bytes: number of parts which image was divided

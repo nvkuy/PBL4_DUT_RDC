@@ -33,7 +33,7 @@ public class ImageData {
         lock = new ReentrantLock(true);
 
         numOfPart = imgByteLen = partReceived = 0;
-        imagePart = new byte[16][];
+        imagePart = new byte[8][];
 
     }
 

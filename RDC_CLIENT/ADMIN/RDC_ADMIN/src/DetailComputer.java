@@ -39,7 +39,7 @@ public class DetailComputer extends JFrame implements ActionListener {
         computer.setEmployeeName(client.readMes());
         computer.setMail(client.readMes());
         computer.setCompress(client.readCompressMes());
-        System.out.println(computer.getCompress());
+//        System.out.println(computer.getCompress());
         GUI();
     }
     public void GUI() throws Exception{

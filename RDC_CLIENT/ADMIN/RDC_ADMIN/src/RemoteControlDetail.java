@@ -41,7 +41,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         GUI();
     }
-    public void GUI() throws Exception{
+    public void GUI() {
         setDefaultCloseOperation(3);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -84,7 +84,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public static final int SCREEN_HEIGHT = 750;
 
         public ScreenDisplayer() {
-            setSize(1200, 750);
+            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             setBounds(100,120,SCREEN_WIDTH,SCREEN_HEIGHT);
         }
 

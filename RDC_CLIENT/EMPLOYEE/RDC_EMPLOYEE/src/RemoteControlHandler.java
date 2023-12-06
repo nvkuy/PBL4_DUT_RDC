@@ -15,8 +15,8 @@ import java.util.Iterator;
 public class RemoteControlHandler implements Runnable {
 
     private static final int PORT = 6969;
-    private static final int PACKET_SIZE = 1 << 15;
-    private static final int DATA_SIZE = 1 << 14;
+    private static final int PACKET_SIZE = 60000;
+    private static final int DATA_SIZE = PACKET_SIZE / 2;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
     private static final float IMAGE_QUALITY = 0.3f;
@@ -159,23 +159,10 @@ public class RemoteControlHandler implements Runnable {
                 try {
 
                     Robot robot = new Robot();
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
-                    ImageWriter writer = writers.next();
-                    ImageOutputStream ios = ImageIO.createImageOutputStream(os);
-                    writer.setOutput(ios);
-                    ImageWriteParam param = writer.getDefaultWriteParam();
-                    param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                    param.setCompressionQuality(IMAGE_QUALITY);
-
                     long curTimeID = System.currentTimeMillis();
-
                     BufferedImage image = robot.createScreenCapture(area);
-                    BufferedImage resizedImg = Util.resizeImage(image, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
-                    writer.write(null, new IIOImage(resizedImg, null, null), param);
 
-                    byte[] data = os.toByteArray();
-                    Thread imageSender = new Thread(new ImageSender(curTimeID, data));
+                    Thread imageSender = new Thread(new ImageSender(curTimeID, image));
                     imageSender.start();
 
                 } catch (Exception e) {
@@ -186,11 +173,11 @@ public class RemoteControlHandler implements Runnable {
 
             private class ImageSender implements Runnable {
 
-                private byte[] data;
+                private BufferedImage img;
                 private byte[] curTimeID;
 
-                public ImageSender(long curTimeID, byte[] data) {
-                    this.data = data;
+                public ImageSender(long curTimeID, BufferedImage img) {
+                    this.img = img;
                     this.curTimeID = Util.longToBytes(curTimeID, 8);
                 }
 
@@ -206,6 +193,19 @@ public class RemoteControlHandler implements Runnable {
 
                     try {
 
+                        ByteArrayOutputStream os = new ByteArrayOutputStream();
+                        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+                        ImageWriter writer = writers.next();
+                        ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+                        writer.setOutput(ios);
+                        ImageWriteParam param = writer.getDefaultWriteParam();
+                        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                        param.setCompressionQuality(IMAGE_QUALITY);
+
+                        BufferedImage resizedImg = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
+                        writer.write(null, new IIOImage(resizedImg, null, null), param);
+
+                        byte[] data = os.toByteArray();
                         byte[] IV = aes.generateIV();
                         byte[] cryptImg = aes.encrypt(data, IV);
 
