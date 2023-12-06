@@ -116,6 +116,14 @@ public class RemoteControlView extends JFrame implements ActionListener {
         lb3.setForeground(Color.WHITE);
         lb3.setFont(new Font("Arial",Font.PLAIN,16));
 
+        pnList1 = new JPanel(null);
+        pnList1.setSize(900,70);
+        pnList1.setBounds(50, 230, 900, 70);
+        pnList1.setBackground(Color.BLUE);
+        pnList2 = new JPanel(null);
+        pnList2.setSize(900,70);
+        pnList2.setBounds(50, 430, 900, 70);
+        pnList2.setBackground(Color.GREEN);
 
 
         pn=new JPanel(null);
@@ -131,7 +139,8 @@ public class RemoteControlView extends JFrame implements ActionListener {
         pn.add(lb1);
         pn.add(lb2);
         pn.add(lb3);
-
+        pn.add(pnList1);
+        pn.add(pnList2);
         add(pn);
 
         setVisible(true);
@@ -139,29 +148,13 @@ public class RemoteControlView extends JFrame implements ActionListener {
 
     }
     public void GUI2() {
-        if(isPanelInContainer(pnList1)){
-            for(int i = 0;i < btnList1.size();i++){
-                remove(btnList1.get(i));
-            }
-            remove(pnList1);
-        }
-        if(isPanelInContainer(pnList2)){
-            for(int i = 0;i < btnList1.size();i++){
-                remove(btnList2.get(i));
-            }
-            remove(pnList2);
-        }
+        pnList1.removeAll();
+        pnList2.removeAll();
+
 
         btnList1 = new ArrayList<>(10);
         btnList2 = new ArrayList<>(10);
-        pnList1 = new JPanel(null);
-        pnList1.setSize(900,70);
-        pnList1.setBounds(50, 230, 900, 70);
-        pnList1.setBackground(Color.BLUE);
-        pnList2 = new JPanel(null);
-        pnList2.setSize(900,70);
-        pnList2.setBounds(50, 430, 900, 70);
-        pnList2.setBackground(Color.GREEN);
+
 
         for (int i = 0; i < onlineComps.size(); i++) {
             JButton btn = new JButton(onlineComps.get(i));
@@ -180,21 +173,16 @@ public class RemoteControlView extends JFrame implements ActionListener {
             btn.addActionListener(this);
             pnList2.add(btnList2.get(i));
         }
-        add(pnList1);
-        add(pnList2);
-        revalidate();
-        repaint();
-        setVisible(true);
+        pnList1.revalidate();
+        pnList2.revalidate();
+        pnList1.repaint();
+        pnList2.repaint();
+
     }
-    private boolean isPanelInContainer(JPanel panel) {
-        Component[] components = getContentPane().getComponents();
-        for (Component component : components) {
-            if (component.equals(panel)) {
-                return true;
-            }
-        }
-        return false;
+    public void paint(Graphics g){
+        super.paint(g);
     }
+
 
 
     public void windowClosing(WindowEvent we) {
@@ -220,4 +208,5 @@ public class RemoteControlView extends JFrame implements ActionListener {
 
     }
 }
+
 
