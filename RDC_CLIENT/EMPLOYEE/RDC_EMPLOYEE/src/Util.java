@@ -1,4 +1,14 @@
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Base64;
+import java.util.Iterator;
 
 public class Util {
 
@@ -34,6 +44,31 @@ public class Util {
         }
 
         return res;
+
+    }
+
+    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        graphics2D.dispose();
+        return resizedImage;
+    }
+
+    public static byte[] compressImgToByte(BufferedImage img, float quality) throws IOException {
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+        ImageWriter writer = writers.next();
+        ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+        writer.setOutput(ios);
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        param.setCompressionQuality(quality);
+
+        writer.write(null, new IIOImage(img, null, null), param);
+
+        return os.toByteArray();
 
     }
 

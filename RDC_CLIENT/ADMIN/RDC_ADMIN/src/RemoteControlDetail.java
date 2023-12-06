@@ -34,12 +34,14 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public void GetData() throws Exception {
         client.writeMes("/RemoteControl");
         client.writeMes(comp);
+        client.writeMes(String.valueOf(ScreenDisplayer.SCREEN_WIDTH));
+        client.writeMes(String.valueOf(ScreenDisplayer.SCREEN_HEIGHT));
         key = client.readMes();
         targetIP = client.readMes();
 
         GUI();
     }
-    public void GUI() throws Exception{
+    public void GUI() {
         setDefaultCloseOperation(3);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -78,17 +80,19 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     }
     public class ScreenDisplayer extends JPanel {
         private BufferedImage screenFrame;
+        public static final int SCREEN_WIDTH = 1200;
+        public static final int SCREEN_HEIGHT = 750;
 
         public ScreenDisplayer() {
-            setSize(1200, 750);
-            setBounds(100,120,1200,750);
+            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            setBounds(100,120,SCREEN_WIDTH,SCREEN_HEIGHT);
         }
 
         @Override
         public void paint(Graphics g) {
 
             if (screenFrame != null){
-                screenFrame = resizeImage(screenFrame, 1200, 750);
+                screenFrame = Util.resizeImage(screenFrame, SCREEN_WIDTH, SCREEN_HEIGHT);
                 g.drawImage(screenFrame, 0, 0, null);
             }
 
@@ -100,16 +104,6 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
             repaint();
         }
 
-    }
-    private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
-        Image resultingImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
-        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(resultingImage, 0, 0, null);
-        g2d.dispose();
-
-        return resizedImage;
     }
 
     public void windowClosing(WindowEvent we) {
