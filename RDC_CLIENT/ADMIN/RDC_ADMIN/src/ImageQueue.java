@@ -55,7 +55,8 @@ public class ImageQueue {
             lock.unlock();
         }
 
-        data[hashID].addPart(rawData);
+        if (data[hashID] != null) // repeat check because another thread may already delete that node
+            data[hashID].addPart(rawData);
 
     }
 
@@ -71,8 +72,10 @@ public class ImageQueue {
 
             try {
                 lock.lock();
-                timeIDHeap.pop();
-                data[hashID] = null;
+                if (data[hashID] != null) { // repeat check because when allow to lock the condition may not correct anymore
+                    timeIDHeap.pop();
+                    data[hashID] = null;
+                }
             } finally {
                 lock.unlock();
             }
@@ -84,19 +87,18 @@ public class ImageQueue {
         long id = timeIDHeap.getLatestTimeID();
         int hashID = (int) (id % TIME_SPACE);
 
-        if (data[hashID] == null) return null;
+        if (data[hashID] == null || !data[hashID].isCompleted()) return null;
 
-        BufferedImage img = data[hashID].getImage(aes);
-        if (img != null) {
-            try {
-                lock.lock();
-                timeIDHeap.pop();
-                data[hashID] = null;
-            } finally {
-                lock.unlock();
-            }
+        try {
+            lock.lock();
+            if (data[hashID] == null || !data[hashID].isCompleted()) return null; // repeat check because when allow to lock the condition may not correct anymore
+            BufferedImage img = data[hashID].getImage(aes);
+            timeIDHeap.pop();
+            data[hashID] = null;
+            return img;
+        } finally {
+            lock.unlock();
         }
-        return img;
 
     }
 

@@ -46,8 +46,8 @@ public class ImageData {
             int partID = (int)Util.bytesToLong(Arrays.copyOfRange(rawData, 8, 10));
             if (partID == 0) { // header
 
-                numOfPart = (int)Util.bytesToLong(Arrays.copyOfRange(rawData, 10, 12));
                 IV = Arrays.copyOfRange(rawData, 12, rawData.length);
+                numOfPart = (int)Util.bytesToLong(Arrays.copyOfRange(rawData, 10, 12));
 
             } else { // normal image part
 
@@ -70,9 +70,6 @@ public class ImageData {
     }
 
     public BufferedImage getImage(AES aes) throws Exception {
-
-        if (!isCompleted())
-            return null;
 
         byte[] data = new byte[imgByteLen];
         int i = 0;

@@ -15,11 +15,11 @@ import java.util.Iterator;
 public class RemoteControlHandler implements Runnable {
 
     private static final int PORT = 6969;
-    private static final int PACKET_SIZE = 60000;
-    private static final int DATA_SIZE = PACKET_SIZE / 2;
+    private static final int PACKET_SIZE = 1 << 15;
+    private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = (int)(1000.0 / FPS);
-    private static final float IMAGE_QUALITY = 0.3f;
+    private static final float IMAGE_QUALITY = 0.01f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 

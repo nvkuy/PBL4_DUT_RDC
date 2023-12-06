@@ -9,7 +9,7 @@ public class RemoteControlHandler implements Runnable {
     private final AES aes;
     private final String targetIP;
     private static final int PORT = 6969;
-    private static final int PACKET_SIZE = 60000;
+    private static final int PACKET_SIZE = 1 << 15;
     private static final long MAX_DELAY = 1000;
     private ImageQueue frameQueue;
     private DatagramSocket adminSocket;
@@ -115,7 +115,7 @@ public class RemoteControlHandler implements Runnable {
 
                     mRemoteControl.screen.display(img);
                     paintFramePerSecond++;
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
