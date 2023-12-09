@@ -19,9 +19,10 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.01f;
+    private static final float IMAGE_QUALITY = 0.3f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
+    private final long TIME_DIFF;
 
     private final AES aes;
     private final String targetIP;
@@ -45,11 +46,12 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip, Integer targetScreenWidth, Integer targetScreenHeight) {
+    public RemoteControlHandler(String key, String ip, Integer targetScreenWidth, Integer targetScreenHeight, long timeDiff) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.TARGET_SCREEN_WIDTH = targetScreenWidth;
         this.TARGET_SCREEN_HEIGHT = targetScreenHeight;
+        this.TIME_DIFF = timeDiff;
     }
 
     @Override
@@ -159,7 +161,7 @@ public class RemoteControlHandler implements Runnable {
                 try {
 
                     Robot robot = new Robot();
-                    long curTimeID = System.currentTimeMillis();
+                    long curTimeID = System.currentTimeMillis() + TIME_DIFF;
                     BufferedImage image = robot.createScreenCapture(area);
 
                     Thread imageSender = new Thread(new ImageSender(curTimeID, image));

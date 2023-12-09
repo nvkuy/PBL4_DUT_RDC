@@ -39,6 +39,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         key = client.readMes();
         targetIP = client.readMes();
 
+        client.writeMes(String.valueOf(System.currentTimeMillis()));
+
         GUI();
     }
     public void GUI() {

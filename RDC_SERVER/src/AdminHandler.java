@@ -94,6 +94,11 @@ public class AdminHandler extends ConnectionHandler {
 					connectionHandler.writeMes(ip);
 					connectionHandler.writeMes(String.valueOf(width));
 					connectionHandler.writeMes(String.valueOf(height));
+
+					long timePC1 = Long.parseLong(readMes());
+					long timePC2 = Long.parseLong(connectionHandler.readMes());
+					long diff = timePC1 - timePC2;
+					connectionHandler.writeMes(String.valueOf(diff));
 					
 				} else {
 					// more feature..
