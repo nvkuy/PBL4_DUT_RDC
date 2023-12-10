@@ -1,9 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class RemoteControlDetail extends JFrame implements ActionListener {
     private JLabel lb1;
@@ -15,7 +14,6 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private String key = "";
     private String targetIP = "";
     public ScreenDisplayer screen;
-
 
     public RemoteControlDetail(String s, String name, String state)  {
         super(s);
@@ -38,8 +36,6 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         client.writeMes(String.valueOf(ScreenDisplayer.SCREEN_HEIGHT));
         key = client.readMes();
         targetIP = client.readMes();
-
-        client.writeMes(String.valueOf(System.currentTimeMillis()));
 
         GUI();
     }
@@ -80,7 +76,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
 
     }
-    public class ScreenDisplayer extends JPanel {
+
+    public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener {
         private BufferedImage screenFrame;
         public static final int SCREEN_WIDTH = 1200;
         public static final int SCREEN_HEIGHT = 750;
@@ -106,6 +103,45 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
             repaint();
         }
 
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
     }
 
     public void windowClosing(WindowEvent we) {

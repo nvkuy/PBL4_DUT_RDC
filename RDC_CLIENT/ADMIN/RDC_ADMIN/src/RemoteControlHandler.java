@@ -1,18 +1,25 @@
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Arrays;
 
 public class RemoteControlHandler implements Runnable {
 
     private final AES aes;
     private final String targetIP;
-    private static final int PORT = 6969;
+    private static final int SCREEN_PORT = 6969;
+    private static final int COMMAND_PORT = 8888;
     private static final int PACKET_SIZE = 1 << 15;
     private static final long MAX_DELAY = 1000;
     private ImageQueue frameQueue;
-    private DatagramSocket adminSocket;
+    private DatagramSocket adminUDPSocket;
+    private Socket adminTCPSocket;
     private InetAddress inetAddress;
     private RemoteControlDetail mRemoteControl;
 
@@ -20,6 +27,7 @@ public class RemoteControlHandler implements Runnable {
     private long sumDelay = 0;
     private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
+    private boolean isRunning = true;
 
     /*
 
@@ -45,21 +53,24 @@ public class RemoteControlHandler implements Runnable {
 
         try {
 
-            adminSocket = new DatagramSocket(PORT);
             inetAddress = InetAddress.getByName(targetIP);
+
+            adminTCPSocket = new Socket(targetIP, COMMAND_PORT);
+
+            adminUDPSocket = new DatagramSocket(SCREEN_PORT);
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
             frameQueue = new ImageQueue(MAX_DELAY);
+
+            Thread controlSignalHandler = new Thread(new ControlSignalHandler());
+            controlSignalHandler.start();
 
             Thread screenReceiver = new Thread(new ScreenReceiver());
             screenReceiver.start();
 
             Thread screenRender = new Thread(new ScreenRender());
             screenRender.start();
-
-            Thread controlSignalSender = new Thread(new ControlSignalSender());
-            controlSignalSender.start();
 
             if (BENCHMARK) {
                 Thread benchmarkFPS = new Thread(new BenchmarkFPS());
@@ -72,16 +83,82 @@ public class RemoteControlHandler implements Runnable {
 
     }
 
+    private class ControlSignalHandler implements Runnable {
+        private BufferedReader inp;
+        private PrintWriter out;
+
+        @Override
+        public void run() {
+
+            try {
+
+                isRunning = true;
+                inp = new BufferedReader(new InputStreamReader(adminTCPSocket.getInputStream()));
+                out = new PrintWriter(adminTCPSocket.getOutputStream(), true);
+
+                syncTime();
+
+                while (isRunning) {
+
+                    //..
+
+                }
+
+            } catch (Exception e) {
+                close();
+            }
+
+        }
+
+        private void syncTime() throws Exception {
+            readMes();
+            writeMes(String.valueOf(System.currentTimeMillis()));
+        }
+
+        public String readMes() throws Exception {
+
+            String IVStr = inp.readLine();
+            String crypMes = inp.readLine();
+            byte[] IV = Util.strToByte(IVStr);
+            return aes.decrypt(crypMes, IV);
+
+        }
+
+        public void writeMes(String mes) throws Exception {
+
+            if (mes == null || mes.isEmpty())
+                mes = " ";
+
+            byte[] IV = aes.generateIV();
+            String crypMes = aes.encrypt(mes, IV);
+            String IVStr = Util.byteToStr(IV);
+            out.println(IVStr);
+            out.println(crypMes);
+
+        }
+
+        private void close() {
+            isRunning = false;
+            try {
+                adminTCPSocket.close();
+            } catch (IOException e) {
+            }
+        }
+
+    }
+
     private class BenchmarkFPS implements Runnable {
 
         @Override
         public void run() {
 
-            while (true) {
+            while (isRunning) {
                 try {
                     Thread.sleep(1000);
-                    System.out.println("FPS: " + paintFramePerSecond
-                            + " - AVG DELAY: " + (sumDelay / packetCnt));
+                    if (packetCnt > 0) {
+                        System.out.println("FPS: " + paintFramePerSecond
+                                + " - AVG DELAY: " + (sumDelay / packetCnt));
+                    }
                     paintFramePerSecond = 0;
                     sumDelay = 0;
                     packetCnt = 0;
@@ -94,22 +171,12 @@ public class RemoteControlHandler implements Runnable {
 
     }
 
-    private class ControlSignalSender implements Runnable {
-
-        @Override
-        public void run() {
-
-            // TODO: capture mouse position and action, send to employee..
-
-        }
-    }
-
     private class ScreenRender implements Runnable {
 
         @Override
         public void run() {
 
-            while (true) {
+            while (isRunning) {
 
                 try {
 
@@ -138,14 +205,14 @@ public class RemoteControlHandler implements Runnable {
         @Override
         public void run() {
 
-            while (true) {
+            while (isRunning) {
 
                 try {
 
                     byte[] receiveData = new byte[PACKET_SIZE];
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
-                    adminSocket.receive(receivePacket);
+                    adminUDPSocket.receive(receivePacket);
                     if (!receivePacket.getAddress().getHostAddress().equals(targetIP)) continue;
 
                     Thread packetDataProcessor = new Thread(new PacketDataProcessor(receivePacket.getData(), receivePacket.getLength()));

@@ -232,10 +232,7 @@ public class ClientEmployee {
                         Integer targetScreenWidth = Integer.valueOf(readMes());
                         Integer targetScreenHeight = Integer.valueOf(readMes());
 
-                        writeMes(String.valueOf(System.currentTimeMillis()));
-                        long timeDiff = Long.parseLong(readMes());
-
-                        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, targetScreenWidth, targetScreenHeight, timeDiff));
+                        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, targetScreenWidth, targetScreenHeight));
                         remoteControlHandler.start();
 
                     } else {
