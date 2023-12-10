@@ -176,6 +176,8 @@ public class RemoteControlHandler implements Runnable {
             long travelTime = (time3 - time1) / 2;
             timeDiff = time2 - travelTime - time1;
 
+            System.out.println("TimeDiff: " + timeDiff);
+
         }
 
         public String readMes() throws Exception {
@@ -206,6 +208,7 @@ public class RemoteControlHandler implements Runnable {
         isRunning = false;
         try {
             employeeTCPSocket.close();
+            employeeUDPSocket.close();
         } catch (IOException e) {
         }
     }

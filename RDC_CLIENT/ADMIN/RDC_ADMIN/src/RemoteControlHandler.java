@@ -146,6 +146,7 @@ public class RemoteControlHandler implements Runnable {
         isRunning = false;
         try {
             adminTCPSocket.close();
+            adminUDPSocket.close();
         } catch (IOException e) {
         }
     }
