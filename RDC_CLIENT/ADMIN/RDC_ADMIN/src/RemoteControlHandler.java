@@ -28,6 +28,7 @@ public class RemoteControlHandler implements Runnable {
     private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
+    private ControlSignalQueue controlSignalQueue;
 
     /*
 
@@ -42,10 +43,11 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl) {
+    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, ControlSignalQueue controlSignalQueue) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.mRemoteControl = mRemoteControl;
+        this.controlSignalQueue = controlSignalQueue;
     }
 
     @Override
@@ -100,12 +102,13 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    //..
+                    String signal = controlSignalQueue.getNext();
+                    if (signal != null) writeMes(signal);
 
                 }
 
             } catch (Exception e) {
-                close();
+                shutdown();
             }
 
         }
@@ -137,14 +140,14 @@ public class RemoteControlHandler implements Runnable {
 
         }
 
-        private void close() {
-            isRunning = false;
-            try {
-                adminTCPSocket.close();
-            } catch (IOException e) {
-            }
-        }
+    }
 
+    public void shutdown() {
+        isRunning = false;
+        try {
+            adminTCPSocket.close();
+        } catch (IOException e) {
+        }
     }
 
     private class BenchmarkFPS implements Runnable {

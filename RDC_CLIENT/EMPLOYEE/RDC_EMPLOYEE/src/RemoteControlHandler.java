@@ -161,7 +161,7 @@ public class RemoteControlHandler implements Runnable {
                 }
 
             } catch (Exception e) {
-                close();
+                shutdown();
             }
 
         }
@@ -200,14 +200,14 @@ public class RemoteControlHandler implements Runnable {
 
         }
 
-        private void close() {
-            isRunning = false;
-            try {
-                employeeTCPSocket.close();
-            } catch (IOException e) {
-            }
-        }
+    }
 
+    public void shutdown() {
+        isRunning = false;
+        try {
+            employeeTCPSocket.close();
+        } catch (IOException e) {
+        }
     }
 
     private class BenchmarkFPS implements Runnable {

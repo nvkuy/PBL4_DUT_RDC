@@ -93,10 +93,6 @@ public class ClientAdmin {
 
        new RemoteControlView("Remote control");
 
-
-
-
-
     }
 
 

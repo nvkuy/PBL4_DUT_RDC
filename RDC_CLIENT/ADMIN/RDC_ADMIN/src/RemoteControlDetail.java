@@ -14,6 +14,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private String key = "";
     private String targetIP = "";
     public ScreenDisplayer screen;
+    private ControlSignalQueue controlSignalQueue;
+    private RemoteControlHandler remoteControlHandler;
 
     public RemoteControlDetail(String s, String name, String state)  {
         super(s);
@@ -61,9 +63,13 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         pn.setBounds(0,0,1500,1000);
         pn.setBackground(Color.BLACK);
 
+        controlSignalQueue = new ControlSignalQueue(2000);
+
         screen = new ScreenDisplayer();
-        Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, this));
-        remoteControlHandler.start();
+        remoteControlHandler = new RemoteControlHandler(key, targetIP, this, controlSignalQueue);
+        Thread thread = new Thread(remoteControlHandler);
+        thread.start();
+
         lb1.setBounds(50,50,400, 50);
         btnBack.setBounds(1250,50,200,60);
         btnBack.addActionListener(this);
@@ -152,6 +158,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==btnBack){
             new DetailComputer("Detail computer", comp, state);
+            remoteControlHandler.shutdown();
             dispose();
         }
 
