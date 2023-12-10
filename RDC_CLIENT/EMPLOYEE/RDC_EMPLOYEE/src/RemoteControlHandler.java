@@ -161,7 +161,7 @@ public class RemoteControlHandler implements Runnable {
                 }
 
             } catch (Exception e) {
-                close();
+                shutdown();
             }
 
         }
@@ -175,6 +175,8 @@ public class RemoteControlHandler implements Runnable {
 
             long travelTime = (time3 - time1) / 2;
             timeDiff = time2 - travelTime - time1;
+
+            System.out.println("TimeDiff: " + timeDiff);
 
         }
 
@@ -200,14 +202,15 @@ public class RemoteControlHandler implements Runnable {
 
         }
 
-        private void close() {
-            isRunning = false;
-            try {
-                employeeTCPSocket.close();
-            } catch (IOException e) {
-            }
-        }
+    }
 
+    public void shutdown() {
+        isRunning = false;
+        try {
+            employeeTCPSocket.close();
+            employeeUDPSocket.close();
+        } catch (IOException e) {
+        }
     }
 
     private class BenchmarkFPS implements Runnable {
