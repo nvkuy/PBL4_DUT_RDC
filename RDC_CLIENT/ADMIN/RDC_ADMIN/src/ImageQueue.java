@@ -45,14 +45,16 @@ public class ImageQueue {
         if (curTime - timeID > MAX_DELAY) return;
 
         int hashID = (int)(timeID % TIME_SPACE);
-        try {
-            lock.lock();
-            if (data[hashID] == null) {
-                data[hashID] = new ImageData();
-                timeIDHeap.push(timeID);
+        if (data[hashID] == null) {
+            try {
+                lock.lock();
+                if (data[hashID] == null) { // repeat check because another thread may already create it when get lock
+                    data[hashID] = new ImageData();
+                    timeIDHeap.push(timeID);
+                }
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
         }
 
         if (data[hashID] != null) // repeat check because another thread may already delete that node
