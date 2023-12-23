@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class RemoteControlDetail extends JFrame implements ActionListener {
@@ -14,7 +17,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private String key = "";
     private String targetIP = "";
     public ScreenDisplayer screen;
-    private ControlSignalQueue controlSignalQueue;
+    private Queue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
 
     public RemoteControlDetail(String s, String name, String state)  {
@@ -63,7 +66,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         pn.setBounds(0,0,1500,1000);
         pn.setBackground(Color.BLACK);
 
-        controlSignalQueue = new ControlSignalQueue(2000);
+        controlSignalQueue = new ArrayDeque<>();
 
         screen = new ScreenDisplayer();
         remoteControlHandler = new RemoteControlHandler(key, targetIP, this, controlSignalQueue);
@@ -118,12 +121,12 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void keyPressed(KeyEvent e) {
-            controlSignalQueue.push("K P " + e.getKeyCode());
+            controlSignalQueue.add("K P " + e.getKeyCode());
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            controlSignalQueue.push("K R " + e.getKeyCode());
+            controlSignalQueue.add("K R " + e.getKeyCode());
         }
 
         @Override
@@ -133,17 +136,17 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            controlSignalQueue.push("M P " + e.getButton());
+            controlSignalQueue.add("M P " + e.getButton());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            controlSignalQueue.push("M R " + e.getButton());
+            controlSignalQueue.add("M R " + e.getButton());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            controlSignalQueue.push("M M " + e.getX() + " " + e.getY());
+            controlSignalQueue.add("M M " + e.getX() + " " + e.getY());
         }
 
         @Override

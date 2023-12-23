@@ -8,6 +8,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.Queue;
 
 public class RemoteControlHandler implements Runnable {
 
@@ -28,7 +30,7 @@ public class RemoteControlHandler implements Runnable {
     private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
-    private ControlSignalQueue controlSignalQueue;
+    private Queue<String> controlSignalQueue;
 
     /*
 
@@ -43,7 +45,7 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, ControlSignalQueue controlSignalQueue) {
+    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, Queue<String> controlSignalQueue) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.mRemoteControl = mRemoteControl;
@@ -102,7 +104,7 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    String signal = controlSignalQueue.getNext();
+                    String signal = controlSignalQueue.poll();
                     if (signal != null) writeMes(signal);
 
                 }
