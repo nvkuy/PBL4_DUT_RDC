@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ConnectionHandler implements Runnable {
 
@@ -10,6 +13,7 @@ public class ConnectionHandler implements Runnable {
 	protected PrintWriter out;
 	protected String compID;
 	volatile protected Boolean isRunning = false;
+	protected boolean isAdmin;
 	protected String ip;
 	protected AES aes;
 	
@@ -34,11 +38,13 @@ public class ConnectionHandler implements Runnable {
 			// System.out.println(compID + " verified!");
 
 			isRunning = true;
+			isAdmin = server.compDataHelper.isAdminComp(compID);
+
 			System.out.println(compID + " connected!");
-			if (server.adminIPs.contains(ip))
-				server.admins.put(compID, (AdminHandler) this);
+			if (isAdmin)
+				new AdminMesLoopHandler().start();
 			else
-				server.employees.put(compID, (EmployeeHandler) this);
+				new EmployeeMesLoopHandler().start();
 			
 		} catch (Exception e) {
 			// e.printStackTrace();
@@ -121,11 +127,125 @@ public class ConnectionHandler implements Runnable {
 
 		System.out.println(compID + " disconnected!");
 		isRunning = false;
-		if (server.adminIPs.contains(ip))
+		if (isAdmin)
 			server.admins.remove(compID);
 		else
 			server.employees.remove(compID);
 		
+	}
+
+	private class EmployeeMesLoopHandler {
+
+		public void start() throws Exception {
+
+			while (isRunning) {
+
+				String option = readMes();
+
+				if (option.equals("/AppHistory")) {
+
+					int n = Integer.parseInt(readMes());
+					List<String> apps = new ArrayList<>();
+					for (int i = 0; i < n; i++)
+						apps.add(readMes());
+					server.compDataHelper.insertAppHistory(compID, apps);
+
+				} else {
+					// more feature..
+				}
+
+			}
+
+		}
+
+	}
+
+	private class AdminMesLoopHandler {
+
+		public void start() throws Exception {
+
+			while (isRunning) {
+
+				String option = readMes();
+
+                switch (option) {
+                    case "/AppHistory" -> {
+
+                        String targetCompID = readMes();
+                        List<List<String>> apps = server.compDataHelper.readAppHistory(targetCompID);
+
+                        writeMes(String.valueOf(apps.size()));
+                        for (var app_time : apps) {
+                            writeMes(app_time.get(0));
+                            writeMes(app_time.get(1));
+                        }
+
+                    }
+                    case "/NotAllowApp" -> {
+                        List<String> notAllowApps = server.compDataHelper.readNotAllowApps();
+                        writeMes(notAllowApps.size() + "");
+                        for (String app : notAllowApps)
+                            writeMes(app);
+                    }
+                    case "/CompInfo" -> {
+                        option = readMes();
+                        switch (option) {
+                            case "/Read" -> {
+                                String targetCompID = readMes();
+                                Map<String, String> info = server.compDataHelper.readEmployeeCompInfo(targetCompID);
+                                writeMes(info.get("CompID"));
+                                writeMes(info.get("EmployeeID"));
+                                writeMes(info.get("EmployeeName"));
+                                writeMes(info.get("Mail"));
+                                writeCompressMes(info.get("EmployeeImage"));
+                            }
+                            case "/AddOrInsert" -> {
+                            }
+                            //..
+                            case "/Delete" -> {
+                            }
+                            //..
+                            default -> {
+                            }
+                            // more feature..
+                        }
+                    }
+                    case "/AllCompID" -> {
+                        List<String> allCompID = server.compDataHelper.readEmployeeCompIDs();
+                        writeMes(allCompID.size() + "");
+                        for (String ID : allCompID)
+                            writeMes(ID);
+                    }
+                    case "/OnlineList" -> {
+                        writeMes(server.employees.keySet().size() + "");
+                        for (String compID : server.employees.keySet())
+                            writeMes(compID);
+                    }
+                    case "/RemoteControl" -> {
+
+                        String targetCompID = readMes();
+                        Integer width = Integer.valueOf(readMes());
+                        Integer height = Integer.valueOf(readMes());
+                        AES rdcAES = new AES();
+                        ConnectionHandler connectionHandler = server.employees.get(targetCompID);
+                        writeMes(rdcAES.getKeyStr());
+                        writeMes(connectionHandler.ip);
+                        connectionHandler.writeMes("/RemoteControl");
+                        connectionHandler.writeMes(rdcAES.getKeyStr());
+                        connectionHandler.writeMes(ip);
+                        connectionHandler.writeMes(String.valueOf(width));
+                        connectionHandler.writeMes(String.valueOf(height));
+
+                    }
+                    default -> {
+                    }
+                    // more feature..
+                }
+
+			}
+
+		}
+
 	}
 
 }

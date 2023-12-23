@@ -2,13 +2,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class Server {
 
@@ -21,9 +16,7 @@ public class Server {
     Connection conn;
     CompDataHelper compDataHelper;
     ServerSocket server;
-    Set<String> adminIPs;
-    Map<String, AdminHandler> admins;
-    Map<String, EmployeeHandler> employees;
+    Map<String, ConnectionHandler> admins, employees;
     volatile Boolean isRunning = false;
     RSA rsa;
 
@@ -36,7 +29,7 @@ public class Server {
 			server.Start();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			System.out.println("Server init fail!");
             server.Shutdown();
 		}
@@ -54,11 +47,8 @@ public class Server {
 
         conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
         compDataHelper = new CompDataHelper(conn);
-        adminIPs = new HashSet<>();
         admins = new HashMap<>();
         employees = new HashMap<>();
-
-        adminIPs = compDataHelper.getAdminIPs();
 
     }
 
@@ -72,11 +62,7 @@ public class Server {
             while (isRunning) {
 
                 Socket socket = server.accept();
-                Thread handler = null;
-                if (adminIPs.contains(socket.getInetAddress().getHostAddress()))
-                    handler = new Thread(new AdminHandler(this, socket));
-                else
-                    handler = new Thread(new EmployeeHandler(this, socket));
+                Thread handler = new Thread(new ConnectionHandler(this, socket));
                 handler.start();
 
             }
@@ -98,8 +84,7 @@ public class Server {
             server.close();
             System.out.println("Server down!");
 
-        } catch (Exception e) {
-        }
+        } catch (Exception ignored) { }
 
     }
 

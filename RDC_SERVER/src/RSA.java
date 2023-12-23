@@ -14,8 +14,8 @@ import javax.crypto.Cipher;
 
 public class RSA {
 
-	private PrivateKey privateKey;
-    private PublicKey publicKey;
+	private final PrivateKey privateKey;
+    private final PublicKey publicKey;
     
     private static final Integer KEY_SIZE = 1024;
     

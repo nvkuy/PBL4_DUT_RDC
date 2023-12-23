@@ -114,9 +114,7 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    String sc = readMes();
-                    System.out.println(sc);
-                    String[] signal = sc.split(" ");
+                    String[] signal = readMes().split(" ");
 
                     if (signal[0].equals("M")) { // Mouse
 

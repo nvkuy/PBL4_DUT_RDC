@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
@@ -104,7 +107,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public void paint(Graphics g) {
 
             if (screenFrame != null){
-                screenFrame = Util.resizeImage(screenFrame, SCREEN_WIDTH, SCREEN_HEIGHT);
+//                screenFrame = Util.resizeImage(screenFrame, SCREEN_WIDTH, SCREEN_HEIGHT);
                 g.drawImage(screenFrame, 0, 0, null);
             }
 

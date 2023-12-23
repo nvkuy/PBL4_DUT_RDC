@@ -104,6 +104,7 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
+                    Thread.sleep(2);
                     String signal = controlSignalQueue.poll();
                     if (signal != null) writeMes(signal);
 
