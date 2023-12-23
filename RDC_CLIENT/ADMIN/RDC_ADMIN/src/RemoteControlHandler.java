@@ -167,7 +167,6 @@ public class RemoteControlHandler implements Runnable {
                     sumDelay = 0;
                     packetCnt = 0;
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -189,14 +188,18 @@ public class RemoteControlHandler implements Runnable {
                     BufferedImage img = frameQueue.getNextImage(aes);
                     if (img == null) continue;
 
+//                    long t1 = System.currentTimeMillis();
                     mRemoteControl.screen.display(img);
+//                    long t2 = System.currentTimeMillis();
+//                    System.out.println("Draw time: " + (t2 - t1));
+
                     if (BENCHMARK)
                         paintFramePerSecond++;
 
                     Thread.sleep(2);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -223,7 +226,7 @@ public class RemoteControlHandler implements Runnable {
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
 
@@ -253,7 +256,7 @@ public class RemoteControlHandler implements Runnable {
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }

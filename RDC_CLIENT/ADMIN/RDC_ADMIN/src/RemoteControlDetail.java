@@ -91,6 +91,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public ScreenDisplayer() {
             setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             setBounds(100,120,SCREEN_WIDTH,SCREEN_HEIGHT);
+            addKeyListener(this);
+            addMouseListener(this);
         }
 
         @Override
@@ -116,12 +118,12 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void keyPressed(KeyEvent e) {
-
+            controlSignalQueue.push("K P " + e.getKeyCode());
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-
+            controlSignalQueue.push("K R " + e.getKeyCode());
         }
 
         @Override
@@ -131,17 +133,17 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mousePressed(MouseEvent e) {
-
+            controlSignalQueue.push("M P " + e.getButton());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-
+            controlSignalQueue.push("M R " + e.getButton());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
-
+            controlSignalQueue.push("M M " + e.getX() + " " + e.getY());
         }
 
         @Override

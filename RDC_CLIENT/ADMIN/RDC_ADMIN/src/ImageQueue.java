@@ -62,9 +62,10 @@ public class ImageQueue {
 
     }
 
-    public BufferedImage getNextImage(AES aes) throws Exception {
+    private void deleteLateFrame() {
 
         long curTime = System.currentTimeMillis();
+
         while (true) {
 
             if (timeIDHeap.isEmpty()) break;
@@ -83,6 +84,12 @@ public class ImageQueue {
             }
 
         }
+
+    }
+
+    public BufferedImage getNextImage(AES aes) throws Exception {
+
+        deleteLateFrame();
 
         if (timeIDHeap.isEmpty()) return null;
 
