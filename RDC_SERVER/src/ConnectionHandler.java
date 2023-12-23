@@ -41,10 +41,13 @@ public class ConnectionHandler implements Runnable {
 			isAdmin = server.compDataHelper.isAdminComp(compID);
 
 			System.out.println(compID + " connected!");
-			if (isAdmin)
+			if (isAdmin) {
+				server.admins.put(compID, this);
 				new AdminMesLoopHandler().start();
-			else
+			} else {
+				server.employees.put(compID, this);
 				new EmployeeMesLoopHandler().start();
+			}
 			
 		} catch (Exception e) {
 			// e.printStackTrace();
@@ -168,79 +171,78 @@ public class ConnectionHandler implements Runnable {
 
 				String option = readMes();
 
-                switch (option) {
-                    case "/AppHistory" -> {
+				if (option.equals("/AppHistory")) {
 
-                        String targetCompID = readMes();
-                        List<List<String>> apps = server.compDataHelper.readAppHistory(targetCompID);
+					String targetCompID = readMes();
+					List<List<String>> apps = server.compDataHelper.readAppHistory(targetCompID);
 
-                        writeMes(String.valueOf(apps.size()));
-                        for (var app_time : apps) {
-                            writeMes(app_time.get(0));
-                            writeMes(app_time.get(1));
-                        }
+					writeMes(String.valueOf(apps.size()));
+					for (var app_time : apps) {
+						writeMes(app_time.get(0));
+						writeMes(app_time.get(1));
+					}
 
-                    }
-                    case "/NotAllowApp" -> {
-                        List<String> notAllowApps = server.compDataHelper.readNotAllowApps();
-                        writeMes(notAllowApps.size() + "");
-                        for (String app : notAllowApps)
-                            writeMes(app);
-                    }
-                    case "/CompInfo" -> {
-                        option = readMes();
-                        switch (option) {
-                            case "/Read" -> {
-                                String targetCompID = readMes();
-                                Map<String, String> info = server.compDataHelper.readEmployeeCompInfo(targetCompID);
-                                writeMes(info.get("CompID"));
-                                writeMes(info.get("EmployeeID"));
-                                writeMes(info.get("EmployeeName"));
-                                writeMes(info.get("Mail"));
-                                writeCompressMes(info.get("EmployeeImage"));
-                            }
-                            case "/AddOrInsert" -> {
-                            }
-                            //..
-                            case "/Delete" -> {
-                            }
-                            //..
-                            default -> {
-                            }
-                            // more feature..
-                        }
-                    }
-                    case "/AllCompID" -> {
-                        List<String> allCompID = server.compDataHelper.readEmployeeCompIDs();
-                        writeMes(allCompID.size() + "");
-                        for (String ID : allCompID)
-                            writeMes(ID);
-                    }
-                    case "/OnlineList" -> {
-                        writeMes(server.employees.keySet().size() + "");
-                        for (String compID : server.employees.keySet())
-                            writeMes(compID);
-                    }
-                    case "/RemoteControl" -> {
+				} else if (option.equals("/NotAllowApp")) {
 
-                        String targetCompID = readMes();
-                        Integer width = Integer.valueOf(readMes());
-                        Integer height = Integer.valueOf(readMes());
-                        AES rdcAES = new AES();
-                        ConnectionHandler connectionHandler = server.employees.get(targetCompID);
-                        writeMes(rdcAES.getKeyStr());
-                        writeMes(connectionHandler.ip);
-                        connectionHandler.writeMes("/RemoteControl");
-                        connectionHandler.writeMes(rdcAES.getKeyStr());
-                        connectionHandler.writeMes(ip);
-                        connectionHandler.writeMes(String.valueOf(width));
-                        connectionHandler.writeMes(String.valueOf(height));
+					List<String> notAllowApps = server.compDataHelper.readNotAllowApps();
 
-                    }
-                    default -> {
-                    }
-                    // more feature..
-                }
+					writeMes(notAllowApps.size() + "");
+					for (String app : notAllowApps)
+						writeMes(app);
+
+				} else if (option.equals("/CompInfo")) {
+
+					option = readMes();
+					if (option.equals("/Read")) {
+
+						String targetCompID = readMes();
+						Map<String, String> info = server.compDataHelper.readEmployeeCompInfo(targetCompID);
+						writeMes(info.get("CompID"));
+						writeMes(info.get("EmployeeID"));
+						writeMes(info.get("EmployeeName"));
+						writeMes(info.get("Mail"));
+						writeCompressMes(info.get("EmployeeImage"));
+
+					} else if (option.equals("/AddOrInsert")) {
+						//..
+					} else if (option.equals("/Delete")) {
+						//..
+					} else {
+						// more feature..
+					}
+
+				} else if (option.equals("/AllCompID")) {
+
+					List<String> allCompID = server.compDataHelper.readEmployeeCompIDs();
+
+					writeMes(allCompID.size() + "");
+					for (String ID : allCompID)
+						writeMes(ID);
+
+				} else if (option.equals("/OnlineList")) {
+
+					writeMes(server.employees.keySet().size() + "");
+					for (String compID : server.employees.keySet())
+						writeMes(compID);
+
+				} else if (option.equals("/RemoteControl")) {
+
+					String targetCompID = readMes();
+					Integer width = Integer.valueOf(readMes());
+					Integer height = Integer.valueOf(readMes());
+					AES rdcAES = new AES();
+					ConnectionHandler connectionHandler = server.employees.get(targetCompID);
+					writeMes(rdcAES.getKeyStr());
+					writeMes(connectionHandler.ip);
+					connectionHandler.writeMes("/RemoteControl");
+					connectionHandler.writeMes(rdcAES.getKeyStr());
+					connectionHandler.writeMes(ip);
+					connectionHandler.writeMes(String.valueOf(width));
+					connectionHandler.writeMes(String.valueOf(height));
+
+				} else {
+					// more feature..
+				}
 
 			}
 
