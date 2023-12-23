@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RemoteControlDetail extends JFrame implements ActionListener {
     private JLabel lb1;
@@ -66,7 +67,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         pn.setBounds(0,0,1500,1000);
         pn.setBackground(Color.BLACK);
 
-        controlSignalQueue = new ArrayDeque<>();
+        controlSignalQueue = new ConcurrentLinkedQueue<>();
 
         screen = new ScreenDisplayer();
         remoteControlHandler = new RemoteControlHandler(key, targetIP, this, controlSignalQueue);
@@ -86,7 +87,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
     }
 
-    public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener {
+    public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
         public static final int SCREEN_WIDTH = 1200;
         public static final int SCREEN_HEIGHT = 750;
@@ -96,6 +97,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
             setBounds(100,120,SCREEN_WIDTH,SCREEN_HEIGHT);
             addKeyListener(this);
             addMouseListener(this);
+            addMouseMotionListener(this);
         }
 
         @Override
@@ -146,12 +148,22 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            controlSignalQueue.add("M M " + e.getX() + " " + e.getY());
+
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
 
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            controlSignalQueue.add("M M " + e.getX() + " " + e.getY());
         }
     }
 
