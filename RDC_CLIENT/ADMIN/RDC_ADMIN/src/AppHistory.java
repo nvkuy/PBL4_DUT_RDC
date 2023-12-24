@@ -149,17 +149,15 @@ public class AppHistory extends JFrame implements ActionListener {
         btnBack.setBounds(770, 500, 200, 60);
         lb1.setBounds(50, 50, 600, 50);
 
-        // Thêm ListSelectionListener để xử lý sự kiện khi người dùng chọn ô
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()) {
-                    return;  // Đảm bảo chỉ xử lý sự kiện sau khi người dùng hoàn tất lựa chọn
+                    return;
                 }
                 int selectedRow = table.getSelectedRow();
                 int selectedColumn = table.getSelectedColumn();
 
-                // Loại trừ cột đầu tiên (cột ngày)
                 if (selectedColumn > 0) {
                     String selectedDate = (String) table.getValueAt(selectedRow, 0);
                     String selectedColumnName = table.getColumnName(selectedColumn);

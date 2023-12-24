@@ -8,10 +8,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.Queue;
 
 public class RemoteControlHandler implements Runnable {
 
-    private final AES aes;
+    private AES aes;
     private final String targetIP;
     private static final int SCREEN_PORT = 6969;
     private static final int COMMAND_PORT = 8888;
@@ -28,7 +30,7 @@ public class RemoteControlHandler implements Runnable {
     private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
-    private ControlSignalQueue controlSignalQueue;
+    private Queue<String> controlSignalQueue;
 
     /*
 
@@ -43,7 +45,7 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, ControlSignalQueue controlSignalQueue) {
+    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, Queue<String> controlSignalQueue) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.mRemoteControl = mRemoteControl;
@@ -102,7 +104,8 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    String signal = controlSignalQueue.getNext();
+                    Thread.sleep(2);
+                    String signal = controlSignalQueue.poll();
                     if (signal != null) writeMes(signal);
 
                 }
@@ -167,7 +170,6 @@ public class RemoteControlHandler implements Runnable {
                     sumDelay = 0;
                     packetCnt = 0;
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -189,14 +191,18 @@ public class RemoteControlHandler implements Runnable {
                     BufferedImage img = frameQueue.getNextImage(aes);
                     if (img == null) continue;
 
+//                    long t1 = System.currentTimeMillis();
                     mRemoteControl.screen.display(img);
+//                    long t2 = System.currentTimeMillis();
+//                    System.out.println("Draw time: " + (t2 - t1));
+
                     if (BENCHMARK)
                         paintFramePerSecond++;
 
                     Thread.sleep(2);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }
@@ -223,7 +229,7 @@ public class RemoteControlHandler implements Runnable {
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
 
@@ -253,7 +259,7 @@ public class RemoteControlHandler implements Runnable {
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
             }

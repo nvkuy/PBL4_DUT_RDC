@@ -1,4 +1,3 @@
-import java.util.Base64;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
@@ -9,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
 
-    private SecretKey key;
+    private final SecretKey key;
     private static final int KEY_SIZE = 128;
     private static final int T_LEN = 128;
 

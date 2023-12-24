@@ -173,7 +173,6 @@ public class ClientEmployee {
                         Thread.sleep(120000);
                     }
                     if (date.getMinute() == 1) check = 1;
-                    // Chuyển đổi mili giây sang thông tin ngày giờ hiện tại
                     if ((date.getMinute() == 58 || date.getMinute() == 59) && (check == 1)) {
                         data = (num + System.lineSeparator()) + data;
                         String[] lines = data.split(System.lineSeparator());

@@ -1,29 +1,23 @@
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 public class CompDataHelper {
-    private Connection conn;
+    private final Connection conn;
 
     public CompDataHelper(Connection connection) {
         this.conn = connection;
     }
 
-    public Set<String> getAdminIPs() throws Exception {
-        Set<String> adminIPs = new HashSet<>();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM _ADMIN_COMP");
-        while (rs.next()) {
-            String ip = rs.getString("IPComp");
-            adminIPs.add(ip);
-            // System.out.println(ip);
-        }
-        return adminIPs;
+    public boolean isAdminComp(String compID) throws Exception {
+        String checkAdminCompIDSQL = "SELECT 1 FROM _ADMIN_COMP WHERE CompID = ?";
+        PreparedStatement preparedStmt = conn.prepareStatement(checkAdminCompIDSQL);
+        preparedStmt.setString(1, compID);
+        ResultSet rs = preparedStmt.executeQuery();
+        return rs.next();
     }
 
     public String getPublicKeyStr(String compID) throws Exception {
@@ -39,7 +33,7 @@ public class CompDataHelper {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
         String curDate = formatter.format(date);
-        String insertAppHistorySQL = "INSERT INTO _COMP_APP_HISTORY VALUES (?, ?, ?)";
+        String insertAppHistorySQL = "INSERT INTO _EMPLOYEE_APP_HISTORY VALUES (?, ?, ?)";
         PreparedStatement preparedStmt = conn.prepareStatement(insertAppHistorySQL);
         preparedStmt.setString(1, compID);
         preparedStmt.setString(2, curDate);
@@ -52,7 +46,7 @@ public class CompDataHelper {
     }
 
     public List<List<String>> readAppHistory(String compID) throws Exception {
-        String readAppHistorySQL = "SELECT * FROM _COMP_APP_HISTORY WHERE CompID = ?";
+        String readAppHistorySQL = "SELECT * FROM _EMPLOYEE_APP_HISTORY WHERE CompID = ?";
         PreparedStatement preparedStmt = conn.prepareStatement(readAppHistorySQL);
         preparedStmt.setString(1, compID);
         ResultSet rs = preparedStmt.executeQuery();
@@ -78,10 +72,11 @@ public class CompDataHelper {
         return notAllowApps;
     }
 
-    public List<String> readAllCompID() throws Exception {
-        String readCompIDSQL = "SELECT CompID FROM _COMP";
+    public List<String> readEmployeeCompIDs() throws Exception {
+        String readAllCompIDSQL = "SELECT CompID FROM _COMP WHERE NOT EXISTS " +
+                "(SELECT 1 FROM _ADMIN_COMP WHERE CompID = _COMP.CompID)";
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery(readCompIDSQL);
+        ResultSet rs = statement.executeQuery(readAllCompIDSQL);
         List<String> allCompID = new ArrayList<>();
         while (rs.next()) {
             String compID = rs.getString("CompID");
@@ -90,8 +85,8 @@ public class CompDataHelper {
         return allCompID;
     }
 
-    public Map<String, String> readCompInfo(String compID) throws Exception {
-        String readCompInfoSQL = "SELECT * FROM _COMP_INFO WHERE CompID = ?";
+    public Map<String, String> readEmployeeCompInfo(String compID) throws Exception {
+        String readCompInfoSQL = "SELECT * FROM _EMPLOYEE_COMP WHERE CompID = ?";
         PreparedStatement preparedStmt = conn.prepareStatement(readCompInfoSQL);
         preparedStmt.setString(1, compID);
         ResultSet rs = preparedStmt.executeQuery();
@@ -104,14 +99,9 @@ public class CompDataHelper {
             String img_file = rs.getString("EmployeeImage");
             File fi = new File("images/" + img_file);
             byte[] img = Files.readAllBytes(fi.toPath());
-            compInfo.put("EmployeeImage", Base64.getEncoder().encodeToString(img));
+            compInfo.put("EmployeeImage", Util.byteToStr(img));
         }
         return compInfo;
-    }
-
-    public boolean isCompExists(String compID) throws Exception {
-        Map<String, String> info = readCompInfo(compID);
-        return info.containsKey(compID);
     }
 
 }

@@ -17,17 +17,19 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.3f;
+    private static final float IMAGE_QUALITY = 0.5f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
-    private final AES aes;
+    private AES aes;
     private final String targetIP;
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;
     private Rectangle area;
 
     private int sendFPS = 0;
+    private long packetSent = 0;
+    private long sumPacketSize = 0;
     private static final boolean BENCHMARK = true;
     private long timeDiff = 0;
     private Socket employeeTCPSocket;
@@ -112,7 +114,7 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    String[] signal = readMes().trim().split(" ");
+                    String[] signal = readMes().split(" ");
 
                     if (signal[0].equals("M")) { // Mouse
 
@@ -120,7 +122,9 @@ public class RemoteControlHandler implements Runnable {
 
                             int x = Integer.parseInt(signal[2]);
                             int y = Integer.parseInt(signal[3]);
-                            robot.mouseMove(x, y);
+                            int x_real = (x * area.width) / TARGET_SCREEN_WIDTH;
+                            int y_real = (y * area.height) / TARGET_SCREEN_HEIGHT;
+                            robot.mouseMove(x_real, y_real);
 
                         } else if (signal[1].equals("P")) { // Press
 
@@ -221,8 +225,9 @@ public class RemoteControlHandler implements Runnable {
             while (isRunning) {
                 try {
                     Thread.sleep(1000);
-                    System.out.println(sendFPS);
-                    sendFPS = 0;
+                    if (packetSent > 0)
+                        System.out.println("FPS: " + sendFPS + " - AVG packet size: " + (sumPacketSize / packetSent));
+                    sumPacketSize = packetSent = sendFPS = 0;
                 } catch (Exception e) {
 
                 }
@@ -285,6 +290,9 @@ public class RemoteControlHandler implements Runnable {
                 }
 
                 private void sendImagePart(byte[] data) {
+
+                    sumPacketSize += data.length;
+                    packetSent++;
 
                     Thread imagePartSender = new Thread(new ImagePartSender(data));
                     imagePartSender.start();
