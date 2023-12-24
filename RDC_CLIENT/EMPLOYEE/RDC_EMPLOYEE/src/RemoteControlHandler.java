@@ -17,11 +17,11 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.3f;
+    private static final float IMAGE_QUALITY = 0.5f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
-    private final AES aes;
+    private AES aes;
     private final String targetIP;
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;

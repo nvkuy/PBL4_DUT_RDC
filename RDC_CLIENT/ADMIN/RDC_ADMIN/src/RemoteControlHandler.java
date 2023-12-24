@@ -13,7 +13,7 @@ import java.util.Queue;
 
 public class RemoteControlHandler implements Runnable {
 
-    private final AES aes;
+    private AES aes;
     private final String targetIP;
     private static final int SCREEN_PORT = 6969;
     private static final int COMMAND_PORT = 8888;
