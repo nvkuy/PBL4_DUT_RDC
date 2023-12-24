@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -225,6 +226,8 @@ public class ClientEmployee {
                 try {
                     String option = readMes();
                     if (option.equals("/RemoteControl")) {
+
+//                        JOptionPane.showMessageDialog(null, "Your computer are being controlled!", "Message",1);
 
                         String key = readMes();
                         String targetIP = readMes();

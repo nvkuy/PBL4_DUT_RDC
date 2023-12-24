@@ -34,6 +34,7 @@ public class RemoteControlHandler implements Runnable {
     private long timeDiff = 0;
     private Socket employeeTCPSocket;
     private boolean isRunning = true;
+    private static final int SYNC_ROUND = 10;
 
     /*
 
@@ -172,13 +173,16 @@ public class RemoteControlHandler implements Runnable {
 
         private void syncTime() throws Exception {
 
-            long time1 = System.currentTimeMillis();
-            writeMes(String.valueOf(time1));
-            long time2 = Long.parseLong(readMes());
-            long time3 = System.currentTimeMillis();
-
-            long travelTime = (time3 - time1) / 2;
-            timeDiff = time2 - travelTime - time1;
+            long sumTimeDiff = 0;
+            for (int i = 0; i < SYNC_ROUND; i++) {
+                long time1 = System.currentTimeMillis();
+                writeMes(String.valueOf(time1));
+                long time2 = Long.parseLong(readMes());
+                long time3 = System.currentTimeMillis();
+                long travelTime = (time3 - time1) / 2;
+                sumTimeDiff += (time2 - travelTime - time1);
+            }
+            timeDiff = sumTimeDiff / SYNC_ROUND;
 
             System.out.println("TimeDiff: " + timeDiff);
 

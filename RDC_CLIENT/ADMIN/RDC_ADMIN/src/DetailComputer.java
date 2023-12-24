@@ -148,7 +148,7 @@ public class DetailComputer extends JFrame implements ActionListener {
                 new RemoteControlDetail("Computer remote", comp, state);
                 dispose();
             } else{
-                JOptionPane.showMessageDialog(this, "Hiện tại máy tính đang chưa hoạt động", "Message",1);
+                JOptionPane.showMessageDialog(this, "Employee computer not online!", "Message",1);
             }
         }
     }

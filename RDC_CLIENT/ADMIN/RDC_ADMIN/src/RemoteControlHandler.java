@@ -31,6 +31,7 @@ public class RemoteControlHandler implements Runnable {
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
     private Queue<String> controlSignalQueue;
+    private static final int SYNC_ROUND = 10;
 
     /*
 
@@ -117,8 +118,10 @@ public class RemoteControlHandler implements Runnable {
         }
 
         private void syncTime() throws Exception {
-            readMes();
-            writeMes(String.valueOf(System.currentTimeMillis()));
+            for (int i = 0; i < SYNC_ROUND; i++) {
+                readMes();
+                writeMes(String.valueOf(System.currentTimeMillis()));
+            }
         }
 
         public String readMes() throws Exception {
