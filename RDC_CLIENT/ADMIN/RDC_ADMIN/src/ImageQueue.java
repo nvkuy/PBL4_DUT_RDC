@@ -109,6 +109,19 @@ public class ImageQueue {
             lock.unlock();
         }
 
+//        ImageData imgData = null;
+//        try {
+//            lock.lock();
+//            if (data[hashID] == null || !data[hashID].isCompleted()) return null;
+//            imgData = data[hashID];
+//            timeIDHeap.pop();
+//            data[hashID] = null;
+//        } finally {
+//            lock.unlock();
+//        }
+//        BufferedImage img = imgData.getImage(aes);
+//        return img;
+
     }
 
 }

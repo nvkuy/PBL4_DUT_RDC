@@ -10,6 +10,7 @@ import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class RemoteControlDetail extends JFrame implements ActionListener {
     private JLabel lb1;
@@ -18,8 +19,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private String comp ="";
     private String state = "";
     private ClientAdmin client = new ClientAdmin();
-    private String key = "";
-    private String targetIP = "";
+    private String key;
+    private String targetIP;
     public ScreenDisplayer screen;
     private Queue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
@@ -49,7 +50,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         GUI();
     }
     public void GUI() {
-        setDefaultCloseOperation(3);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
@@ -73,34 +74,36 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         controlSignalQueue = new ConcurrentLinkedQueue<>();
 
         screen = new ScreenDisplayer();
+
         remoteControlHandler = new RemoteControlHandler(key, targetIP, this, controlSignalQueue);
         Thread thread = new Thread(remoteControlHandler);
         thread.start();
 
-        lb1.setBounds(30,30,200, 30);
-        btnBack.setBounds(800,30,100,40);
+        lb1.setBounds(50,10,400, 30);
+        btnBack.setBounds(900,10,100,30);
         btnBack.addActionListener(this);
         pn.add(lb1);
         pn.add(btnBack);
         pn.add(screen);
 
         add(pn);
-        show();
-
+        setVisible(true);
 
     }
 
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
-        public static final int SCREEN_WIDTH = 800;
+        public static final int SCREEN_WIDTH = 900;
         public static final int SCREEN_HEIGHT = 600;
 
         public ScreenDisplayer() {
             setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            setBounds(50,60,SCREEN_WIDTH,SCREEN_HEIGHT);
+            setBounds(50,50,SCREEN_WIDTH,SCREEN_HEIGHT);
             addKeyListener(this);
             addMouseListener(this);
             addMouseMotionListener(this);
+            setFocusable(true);
+            requestFocus();
         }
 
         @Override

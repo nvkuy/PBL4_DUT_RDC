@@ -14,7 +14,7 @@ import java.util.Queue;
 public class RemoteControlHandler implements Runnable {
 
     private AES aes;
-    private final String targetIP;
+    private String targetIP;
     private static final int SCREEN_PORT = 6969;
     private static final int COMMAND_PORT = 8888;
     private static final int PACKET_SIZE = 1 << 15;
@@ -31,7 +31,7 @@ public class RemoteControlHandler implements Runnable {
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
     private Queue<String> controlSignalQueue;
-    private static final int SYNC_ROUND = 10;
+    private static final int SYNC_ROUND = 15;
 
     /*
 
@@ -106,8 +106,10 @@ public class RemoteControlHandler implements Runnable {
                 while (isRunning) {
 
                     Thread.sleep(2);
+                    if (controlSignalQueue.isEmpty()) continue;
                     String signal = controlSignalQueue.poll();
-                    if (signal != null) writeMes(signal);
+//                    System.out.println(signal);
+                    writeMes(signal);
 
                 }
 

@@ -22,7 +22,7 @@ public class RemoteControlHandler implements Runnable {
     private final int TARGET_SCREEN_HEIGHT;
 
     private AES aes;
-    private final String targetIP;
+    private String targetIP;
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;
     private Rectangle area;
@@ -34,7 +34,7 @@ public class RemoteControlHandler implements Runnable {
     private long timeDiff = 0;
     private Socket employeeTCPSocket;
     private boolean isRunning = true;
-    private static final int SYNC_ROUND = 10;
+    private static final int SYNC_ROUND = 15;
 
     /*
 
