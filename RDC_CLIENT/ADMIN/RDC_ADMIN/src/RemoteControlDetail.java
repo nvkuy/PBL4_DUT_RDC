@@ -1,15 +1,8 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class RemoteControlDetail extends JFrame implements ActionListener {
@@ -22,7 +15,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private String key;
     private String targetIP;
     public ScreenDisplayer screen;
-    private Queue<String> controlSignalQueue;
+    private BlockingQueue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
 
     public RemoteControlDetail(String s, String name, String state)  {
@@ -71,7 +64,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         pn.setBounds(0,0,1000,750);
         pn.setBackground(Color.BLACK);
 
-        controlSignalQueue = new ConcurrentLinkedQueue<>();
+        controlSignalQueue = new LinkedBlockingQueue<>();
 
         screen = new ScreenDisplayer();
 
@@ -129,12 +122,16 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void keyPressed(KeyEvent e) {
-            controlSignalQueue.add("K P " + e.getKeyCode());
+            try {
+                controlSignalQueue.put("K P " + e.getKeyCode());
+            } catch (Exception ignored) { }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            controlSignalQueue.add("K R " + e.getKeyCode());
+            try {
+                controlSignalQueue.put("K R " + e.getKeyCode());
+            } catch (Exception ignored) { }
         }
 
         @Override
@@ -144,12 +141,16 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            controlSignalQueue.add("M P " + e.getButton());
+            try {
+                controlSignalQueue.put("M P " + e.getButton());
+            } catch (Exception ignored) { }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            controlSignalQueue.add("M R " + e.getButton());
+            try {
+                controlSignalQueue.put("M R " + e.getButton());
+            } catch (Exception ignored) { }
         }
 
         @Override
@@ -169,7 +170,9 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            controlSignalQueue.add("M M " + e.getX() + " " + e.getY());
+            try {
+                controlSignalQueue.put("M M " + e.getX() + " " + e.getY());
+            } catch (Exception ignored) { }
         }
     }
 

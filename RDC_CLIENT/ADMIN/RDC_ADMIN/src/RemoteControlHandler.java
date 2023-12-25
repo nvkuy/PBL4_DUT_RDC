@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 public class RemoteControlHandler implements Runnable {
 
@@ -30,7 +31,7 @@ public class RemoteControlHandler implements Runnable {
     private int packetCnt = 0;
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
-    private Queue<String> controlSignalQueue;
+    private BlockingQueue<String> controlSignalQueue;
     private static final int SYNC_ROUND = 15;
 
     /*
@@ -46,7 +47,7 @@ public class RemoteControlHandler implements Runnable {
 
      */
 
-    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, Queue<String> controlSignalQueue) {
+    public RemoteControlHandler(String key, String ip, RemoteControlDetail mRemoteControl, BlockingQueue<String> controlSignalQueue) {
         this.aes = new AES(key);
         this.targetIP = ip;
         this.mRemoteControl = mRemoteControl;
@@ -105,15 +106,14 @@ public class RemoteControlHandler implements Runnable {
 
                 while (isRunning) {
 
-                    Thread.sleep(2);
-                    if (controlSignalQueue.isEmpty()) continue;
-                    String signal = controlSignalQueue.poll();
+                    String signal = controlSignalQueue.take();
 //                    System.out.println(signal);
                     writeMes(signal);
 
                 }
 
             } catch (Exception e) {
+//                e.printStackTrace();
                 shutdown();
             }
 

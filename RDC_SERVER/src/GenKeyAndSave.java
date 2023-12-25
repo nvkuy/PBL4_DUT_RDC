@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class GenKeyAndSave {
 	
-	// TODO: Add to be a feature of admin later..
+	// TODO: Add to be a feature of system admin later..
 	
 	private static final String DB_URL = "jdbc:mysql://127.0.0.2:3306/rdc";
 	private static final String USER_NAME = "root";
@@ -18,9 +18,9 @@ public class GenKeyAndSave {
 
 		try {
 			
-			Connection conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
-			String insertSQL = "INSERT INTO _COMP VALUES (?, ?)";
-			PreparedStatement preparedStmt = conn.prepareStatement(insertSQL);
+//			Connection conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
+//			String insertSQL = "INSERT INTO _COMP VALUES (?, ?)";
+//			PreparedStatement preparedStmt = conn.prepareStatement(insertSQL);
 			
 			Scanner scanner = new Scanner(System.in);
 			
@@ -46,13 +46,13 @@ public class GenKeyAndSave {
 				System.out.println(pubKey);
 				System.out.println(priKey);
 				
-				preparedStmt.setString(1, compID);
-				preparedStmt.setString(2, pubKey);
+//				preparedStmt.setString(1, compID);
+//				preparedStmt.setString(2, pubKey);
 				
-				if (preparedStmt.executeUpdate() > 0) 
-					System.out.println("Success!");
-				else
-					System.out.println("Error!");
+//				if (preparedStmt.executeUpdate() > 0)
+//					System.out.println("Success!");
+//				else
+//					System.out.println("Error!");
 				
 			}
 			
