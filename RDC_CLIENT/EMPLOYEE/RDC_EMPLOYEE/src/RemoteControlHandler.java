@@ -11,6 +11,8 @@ import java.io.*;
 import java.net.*;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class RemoteControlHandler implements Runnable {
 
@@ -23,8 +25,8 @@ public class RemoteControlHandler implements Runnable {
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
-    private AES aes;
-    private String targetIP;
+    private final AES aes;
+    private final String targetIP;
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;
     private Rectangle area;
@@ -80,7 +82,7 @@ public class RemoteControlHandler implements Runnable {
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            area = new Rectangle(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
+            area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
 
             Thread screenHandler = new Thread(new ScreenShareHandler());
             screenHandler.start();
@@ -102,6 +104,9 @@ public class RemoteControlHandler implements Runnable {
         private PrintWriter out;
         private Robot robot;
 
+        private BlockingQueue<String> mouseSignals;
+        private BlockingQueue<String> keySignals;
+
         @Override
         public void run() {
 
@@ -115,11 +120,43 @@ public class RemoteControlHandler implements Runnable {
 
                 syncTime();
 
+                mouseSignals = new LinkedBlockingQueue<>();
+                keySignals = new LinkedBlockingQueue<>();
+
+                Thread mouseSignalHandler = new Thread(new MouseSignalHandler());
+                mouseSignalHandler.start();
+
+                Thread keySignalHandler = new Thread(new KeySignalHandler());
+                keySignalHandler.start();
+
                 while (isRunning) {
 
-                    String[] signal = readMes().split(" ");
+                    String signal = readMes();
 
-                    if (signal[0].equals("M")) { // Mouse
+                    if (signal.charAt(0) == 'M')
+                        mouseSignals.put(signal);
+                    else
+                        keySignals.put(signal);
+
+                }
+
+            } catch (Exception e) {
+                shutdown();
+            }
+
+        }
+
+        private class MouseSignalHandler implements Runnable {
+
+            @Override
+            public void run() {
+
+                try {
+
+                    while (isRunning) {
+
+                        String mouseSignal = mouseSignals.take();
+                        String[] signal = mouseSignal.split(" ");
 
                         if (signal[1].equals("M")) { // Move
 
@@ -143,34 +180,48 @@ public class RemoteControlHandler implements Runnable {
                             //..
                         }
 
-                    } else if (signal[0].equals("K")) { // Key
+                    }
+
+                } catch (Exception ignored) { }
+
+            }
+        }
+
+        private class KeySignalHandler implements Runnable {
+
+            @Override
+            public void run() {
+
+                try {
+
+                    while (isRunning) {
+
+                        String keySignal = keySignals.take();
+                        String[] signal = keySignal.split(" ");
 
                         if (signal[1].equals("P")) { // Press
 
                             int keyCode = Integer.parseInt(signal[2]);
-                            robot.keyPress(keyCode);
+                            try { // skip utf-8 character..
+                                robot.keyPress(keyCode);
+                            } catch (Exception ignored) { }
 
                         } else if (signal[1].equals("R")) { // Release
 
                             int keyCode = Integer.parseInt(signal[2]);
-                            robot.keyRelease(keyCode);
+                            try { // skip utf-8 character..
+                                robot.keyRelease(keyCode);
+                            } catch (Exception ignored) { }
 
                         } else {
                             //..
                         }
 
-                    } else {
-
-                        //..
-
                     }
 
-                }
+                } catch (Exception ignored) { }
 
-            } catch (Exception e) {
-                shutdown();
             }
-
         }
 
         private void syncTime() throws Exception {
@@ -215,12 +266,12 @@ public class RemoteControlHandler implements Runnable {
     }
 
     public void shutdown() {
+        System.out.println("Shutdown remote control..");
         isRunning = false;
         try {
             employeeTCPSocket.close();
             employeeUDPSocket.close();
-        } catch (IOException e) {
-        }
+        } catch (Exception ignored) { }
     }
 
     private class BenchmarkFPS implements Runnable {
@@ -287,8 +338,8 @@ public class RemoteControlHandler implements Runnable {
 
             private class ImageSender implements Runnable {
 
-                private BufferedImage img;
-                private byte[] curTimeID;
+                private final BufferedImage img;
+                private final byte[] curTimeID;
 
                 public ImageSender(long curTimeID, BufferedImage img) {
                     this.img = img;
@@ -343,7 +394,7 @@ public class RemoteControlHandler implements Runnable {
 
                 private class ImagePartSender implements Runnable {
 
-                    private byte[] data;
+                    private final byte[] data;
 
                     public ImagePartSender(byte[] data) {
 //                    if (data.length >= PACKET_SIZE)

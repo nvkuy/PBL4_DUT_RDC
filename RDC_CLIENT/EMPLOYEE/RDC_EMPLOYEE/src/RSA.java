@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -14,8 +15,8 @@ import javax.crypto.Cipher;
 
 public class RSA {
 
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
+    private final PrivateKey privateKey;
+    private final PublicKey publicKey;
 
     private static final Integer KEY_SIZE = 1024;
 
@@ -94,7 +95,7 @@ public class RSA {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
-        return new String(decryptedMessage, "UTF8");
+        return new String(decryptedMessage, StandardCharsets.UTF_8);
     }
 
     public static String decrypt(String encryptedMessage, PrivateKey key) throws Exception {
@@ -102,7 +103,7 @@ public class RSA {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
-        return new String(decryptedMessage, "UTF8");
+        return new String(decryptedMessage, StandardCharsets.UTF_8);
     }
 
     public String sign(String testMes) throws Exception {

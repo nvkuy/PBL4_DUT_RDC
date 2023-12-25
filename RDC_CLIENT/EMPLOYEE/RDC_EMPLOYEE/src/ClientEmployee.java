@@ -227,8 +227,6 @@ public class ClientEmployee {
                     String option = readMes();
                     if (option.equals("/RemoteControl")) {
 
-//                        JOptionPane.showMessageDialog(null, "Your computer are being controlled!", "Message",1);
-
                         String key = readMes();
                         String targetIP = readMes();
                         Integer targetScreenWidth = Integer.valueOf(readMes());
@@ -237,11 +235,14 @@ public class ClientEmployee {
                         Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, targetScreenWidth, targetScreenHeight));
                         remoteControlHandler.start();
 
+//                        JOptionPane.showMessageDialog(null, "Your computer are being controlled!", "Message",JOptionPane.INFORMATION_MESSAGE);
+
                     } else {
                         // ..
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Shutdown();
+//                    e.printStackTrace();
                 }
 
             }

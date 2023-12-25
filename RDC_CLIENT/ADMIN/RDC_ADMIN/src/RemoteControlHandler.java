@@ -151,6 +151,7 @@ public class RemoteControlHandler implements Runnable {
     }
 
     public void shutdown() {
+        System.out.println("Shutdown remote control..");
         isRunning = false;
         try {
             adminTCPSocket.close();

@@ -13,7 +13,7 @@ public class AES {
     private static final int KEY_SIZE = 128;
     private static final int T_LEN = 128;
 
-    private ReentrantLock lock;
+    private final ReentrantLock lock;
 
     public AES() throws Exception {
 
