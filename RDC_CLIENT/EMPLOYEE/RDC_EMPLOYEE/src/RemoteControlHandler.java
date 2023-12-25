@@ -5,6 +5,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;

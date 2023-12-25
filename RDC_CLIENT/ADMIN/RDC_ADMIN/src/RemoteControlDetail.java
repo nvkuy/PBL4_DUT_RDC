@@ -82,6 +82,13 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         add(pn);
         setVisible(true);
 
+        screen.addKeyListener(screen);
+        screen.addMouseListener(screen);
+        screen.addMouseMotionListener(screen);
+        screen.setFocusable(true);
+        screen.setRequestFocusEnabled(true);
+        screen.requestFocus();
+
     }
 
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
@@ -92,11 +99,6 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public ScreenDisplayer() {
             setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             setBounds(50,50,SCREEN_WIDTH,SCREEN_HEIGHT);
-            addKeyListener(this);
-            addMouseListener(this);
-            addMouseMotionListener(this);
-            setFocusable(true);
-            requestFocus();
         }
 
         @Override
