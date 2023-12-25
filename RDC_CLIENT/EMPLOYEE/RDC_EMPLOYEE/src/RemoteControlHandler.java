@@ -4,6 +4,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -129,13 +130,13 @@ public class RemoteControlHandler implements Runnable {
 
                         } else if (signal[1].equals("P")) { // Press
 
-                            int mask = Integer.parseInt(signal[2]);
-                            robot.mousePress(mask);
+                            int btn = Integer.parseInt(signal[2]);
+                            robot.mousePress(InputEvent.getMaskForButton(btn));
 
                         } else if (signal[1].equals("R")) { // Release
 
-                            int mask = Integer.parseInt(signal[2]);
-                            robot.mouseRelease(mask);
+                            int btn = Integer.parseInt(signal[2]);
+                            robot.mouseRelease(InputEvent.getMaskForButton(btn));
 
                         } else {
                             //..
