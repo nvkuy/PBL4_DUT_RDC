@@ -49,9 +49,10 @@ public class ImageData {
 
             if (imagePart[partID] != null) return; // udp package can be duplicate
             byte[] part = Arrays.copyOfRange(rawData, 10, rawData.length);
-            imagePart[partID] = part;
             try {
                 lock.lock();
+                if (imagePart[partID] != null) return;
+                imagePart[partID] = part;
                 imgByteLen += part.length;
                 partReceived++;
             } finally {

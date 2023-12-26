@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/AES.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/AES.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlDetail.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/AES.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/AES.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageQueue.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AES.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AES.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +110,7 @@
       <workItem from="1703416936715" duration="624000" />
       <workItem from="1703485572548" duration="5879000" />
       <workItem from="1703520917122" duration="1817000" />
-      <workItem from="1703562829315" duration="1706000" />
+      <workItem from="1703562829315" duration="3714000" />
     </task>
     <servers />
   </component>
