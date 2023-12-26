@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -92,7 +93,11 @@ public class ClientEmployee {
 
     }
 
-    public void Interact() {
+    public void Interact() throws Exception {
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        writeMes(String.valueOf(screenSize.width));
+        writeMes(String.valueOf(screenSize.height));
 
         isRunning = true;
 

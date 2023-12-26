@@ -14,40 +14,35 @@ public class DetailHistory extends JFrame implements ActionListener {
     private JPanel pn;
     private JTable table;
     private JScrollPane scrollPane;
-    private String date,  comp, compstate;
+    private String date, comp, compstate;
     private int state;
     private List<List<String>> apps = new ArrayList<>();
     private List<List<String>> finalList = new ArrayList<>();
     private List<String> notAllowApps = new ArrayList<>();
     private JButton btnBack;
-    private ClientAdmin client = new ClientAdmin();
-    public DetailHistory(String s, String date, int state, String comp, String compstate)  {
-        super(s);
+    private ClientAdmin client;
+
+    public DetailHistory(ClientAdmin client, String date, int state, String comp, String compstate) throws Exception {
+        super("Detail history");
         this.comp = comp;
         this.date = date;
         this.state = state;
         this.compstate = compstate;
-        try {
-            client.Init();
-            client.Connect();
-            GetData();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error!");
-            client.Shutdown();
-        }
+        this.client = client;
+        GetData();
     }
-    public void GetData() throws Exception{
+
+    public void GetData() throws Exception {
 
         String option1 = "/AppHistory";
         client.writeMes(option1);
         client.writeMes(comp);
         int n1 = Integer.parseInt(client.readMes());
         apps = new ArrayList<>();
-        for(int i = 0; i < n1; i++){
+        for (int i = 0; i < n1; i++) {
             String appName = client.readMes();
             String timeID = client.readMes();
-            if(timeID.equals(date)){
+            if (timeID.equals(date)) {
                 apps.add(Arrays.asList(appName, timeID));
             }
         }
@@ -55,31 +50,31 @@ public class DetailHistory extends JFrame implements ActionListener {
         String option2 = "/NotAllowApp";
         client.writeMes(option2);
         int n = Integer.parseInt(client.readMes());
-        for(int i = 0;i < n;i++){
+        for (int i = 0; i < n; i++) {
             String appName = client.readMes();
             notAllowApps.add(appName);
         }
-        if(state == 1){
-            for(int i = 0;i < apps.size();i++){
-                for(int j = 0;j < notAllowApps.size();j++){
-                    if(apps.get(i).get(0).equals(notAllowApps.get(j))){
-                        finalList.add(Arrays.asList(apps.get(i).get(0),apps.get(i).get(1)));
+        if (state == 1) {
+            for (int i = 0; i < apps.size(); i++) {
+                for (int j = 0; j < notAllowApps.size(); j++) {
+                    if (apps.get(i).get(0).equals(notAllowApps.get(j))) {
+                        finalList.add(Arrays.asList(apps.get(i).get(0), apps.get(i).get(1)));
                         break;
                     }
                 }
 
             }
-        }
-        else{
-            for(int i = 0;i<apps.size();i++){
-                finalList.add(Arrays.asList(apps.get(i).get(0),apps.get(i).get(1)));
+        } else {
+            for (int i = 0; i < apps.size(); i++) {
+                finalList.add(Arrays.asList(apps.get(i).get(0), apps.get(i).get(1)));
             }
         }
 
         GUI();
     }
+
     public void GUI() {
-        setDefaultCloseOperation(3);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
@@ -97,7 +92,7 @@ public class DetailHistory extends JFrame implements ActionListener {
         String[] columnNames = {"Time", "Log App"};
 
         Object[][] data = new Object[finalList.size()][];
-        for(int i = 0;i< finalList.size();i++){
+        for (int i = 0; i < finalList.size(); i++) {
             List<String> row = new ArrayList<>();
             row.add(finalList.get(i).get(1));
             row.add(finalList.get(i).get(0));
@@ -119,14 +114,14 @@ public class DetailHistory extends JFrame implements ActionListener {
         };
 
         table.setDefaultRenderer(Object.class, cellRenderer);
-        btnBack=new JButton("BACK");
-        btnBack.setFont(new Font("Arial",Font.BOLD,16));
+        btnBack = new JButton("BACK");
+        btnBack.setFont(new Font("Arial", Font.BOLD, 16));
         btnBack.setBackground(Color.white);
         btnBack.setForeground(Color.black);
         btnBack.addActionListener(this);
         scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(800, 350));
-        btnBack.setBounds(770,500,200,60);
+        btnBack.setBounds(770, 500, 200, 60);
 
         table.setFillsViewportHeight(true);
 
@@ -141,14 +136,20 @@ public class DetailHistory extends JFrame implements ActionListener {
 
         setVisible(true);
     }
+
     public void windowClosing(WindowEvent we) {
         dispose();
         System.exit(0);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==btnBack){
-            new AppHistory("App history", comp, compstate);
+        if (e.getSource() == btnBack) {
+            try {
+                new AppHistory(client, comp, compstate);
+            } catch (Exception ex) {
+                client.Shutdown();
+            }
             dispose();
         }
     }

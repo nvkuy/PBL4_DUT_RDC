@@ -30,8 +30,8 @@ public class ImageQueue {
         MAX_DELAY = maxDelay;
         TIME_SPACE = 2 * maxDelay + 1;
 
-        data = new ImageData[(int)TIME_SPACE];
-        timeIDHeap = new TimeIDHeap((int)TIME_SPACE);
+        data = new ImageData[(int) TIME_SPACE];
+        timeIDHeap = new TimeIDHeap((int) TIME_SPACE);
 
         lock = new ReentrantLock(true);
 
@@ -44,7 +44,7 @@ public class ImageQueue {
 
         if (curTime - timeID > MAX_DELAY) return;
 
-        int hashID = (int)(timeID % TIME_SPACE);
+        int hashID = (int) (timeID % TIME_SPACE);
         if (data[hashID] == null) {
             try {
                 lock.lock();
@@ -70,7 +70,7 @@ public class ImageQueue {
 
             if (timeIDHeap.isEmpty()) break;
             long id = timeIDHeap.getLatestTimeID();
-            int hashID = (int)(id % TIME_SPACE);
+            int hashID = (int) (id % TIME_SPACE);
             if (curTime - id <= MAX_DELAY) break;
 
             try {
