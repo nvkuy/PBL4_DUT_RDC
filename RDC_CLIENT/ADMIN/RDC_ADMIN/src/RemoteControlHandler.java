@@ -26,9 +26,10 @@ public class RemoteControlHandler implements Runnable {
     private InetAddress inetAddress;
     private RemoteControlDetail mRemoteControl;
 
-    private int paintFramePerSecond = 0;
+    private long paintFramePerSecond = 0;
     private long sumDelay = 0;
-    private int packetCnt = 0;
+    private long packetCnt = 0;
+    private long receivedBytePerSecond = 0;
     private static final boolean BENCHMARK = true;
     private boolean isRunning = true;
     private BlockingQueue<String> controlSignalQueue;
@@ -115,6 +116,7 @@ public class RemoteControlHandler implements Runnable {
             } catch (Exception e) {
 //                e.printStackTrace();
                 shutdown();
+                // TODO: Back to previous page..
             }
 
         }
@@ -169,12 +171,11 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     Thread.sleep(1000);
                     if (packetCnt > 0) {
-                        System.out.println("FPS: " + paintFramePerSecond
-                                + " - AVG DELAY: " + (sumDelay / packetCnt));
+                        System.out.println("PaintFramePerSec: " + paintFramePerSecond +
+                                " - AvgDelay: " + (sumDelay / packetCnt) + " (ms)" +
+                                " - ReceivedPerSec: " + receivedBytePerSecond + " (bytes)");
                     }
-                    paintFramePerSecond = 0;
-                    sumDelay = 0;
-                    packetCnt = 0;
+                    paintFramePerSecond = sumDelay = packetCnt = receivedBytePerSecond = 0;
                 } catch (Exception e) {
                 }
             }
@@ -261,6 +262,7 @@ public class RemoteControlHandler implements Runnable {
                     if (BENCHMARK) {
                         sumDelay += System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8));
                         packetCnt++;
+                        receivedBytePerSecond += rawData.length;
                     }
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
 

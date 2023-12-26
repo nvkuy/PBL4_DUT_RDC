@@ -75,13 +75,21 @@ public class ImageQueue {
 
             try {
                 lock.lock();
-                if (data[hashID] != null) { // repeat check because when allow to lock the condition may not correct anymore
-                    timeIDHeap.pop();
-                    data[hashID] = null;
-                }
+                timeIDHeap.pop();
+                data[hashID] = null;
             } finally {
                 lock.unlock();
             }
+
+//            try {
+//                lock.lock();
+//                if (data[hashID] != null) { // repeat check because when allow to lock the condition may not correct anymore
+//                    timeIDHeap.pop();
+//                    data[hashID] = null;
+//                }
+//            } finally {
+//                lock.unlock();
+//            }
 
         }
 
@@ -98,16 +106,26 @@ public class ImageQueue {
 
         if (data[hashID] == null || !data[hashID].isCompleted()) return null;
 
+        BufferedImage img = data[hashID].getImage(aes);
         try {
             lock.lock();
-            if (data[hashID] == null || !data[hashID].isCompleted()) return null; // repeat check because when allow to lock the condition may not correct anymore
-            BufferedImage img = data[hashID].getImage(aes);
             timeIDHeap.pop();
-            data[hashID] = null;
-            return img;
         } finally {
             lock.unlock();
         }
+        data[hashID] = null;
+        return img;
+
+//        try {
+//            lock.lock();
+//            if (data[hashID] == null || !data[hashID].isCompleted()) return null; // repeat check because when allow to lock the condition may not correct anymore
+//            BufferedImage img = data[hashID].getImage(aes);
+//            timeIDHeap.pop();
+//            data[hashID] = null;
+//            return img;
+//        } finally {
+//            lock.unlock();
+//        }
 
 //        ImageData imgData = null;
 //        try {

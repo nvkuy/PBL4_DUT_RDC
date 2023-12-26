@@ -283,7 +283,9 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     Thread.sleep(1000);
                     if (packetSent > 0)
-                        System.out.println("FPS: " + sendFPS + " - AVG packet size: " + (sumPacketSize / packetSent));
+                        System.out.println("SendFramePerSec: " + sendFPS +
+                                " - SendPerSec: " + sumPacketSize + " (bytes)" +
+                                " - AvgPacketSize: " + (sumPacketSize / packetSent) + " (bytes)");
                     sumPacketSize = packetSent = sendFPS = 0;
                 } catch (Exception e) {
 

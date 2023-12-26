@@ -9,8 +9,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private JLabel lb1;
     private JButton btnBack;
     private JPanel pn;
-    private String comp ="";
-    private String state = "";
+    public String comp ="";
+    public String state = "";
     private ClientAdmin client = new ClientAdmin();
     private String key;
     private String targetIP;
