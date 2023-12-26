@@ -16,6 +16,8 @@ public class ConnectionHandler implements Runnable {
 	protected boolean isAdmin;
 	protected String ip;
 	protected AES aes;
+	protected int viewport_width;
+	protected int viewport_height;
 	
 	public ConnectionHandler(Server server, Socket socket) {
 		this.server = server;
@@ -36,6 +38,9 @@ public class ConnectionHandler implements Runnable {
 
 			verify();
 			// System.out.println(compID + " verified!");
+
+			viewport_width = Integer.parseInt(readMes());
+			viewport_height = Integer.parseInt(readMes());
 
 			isRunning = true;
 			isAdmin = server.compDataHelper.isAdminComp(compID);
@@ -228,17 +233,32 @@ public class ConnectionHandler implements Runnable {
 				} else if (option.equals("/RemoteControl")) {
 
 					String targetCompID = readMes();
-					Integer width = Integer.valueOf(readMes());
-					Integer height = Integer.valueOf(readMes());
 					AES rdcAES = new AES();
 					ConnectionHandler connectionHandler = server.employees.get(targetCompID);
+
+					int employeeScreenWidth = connectionHandler.viewport_width;
+					int employeeScreenHeight = connectionHandler.viewport_height;
+					double scaleDown = 1.0f;
+					scaleDown = Math.max((double)(employeeScreenWidth) / viewport_width, scaleDown);
+					scaleDown = Math.max((double)(employeeScreenHeight) / viewport_height, scaleDown);
+					int w1 = (int) (scaleDown * employeeScreenWidth);
+					int h1 = (int) (scaleDown * employeeScreenHeight);
+					double scaleUp = 1e9;
+					scaleUp = Math.min((double)(viewport_width) / w1, scaleUp);
+					scaleUp = Math.min((double)(viewport_height) / h1, scaleUp);
+					int w2 = (int) (scaleUp * w1);
+					int h2 = (int) (scaleUp * h1);
+
 					writeMes(rdcAES.getKeyStr());
 					writeMes(connectionHandler.ip);
+					writeMes(String.valueOf(w2));
+					writeMes(String.valueOf(h2));
+
 					connectionHandler.writeMes("/RemoteControl");
 					connectionHandler.writeMes(rdcAES.getKeyStr());
 					connectionHandler.writeMes(ip);
-					connectionHandler.writeMes(String.valueOf(width));
-					connectionHandler.writeMes(String.valueOf(height));
+					connectionHandler.writeMes(String.valueOf(w2));
+					connectionHandler.writeMes(String.valueOf(h2));
 
 				} else {
 					// more feature..
