@@ -39,28 +39,25 @@ public class ImageData {
 
     public void addPart(byte[] rawData) {
 
-        try {
+        int partID = (int) Util.bytesToLong(Arrays.copyOfRange(rawData, 8, 10));
+        if (partID == 0) { // header
 
-            lock.lock();
+            IV = Arrays.copyOfRange(rawData, 12, rawData.length);
+            numOfPart = (int) Util.bytesToLong(Arrays.copyOfRange(rawData, 10, 12));
 
-            int partID = (int)Util.bytesToLong(Arrays.copyOfRange(rawData, 8, 10));
-            if (partID == 0) { // header
+        } else { // normal image part
 
-                IV = Arrays.copyOfRange(rawData, 12, rawData.length);
-                numOfPart = (int)Util.bytesToLong(Arrays.copyOfRange(rawData, 10, 12));
-
-            } else { // normal image part
-
-                if (imagePart[partID] != null) return; // udp package can be duplicate
-                byte[] part = Arrays.copyOfRange(rawData, 10, rawData.length);
-                imagePart[partID] = part;
+            if (imagePart[partID] != null) return; // udp package can be duplicate
+            byte[] part = Arrays.copyOfRange(rawData, 10, rawData.length);
+            imagePart[partID] = part;
+            try {
+                lock.lock();
                 imgByteLen += part.length;
                 partReceived++;
-
+            } finally {
+                lock.unlock();
             }
 
-        } finally {
-            lock.unlock();
         }
 
     }
