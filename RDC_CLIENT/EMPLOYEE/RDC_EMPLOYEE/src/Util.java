@@ -23,7 +23,7 @@ public class Util {
     public static byte[] longToBytes(long num, int len) {
         byte[] result = new byte[len];
         for (int i = len - 1; i >= 0; i--) {
-            result[i] = (byte)(num & 0xFF);
+            result[i] = (byte) (num & 0xFF);
             num >>= 8;
         }
         return result;
@@ -70,6 +70,19 @@ public class Util {
 
         return os.toByteArray();
 
+    }
+
+    public static Rectangle getScreenSize() {
+        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
+        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
+        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
+    }
+
+    public static double getSystemScaleRatio() {
+        Rectangle screenSize = getScreenSize();
+        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
+        return screenSize.getWidth() / scaleScreenSize.getWidth();
     }
 
 }

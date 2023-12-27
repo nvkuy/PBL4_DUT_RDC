@@ -81,8 +81,9 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            area = Util.getScreenSize();
+//            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//            area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
 
             Thread screenHandler = new Thread(new ScreenShareHandler());
             screenHandler.start();

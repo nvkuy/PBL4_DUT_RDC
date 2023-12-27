@@ -95,7 +95,7 @@ public class ClientEmployee {
 
     public void Interact() throws Exception {
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Util.getScreenSize().getSize();
         writeMes(String.valueOf(screenSize.width));
         writeMes(String.valueOf(screenSize.height));
 
