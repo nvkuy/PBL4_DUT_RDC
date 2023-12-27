@@ -20,23 +20,15 @@ public class AppHistory extends JFrame implements ActionListener {
     private List<List<String>> apps = new ArrayList<>();
     private List<List<Object>> data = new ArrayList<>();
     private List<String> notAllowApps = new ArrayList<>();
-    private ClientAdmin client = new ClientAdmin();
+    private ClientAdmin client;
     private String comp, state;
 
-    public AppHistory(String s, String comp, String state) {
-        super(s);
+    public AppHistory(ClientAdmin client, String comp, String state) throws Exception {
+        super("App history");
         this.comp = comp;
         this.state = state;
-        try {
-            client.Init();
-            client.Connect();
-            GetData();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error!");
-            client.Shutdown();
-        }
+        this.client = client;
+        GetData();
 
     }
 
@@ -163,7 +155,11 @@ public class AppHistory extends JFrame implements ActionListener {
                     String selectedColumnName = table.getColumnName(selectedColumn);
                     System.out.println("Column id: " + selectedColumn);
                     System.out.println("Column name: " + selectedColumnName);
-                    new DetailHistory("Detail History", selectedDate, selectedColumn, comp, state);
+                    try {
+                        new DetailHistory(client, selectedDate, selectedColumn, comp, state);
+                    } catch (Exception ex) {
+                        client.Shutdown();
+                    }
                     dispose();
                 }
             }
@@ -186,7 +182,11 @@ public class AppHistory extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnBack) {
-            new DetailComputer("Detail computer", comp, state);
+            try {
+                new DetailComputer(client, comp, state);
+            } catch (Exception ex) {
+                client.Shutdown();
+            }
             dispose();
         }
     }

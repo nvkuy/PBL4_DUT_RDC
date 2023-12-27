@@ -12,34 +12,26 @@ public class AES {
     private final SecretKey key;
     private static final int KEY_SIZE = 128;
     private static final int T_LEN = 128;
-
-    private ReentrantLock lock;
+    private final ReentrantLock lock;
 
     public AES() throws Exception {
-
         KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(KEY_SIZE);
         key = generator.generateKey();
         lock = new ReentrantLock(true);
-
     }
 
     public AES(String secretKeyStr) {
-
-        key = new SecretKeySpec(Util.strToByte(secretKeyStr),"AES");
+        key = new SecretKeySpec(Util.strToByte(secretKeyStr), "AES");
         lock = new ReentrantLock(true);
-
     }
 
     public AES(byte[] secretKeyByte) {
-
         key = new SecretKeySpec(secretKeyByte, "AES");
         lock = new ReentrantLock(true);
-
     }
 
     public byte[] generateIV() throws Exception {
-
         try {
             lock.lock();
             Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -48,11 +40,9 @@ public class AES {
         } finally {
             lock.unlock();
         }
-
     }
 
     public byte[] encrypt(byte[] message, byte[] IV) throws Exception {
-
         try {
             lock.lock();
             Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -62,17 +52,11 @@ public class AES {
         } finally {
             lock.unlock();
         }
-
     }
 
     public String encrypt(String message, byte[] IV) throws Exception {
-        try {
-            lock.lock();
-            byte[] messageInBytes = message.getBytes();
-            return Util.byteToStr(encrypt(messageInBytes, IV));
-        } finally {
-            lock.unlock();
-        }
+        byte[] messageInBytes = message.getBytes();
+        return Util.byteToStr(encrypt(messageInBytes, IV));
     }
 
     public byte[] decrypt(byte[] encryptedMessage, byte[] IV) throws Exception {
@@ -88,30 +72,16 @@ public class AES {
     }
 
     public String decrypt(String encryptedMessage, byte[] IV) throws Exception {
-        try {
-            lock.lock();
-            byte[] messageInBytes = Util.strToByte(encryptedMessage);
-            return new String(decrypt(messageInBytes, IV));
-        } finally {
-            lock.unlock();
-        }
+        byte[] messageInBytes = Util.strToByte(encryptedMessage);
+        return new String(decrypt(messageInBytes, IV));
     }
 
     public byte[] getKeyByte() {
-        try {
-            lock.lock();
-            return key.getEncoded();
-        } finally {
-            lock.unlock();
-        }
+        return key.getEncoded();
     }
+
     public String getKeyStr() {
-        try {
-            lock.lock();
-            return Util.byteToStr(getKeyByte());
-        } finally {
-            lock.unlock();
-        }
+        return Util.byteToStr(getKeyByte());
     }
 
 }

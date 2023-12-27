@@ -30,8 +30,8 @@ public class ImageQueue {
         MAX_DELAY = maxDelay;
         TIME_SPACE = 2 * maxDelay + 1;
 
-        data = new ImageData[(int)TIME_SPACE];
-        timeIDHeap = new TimeIDHeap((int)TIME_SPACE);
+        data = new ImageData[(int) TIME_SPACE];
+        timeIDHeap = new TimeIDHeap((int) TIME_SPACE);
 
         lock = new ReentrantLock(true);
 
@@ -44,7 +44,7 @@ public class ImageQueue {
 
         if (curTime - timeID > MAX_DELAY) return;
 
-        int hashID = (int)(timeID % TIME_SPACE);
+        int hashID = (int) (timeID % TIME_SPACE);
         if (data[hashID] == null) {
             try {
                 lock.lock();
@@ -70,18 +70,26 @@ public class ImageQueue {
 
             if (timeIDHeap.isEmpty()) break;
             long id = timeIDHeap.getLatestTimeID();
-            int hashID = (int)(id % TIME_SPACE);
+            int hashID = (int) (id % TIME_SPACE);
             if (curTime - id <= MAX_DELAY) break;
 
             try {
                 lock.lock();
-                if (data[hashID] != null) { // repeat check because when allow to lock the condition may not correct anymore
-                    timeIDHeap.pop();
-                    data[hashID] = null;
-                }
+                timeIDHeap.pop();
+                data[hashID] = null;
             } finally {
                 lock.unlock();
             }
+
+//            try {
+//                lock.lock();
+//                if (data[hashID] != null) { // repeat check because when allow to lock the condition may not correct anymore
+//                    timeIDHeap.pop();
+//                    data[hashID] = null;
+//                }
+//            } finally {
+//                lock.unlock();
+//            }
 
         }
 
@@ -98,16 +106,26 @@ public class ImageQueue {
 
         if (data[hashID] == null || !data[hashID].isCompleted()) return null;
 
+        BufferedImage img = data[hashID].getImage(aes);
         try {
             lock.lock();
-            if (data[hashID] == null || !data[hashID].isCompleted()) return null; // repeat check because when allow to lock the condition may not correct anymore
-            BufferedImage img = data[hashID].getImage(aes);
             timeIDHeap.pop();
-            data[hashID] = null;
-            return img;
         } finally {
             lock.unlock();
         }
+        data[hashID] = null;
+        return img;
+
+//        try {
+//            lock.lock();
+//            if (data[hashID] == null || !data[hashID].isCompleted()) return null; // repeat check because when allow to lock the condition may not correct anymore
+//            BufferedImage img = data[hashID].getImage(aes);
+//            timeIDHeap.pop();
+//            data[hashID] = null;
+//            return img;
+//        } finally {
+//            lock.unlock();
+//        }
 
 //        ImageData imgData = null;
 //        try {

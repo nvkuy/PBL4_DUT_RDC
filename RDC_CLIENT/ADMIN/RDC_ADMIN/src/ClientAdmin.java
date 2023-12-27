@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
@@ -67,7 +68,7 @@ public class ClientAdmin {
         out.println(compID);
 
         // client verify server
-        String testMes = String.valueOf((long)(Math.random() * 1e18));
+        String testMes = String.valueOf((long) (Math.random() * 1e18));
         String crypMes = RSA.encrypt(testMes, serverPublicKey);
         out.println(crypMes);
         String signMes = inp.readLine();
@@ -91,7 +92,10 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
-       new RemoteControlView("Remote control");
+        writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH));
+        writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT));
+
+        new RemoteControlView(this);
 
     }
 

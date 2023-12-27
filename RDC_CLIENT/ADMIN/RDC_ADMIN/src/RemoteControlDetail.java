@@ -9,72 +9,70 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     private JLabel lb1;
     private JButton btnBack;
     private JPanel pn;
-    private String comp ="";
-    private String state = "";
-    private ClientAdmin client = new ClientAdmin();
+    public String comp = "";
+    public String state = "";
+    private ClientAdmin client;
     private String key;
     private String targetIP;
     public ScreenDisplayer screen;
     private BlockingQueue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
 
-    public RemoteControlDetail(String s, String name, String state)  {
-        super(s);
-        this.comp=name;
+    private int viewport_width;
+    private int viewport_height;
+
+    public RemoteControlDetail(ClientAdmin client, String name, String state) throws Exception {
+        super("Remote control detail");
+        this.comp = name;
         this.state = state;
-        try {
-            client.Init();
-            client.Connect();
-            GetData();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error!");
-            client.Shutdown();
-        }
+        this.client = client;
+
+        GetData();
+        GUI();
     }
+
     public void GetData() throws Exception {
         client.writeMes("/RemoteControl");
         client.writeMes(comp);
-        client.writeMes(String.valueOf(ScreenDisplayer.SCREEN_WIDTH));
-        client.writeMes(String.valueOf(ScreenDisplayer.SCREEN_HEIGHT));
         key = client.readMes();
         targetIP = client.readMes();
 
-        GUI();
+        viewport_width = Integer.parseInt(client.readMes());
+        viewport_height = Integer.parseInt(client.readMes());
     }
+
     public void GUI() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(1000,750);
+        setSize(1000, 750);
 
-        lb1=new JLabel("COMPUTER REMOTE CONTROLLER");
+        lb1 = new JLabel("COMPUTER REMOTE CONTROLLER");
         lb1.setForeground(Color.WHITE);
         lb1.setFont(new Font("Arial", Font.BOLD, 16));
 
 
-        btnBack=new JButton("BACK");
-        btnBack.setFont(new Font("Arial",Font.BOLD,12));
+        btnBack = new JButton("BACK");
+        btnBack.setFont(new Font("Arial", Font.BOLD, 12));
         btnBack.setBackground(Color.white);
         btnBack.setForeground(Color.black);
 
-        pn=new JPanel(null);
-        pn.setSize(1000,750);
-        pn.setBounds(0,0,1000,750);
+        pn = new JPanel(null);
+        pn.setSize(1000, 750);
+        pn.setBounds(0, 0, 1000, 750);
         pn.setBackground(Color.BLACK);
 
         controlSignalQueue = new LinkedBlockingQueue<>();
-
-        screen = new ScreenDisplayer();
 
         remoteControlHandler = new RemoteControlHandler(key, targetIP, this, controlSignalQueue);
         Thread thread = new Thread(remoteControlHandler);
         thread.start();
 
-        lb1.setBounds(50,10,400, 30);
-        btnBack.setBounds(900,10,100,30);
+        lb1.setBounds(50, 10, 400, 30);
+        btnBack.setBounds(900, 10, 100, 30);
         btnBack.addActionListener(this);
+        screen = new ScreenDisplayer();
         pn.add(lb1);
         pn.add(btnBack);
         pn.add(screen);
@@ -93,18 +91,19 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
-        public static final int SCREEN_WIDTH = 900;
-        public static final int SCREEN_HEIGHT = 600;
+
+        public static final int MAX_WIDTH = 900;
+        public static final int MAX_HEIGHT = 600;
 
         public ScreenDisplayer() {
-            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            setBounds(50,50,SCREEN_WIDTH,SCREEN_HEIGHT);
+            setSize(viewport_width, viewport_height);
+            setBounds(50, 50, viewport_width, viewport_height);
         }
 
         @Override
         public void paint(Graphics g) {
 
-            if (screenFrame != null){
+            if (screenFrame != null) {
 //                screenFrame = Util.resizeImage(screenFrame, SCREEN_WIDTH, SCREEN_HEIGHT);
                 g.drawImage(screenFrame, 0, 0, null);
             }
@@ -126,14 +125,16 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public void keyPressed(KeyEvent e) {
             try {
                 controlSignalQueue.put("K P " + e.getKeyCode());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
             try {
                 controlSignalQueue.put("K R " + e.getKeyCode());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
 
         @Override
@@ -145,14 +146,16 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public void mousePressed(MouseEvent e) {
             try {
                 controlSignalQueue.put("M P " + e.getButton());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             try {
                 controlSignalQueue.put("M R " + e.getButton());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
 
         @Override
@@ -174,7 +177,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public void mouseMoved(MouseEvent e) {
             try {
                 controlSignalQueue.put("M M " + e.getX() + " " + e.getY());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -182,10 +186,15 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         dispose();
         System.exit(0);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==btnBack){
-            new DetailComputer("Detail computer", comp, state);
+        if (e.getSource() == btnBack) {
+            try {
+                new DetailComputer(client, comp, state);
+            } catch (Exception ex) {
+                client.Shutdown();
+            }
             remoteControlHandler.shutdown();
             dispose();
         }
