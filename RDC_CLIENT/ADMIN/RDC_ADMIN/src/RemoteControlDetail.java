@@ -104,7 +104,10 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         public void paint(Graphics g) {
 
             if (screenFrame != null) {
-//                screenFrame = Util.resizeImage(screenFrame, SCREEN_WIDTH, SCREEN_HEIGHT);
+                if (screenFrame.getWidth() < viewport_width)
+                    screenFrame = Util.resizeImage(screenFrame, viewport_width, viewport_height);
+//                System.out.println(screenFrame.getWidth());
+//                System.out.println(screenFrame.getHeight());
                 g.drawImage(screenFrame, 0, 0, null);
             }
 

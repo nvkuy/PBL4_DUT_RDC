@@ -92,9 +92,11 @@ public class ClientAdmin {
 
     public void Interact() throws Exception {
 
-        double scaleRatio = Util.getSystemScaleRatio();
-        writeMes(String.valueOf((int)(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH * scaleRatio)));
-        writeMes(String.valueOf((int)(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT * scaleRatio)));
+        writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH));
+        writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT));
+
+//        System.out.println((int)(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH / scaleRatio));
+//        System.out.println((int)(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT / scaleRatio));
 
         new RemoteControlView(this);
 

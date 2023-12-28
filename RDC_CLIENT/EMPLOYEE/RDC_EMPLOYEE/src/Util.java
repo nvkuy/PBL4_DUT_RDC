@@ -68,21 +68,26 @@ public class Util {
 
         writer.write(null, new IIOImage(img, null, null), param);
 
-        return os.toByteArray();
+        try {
+            return os.toByteArray();
+        } finally {
+            os.close();
+            writer.dispose();
+        }
 
     }
 
-    public static Rectangle getScreenSize() {
-        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
-        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
-        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
-    }
-
-    public static double getSystemScaleRatio() {
-        Rectangle screenSize = getScreenSize();
-        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
-        return screenSize.getWidth() / scaleScreenSize.getWidth();
-    }
+//    public static Rectangle getScreenSize() {
+//        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+//        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
+//        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
+//        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
+//    }
+//
+//    public static double getSystemScaleRatio() {
+//        Rectangle screenSize = getScreenSize();
+//        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
+//        return screenSize.getWidth() / scaleScreenSize.getWidth();
+//    }
 
 }

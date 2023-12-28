@@ -29,17 +29,17 @@ public class Util {
         return resizedImage;
     }
 
-    public static Rectangle getScreenSize() {
-        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
-        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
-        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
-    }
-
-    public static double getSystemScaleRatio() {
-        Rectangle screenSize = getScreenSize();
-        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
-        return screenSize.getWidth() / scaleScreenSize.getWidth();
-    }
+//    public static Rectangle getScreenSize() {
+//        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+//        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
+//        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
+//        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
+//    }
+//
+//    public static double getSystemScaleRatio() {
+//        Rectangle screenSize = getScreenSize();
+//        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
+//        return screenSize.getWidth() / scaleScreenSize.getWidth();
+//    }
 
 }

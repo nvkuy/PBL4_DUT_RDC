@@ -30,6 +30,7 @@ public class RemoteControlHandler implements Runnable {
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;
     private Rectangle area;
+//    private double scaleRatio;
 
     private int sendFPS = 0;
     private long packetSent = 0;
@@ -81,9 +82,12 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-            area = Util.getScreenSize();
-//            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//            area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+//            area = Util.getScreenSize();
+//            System.out.println(area.width);
+//            System.out.println(area.height);
+//            scaleRatio = Util.getSystemScaleRatio();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
 
             Thread screenHandler = new Thread(new ScreenShareHandler());
             screenHandler.start();
@@ -163,6 +167,8 @@ public class RemoteControlHandler implements Runnable {
 
                             int x = Integer.parseInt(signal[2]);
                             int y = Integer.parseInt(signal[3]);
+//                            int x_real = (int) ((x * area.width * scaleRatio) / TARGET_SCREEN_WIDTH);
+//                            int y_real = (int) ((y * area.height * scaleRatio) / TARGET_SCREEN_HEIGHT);
                             int x_real = (x * area.width) / TARGET_SCREEN_WIDTH;
                             int y_real = (y * area.height) / TARGET_SCREEN_HEIGHT;
                             robot.mouseMove(x_real, y_real);
@@ -341,7 +347,7 @@ public class RemoteControlHandler implements Runnable {
 
             private class ImageSender implements Runnable {
 
-                private final BufferedImage img;
+                private BufferedImage img;
                 private final byte[] curTimeID;
 
                 public ImageSender(long curTimeID, BufferedImage img) {
@@ -364,8 +370,9 @@ public class RemoteControlHandler implements Runnable {
 
                     try {
 
-                        BufferedImage resizedImg = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
-                        byte[] data = Util.compressImgToByte(resizedImg, IMAGE_QUALITY);
+                        if (img.getWidth() > TARGET_SCREEN_WIDTH)
+                            img = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
+                        byte[] data = Util.compressImgToByte(img, IMAGE_QUALITY);
 
                         byte[] IV = aes.generateIV();
                         byte[] cryptImg = aes.encrypt(data, IV);
