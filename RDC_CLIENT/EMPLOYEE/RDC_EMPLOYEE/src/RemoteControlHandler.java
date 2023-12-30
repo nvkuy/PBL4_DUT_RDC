@@ -13,10 +13,10 @@ public class RemoteControlHandler implements Runnable {
 
     private static final int SCREEN_PORT = 6969;
     private static final int COMMAND_PORT = 8888;
-    private static final int DATA_SIZE = 1 << 14;
+    private static final int DATA_SIZE = 1 << 14; // TODO: Will try 1 << 16
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.3f;
+    private static final float IMAGE_QUALITY = 0.5f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
@@ -389,7 +389,7 @@ public class RemoteControlHandler implements Runnable {
                         DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
                         employeeUDPSocket.send(sendPacket);
                     } catch (Exception e) {
-//                        e.printStackTrace();
+                        e.printStackTrace();
                     }
 
                 }

@@ -50,7 +50,7 @@ public class AppHistory extends JFrame implements ActionListener {
         for (int i = 0; i < n; i++) {
             String appName = client.readMes();
             notAllowApps.add(appName);
-            System.out.println(i + appName);
+//            System.out.println(i + appName);
         }
 
         for (int i = 0; i < apps.size(); i++) {
@@ -153,8 +153,8 @@ public class AppHistory extends JFrame implements ActionListener {
                 if (selectedColumn > 0) {
                     String selectedDate = (String) table.getValueAt(selectedRow, 0);
                     String selectedColumnName = table.getColumnName(selectedColumn);
-                    System.out.println("Column id: " + selectedColumn);
-                    System.out.println("Column name: " + selectedColumnName);
+//                    System.out.println("Column id: " + selectedColumn);
+//                    System.out.println("Column name: " + selectedColumnName);
                     try {
                         new DetailHistory(client, selectedDate, selectedColumn, comp, state);
                     } catch (Exception ex) {
