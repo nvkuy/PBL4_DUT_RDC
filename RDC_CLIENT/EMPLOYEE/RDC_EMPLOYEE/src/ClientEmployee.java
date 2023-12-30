@@ -95,17 +95,21 @@ public class ClientEmployee {
 
     public void Interact() throws Exception {
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         writeMes(String.valueOf(screenSize.width));
         writeMes(String.valueOf(screenSize.height));
+
 
         isRunning = true;
 
         Thread serverCmdHandler = new Thread(new ServerCmdHandler());
         serverCmdHandler.start();
 
+
+
         Thread appHistoryLogger = new Thread(new AppHistoryLog());
         appHistoryLogger.start();
+
 
     }
 
@@ -163,62 +167,61 @@ public class ClientEmployee {
     private class AppHistoryLog implements Runnable {
 
         String data = "";
-        List<String> listData = new ArrayList<String>();
         int num = 0;
         @Override
         public void run() {
-
-            int check = 1;
-
             while (isRunning) {
                 try {
-                    LocalDateTime date = LocalDateTime.now();
+                    String machineName = System.getenv("COMPUTERNAME");
+                    ProcessBuilder processBuilder;
 
-                    if(check == 1){
-                        GetData();
-                        Thread.sleep(120000);
-                    }
-                    if (date.getMinute() == 1) check = 1;
-                    if ((date.getMinute() == 58 || date.getMinute() == 59) && (check == 1)) {
-                        data = (num + System.lineSeparator()) + data;
-                        String[] lines = data.split(System.lineSeparator());
-                        writeMes("/AppHistory");
-                        for (String line : lines) {
-                            writeMes(line);
+                    try {
+                        if (machineName == null || machineName.isEmpty()) {
+                            processBuilder = new ProcessBuilder("tasklist");
+                        } else {
+                            processBuilder = new ProcessBuilder("tasklist", "/S", machineName);
                         }
-                        data = "";
-                        num = 0;
-                        listData.clear();
-                        check = 0;
+
+                        Process process = processBuilder.start();
+
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                String processName = line.split("\\s+")[0];
+                                if (processName.isEmpty()) {
+                                    continue;
+                                }
+
+                                if (processName.endsWith(".exe")) {
+                                    processName = processName.substring(0, processName.length() - 4);
+                                }
+                                data += (processName + System.lineSeparator());
+                                num++;
+
+
+                            }
+                        }
+                    } catch (Exception e){
+
                     }
+
+                    data = (num + System.lineSeparator()) + data;
+                    String[] lines = data.split(System.lineSeparator());
+                    writeMes("/AppHistory");
+                    for (String line : lines) {
+                        writeMes(line);
+                    }
+                    data = "";
+                    num = 0;
+
+                    Thread.sleep(120000);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
 
         }
-        public void GetData() throws Exception{
-            String machineName = InetAddress.getLocalHost().getHostName();
-            Process[] list = null;
-            if (machineName == null || machineName.isEmpty())
-                list = ProcessHandle.allProcesses().toArray(Process[]::new);
-            else
-                list = ProcessHandle.allProcesses().filter(p -> p.info().command().isPresent() && p.info().command().get().contains(machineName)).toArray(Process[]::new);
-            for (Process p : list) {
-                int a = 0;
-                for (int i = 0; i < listData.size(); i++) {
-                    if (p.info().command().isPresent() && p.info().command().get().equals(listData.get(i))) {
-                        a = 1;
-                        break;
-                    }
-                }
-                if (a == 0) {
-                    data += (p.info().command().orElse("") + System.lineSeparator());
-                    num++;
-                    listData.add(p.info().command().orElse(""));
-                }
-            }
-        }
+
     }
 
     private class ServerCmdHandler implements Runnable {
