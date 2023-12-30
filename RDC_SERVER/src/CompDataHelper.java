@@ -13,7 +13,7 @@ public class CompDataHelper {
     }
 
     public boolean isAdminComp(String compID) throws Exception {
-        String checkAdminCompIDSQL = "SELECT 1 FROM _ADMIN_COMP WHERE CompID = ?";
+        String checkAdminCompIDSQL = "SELECT CompID FROM _ADMIN_COMP WHERE CompID = ?";
         PreparedStatement preparedStmt = conn.prepareStatement(checkAdminCompIDSQL);
         preparedStmt.setString(1, compID);
         ResultSet rs = preparedStmt.executeQuery();
@@ -74,7 +74,7 @@ public class CompDataHelper {
 
     public List<String> readEmployeeCompIDs() throws Exception {
         String readAllCompIDSQL = "SELECT CompID FROM _COMP WHERE NOT EXISTS " +
-                "(SELECT 1 FROM _ADMIN_COMP WHERE CompID = _COMP.CompID)";
+                "(SELECT CompID FROM _ADMIN_COMP WHERE CompID = _COMP.CompID)";
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery(readAllCompIDSQL);
         List<String> allCompID = new ArrayList<>();

@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ClientAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ClientAdmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CompDataHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CompDataHelper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,22 +33,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "E:/Projects/PBL4/RDC_SERVER",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "advanced.settings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;FixControlSignal&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Projects/PBL4/RDC_SERVER&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Server" />
@@ -113,7 +115,8 @@
       <workItem from="1703665171873" duration="2201000" />
       <workItem from="1703673606257" duration="2681000" />
       <workItem from="1703730183286" duration="6198000" />
-      <workItem from="1703920145887" duration="3252000" />
+      <workItem from="1703920145887" duration="5935000" />
+      <workItem from="1703949260309" duration="1927000" />
     </task>
     <servers />
   </component>

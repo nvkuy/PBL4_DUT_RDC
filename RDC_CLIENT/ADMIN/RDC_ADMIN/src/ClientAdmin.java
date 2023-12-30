@@ -23,6 +23,8 @@ public class ClientAdmin {
 
     public static void main(String[] args) {
 
+        System.setProperty("sun.java2d.uiScale", "1");
+
         ClientAdmin client = new ClientAdmin();
         try {
 
@@ -31,7 +33,6 @@ public class ClientAdmin {
             client.Interact();
 
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Error!");
             client.Shutdown();
         }
@@ -141,7 +142,7 @@ public class ClientAdmin {
 
     public void writeCompressMes(String mes) throws Exception {
 
-        if (mes == null || mes.equals(""))
+        if (mes == null || mes.isEmpty())
             mes = " ";
 
         byte[] IV = aes.generateIV();

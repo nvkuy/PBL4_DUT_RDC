@@ -3,12 +3,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.security.PublicKey;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClientEmployee {
 
@@ -28,6 +24,8 @@ public class ClientEmployee {
 
     public static void main(String[] args) {
 
+        System.setProperty("sun.java2d.uiScale", "1");
+
         ClientEmployee client = new ClientEmployee();
         try {
 
@@ -36,7 +34,6 @@ public class ClientEmployee {
             client.Interact();
 
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Error!");
             client.Shutdown();
         }
