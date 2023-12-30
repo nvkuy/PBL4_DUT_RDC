@@ -1,11 +1,9 @@
-import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.PublicKey;
-import java.security.spec.ECField;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ClientAdmin {
 
@@ -94,6 +92,9 @@ public class ClientAdmin {
 
         writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH));
         writeMes(String.valueOf(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT));
+
+//        System.out.println((int)(RemoteControlDetail.ScreenDisplayer.MAX_WIDTH / scaleRatio));
+//        System.out.println((int)(RemoteControlDetail.ScreenDisplayer.MAX_HEIGHT / scaleRatio));
 
         new RemoteControlView(this);
 

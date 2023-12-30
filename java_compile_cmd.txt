@@ -1,1 +1,1 @@
-java -cp .:/home/osboxes/Desktop/PBL4/server/mysql-connector-java-8.0.28.jar Server
+javac -cp path/to/jar/file1.jar;path/to/jar/file2.jar MyProgram.java

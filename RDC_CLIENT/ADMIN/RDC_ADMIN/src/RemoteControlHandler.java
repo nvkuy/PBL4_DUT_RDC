@@ -5,11 +5,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class RemoteControlHandler implements Runnable {
@@ -20,10 +17,10 @@ public class RemoteControlHandler implements Runnable {
     private static final int COMMAND_PORT = 8888;
     private static final int PACKET_SIZE = 1 << 15;
     private static final long MAX_DELAY = 1000;
-    private ImageQueue frameQueue;
+//    private ImageQueue frameQueue;
+    private ImageQueueV2 frameQueue;
     private DatagramSocket adminUDPSocket;
     private Socket adminTCPSocket;
-    private InetAddress inetAddress;
     private RemoteControlDetail mRemoteControl;
 
     private long paintFramePerSecond = 0;
@@ -60,15 +57,14 @@ public class RemoteControlHandler implements Runnable {
 
         try {
 
-            inetAddress = InetAddress.getByName(targetIP);
-
             adminTCPSocket = new Socket(targetIP, COMMAND_PORT);
 
             adminUDPSocket = new DatagramSocket(SCREEN_PORT);
 
-            System.out.println("RDC: " + inetAddress.getHostAddress());
+            System.out.println("RDC: " + targetIP);
 
-            frameQueue = new ImageQueue(MAX_DELAY);
+//            frameQueue = new ImageQueue(MAX_DELAY);
+            frameQueue = new ImageQueueV2(aes, MAX_DELAY);
 
             Thread controlSignalHandler = new Thread(new ControlSignalHandler());
             controlSignalHandler.start();
@@ -193,10 +189,12 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    Thread.sleep(2);
+//                    Thread.sleep(2);
+//
+//                    BufferedImage img = frameQueue.getNextImage(aes);
+//                    if (img == null) continue;
 
-                    BufferedImage img = frameQueue.getNextImage(aes);
-                    if (img == null) continue;
+                    BufferedImage img = frameQueue.getNextImage();
 
 //                    long t1 = System.currentTimeMillis();
                     mRemoteControl.screen.display(img);

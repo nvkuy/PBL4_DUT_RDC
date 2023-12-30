@@ -23,7 +23,7 @@ public class Util {
     public static byte[] longToBytes(long num, int len) {
         byte[] result = new byte[len];
         for (int i = len - 1; i >= 0; i--) {
-            result[i] = (byte)(num & 0xFF);
+            result[i] = (byte) (num & 0xFF);
             num >>= 8;
         }
         return result;
@@ -48,12 +48,19 @@ public class Util {
     }
 
     public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
-        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
-        graphics2D.dispose();
-        return resizedImage;
+        MultiStepRescaleOp mro = new MultiStepRescaleOp(targetWidth, targetHeight, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        mro.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.None);
+        return mro.filter(originalImage, null);
     }
+
+//    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+//        int w = originalImage.getWidth();
+//        double scaleRatio = 1.0 * targetWidth / w;
+//        BufferedImage scaledImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+//        AffineTransform at = AffineTransform.getScaleInstance(scaleRatio, scaleRatio);
+//        AffineTransformOp ato = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+//        return ato.filter(originalImage, scaledImage);
+//    }
 
     public static byte[] compressImgToByte(BufferedImage img, float quality) throws IOException {
 
@@ -68,7 +75,12 @@ public class Util {
 
         writer.write(null, new IIOImage(img, null, null), param);
 
-        return os.toByteArray();
+        try {
+            return os.toByteArray();
+        } finally {
+            os.close();
+            writer.dispose();
+        }
 
     }
 

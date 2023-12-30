@@ -1,16 +1,11 @@
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.*;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,7 +16,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.5f;
+    private static final float IMAGE_QUALITY = 0.3f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
@@ -133,10 +128,8 @@ public class RemoteControlHandler implements Runnable {
 
                     String signal = readMes();
 
-                    if (signal.charAt(0) == 'M')
-                        mouseSignals.put(signal);
-                    else
-                        keySignals.put(signal);
+                    if (signal.charAt(0) == 'M') mouseSignals.put(signal);
+                    else keySignals.put(signal);
 
                 }
 
@@ -182,7 +175,8 @@ public class RemoteControlHandler implements Runnable {
 
                     }
 
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
 
             }
         }
@@ -204,14 +198,16 @@ public class RemoteControlHandler implements Runnable {
                             int keyCode = Integer.parseInt(signal[2]);
                             try { // skip utf-8 character..
                                 robot.keyPress(keyCode);
-                            } catch (Exception ignored) { }
+                            } catch (Exception ignored) {
+                            }
 
                         } else if (signal[1].equals("R")) { // Release
 
                             int keyCode = Integer.parseInt(signal[2]);
                             try { // skip utf-8 character..
                                 robot.keyRelease(keyCode);
-                            } catch (Exception ignored) { }
+                            } catch (Exception ignored) {
+                            }
 
                         } else {
                             //..
@@ -219,7 +215,8 @@ public class RemoteControlHandler implements Runnable {
 
                     }
 
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
 
             }
         }
@@ -252,8 +249,7 @@ public class RemoteControlHandler implements Runnable {
 
         public void writeMes(String mes) throws Exception {
 
-            if (mes == null || mes.isEmpty())
-                mes = " ";
+            if (mes == null || mes.isEmpty()) mes = " ";
 
             byte[] IV = aes.generateIV();
             String crypMes = aes.encrypt(mes, IV);
@@ -271,7 +267,8 @@ public class RemoteControlHandler implements Runnable {
         try {
             employeeTCPSocket.close();
             employeeUDPSocket.close();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     private class BenchmarkFPS implements Runnable {
@@ -283,9 +280,7 @@ public class RemoteControlHandler implements Runnable {
                 try {
                     Thread.sleep(1000);
                     if (packetSent > 0)
-                        System.out.println("SendFramePerSec: " + sendFPS +
-                                " - SendPerSec: " + sumPacketSize + " (bytes)" +
-                                " - AvgPacketSize: " + (sumPacketSize / packetSent) + " (bytes)");
+                        System.out.println("SendFramePerSec: " + sendFPS + " - SendPerSec: " + sumPacketSize + " (bytes)" + " - AvgPacketSize: " + (sumPacketSize / packetSent) + " (bytes)");
                     sumPacketSize = packetSent = sendFPS = 0;
                 } catch (Exception e) {
 
@@ -326,11 +321,34 @@ public class RemoteControlHandler implements Runnable {
                 try {
 
                     Robot robot = new Robot();
-                    long curTimeID = System.currentTimeMillis() + timeDiff;
+
+                    byte[] curTimeID = Util.longToBytes(System.currentTimeMillis() + timeDiff, 8);
                     BufferedImage image = robot.createScreenCapture(area);
 
-                    Thread imageSender = new Thread(new ImageSender(curTimeID, image));
-                    imageSender.start();
+                    if (image.getWidth() > TARGET_SCREEN_WIDTH)
+                        image = Util.resizeImage(image, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
+                    byte[] data = Util.compressImgToByte(image, IMAGE_QUALITY);
+
+                    byte[] IV = aes.generateIV();
+                    byte[] cryptImg = aes.encrypt(data, IV);
+
+                    int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
+//                    System.out.println("Packet: " + numOfPart + " " + data.length);
+
+                    byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
+                    sendImagePart(header);
+
+                    for (int id = 1; id <= numOfPart; id++) {
+                        int start = (id - 1) * DATA_SIZE;
+                        int end = Math.min(cryptImg.length, start + DATA_SIZE);
+                        byte[] part = Arrays.copyOfRange(cryptImg, start, end);
+                        byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
+
+                        // TODO: Implement thread pool later..
+                        sendImagePart(packetData);
+                    }
+
+                    if (BENCHMARK) sendFPS++;
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
@@ -338,82 +356,36 @@ public class RemoteControlHandler implements Runnable {
 
             }
 
-            private class ImageSender implements Runnable {
+            private void sendImagePart(byte[] data) {
 
-                private final BufferedImage img;
-                private final byte[] curTimeID;
-
-                public ImageSender(long curTimeID, BufferedImage img) {
-                    this.img = img;
-                    this.curTimeID = Util.longToBytes(curTimeID, 8);
-                }
-
-                private void sendImagePart(byte[] data) {
-
+                if (BENCHMARK) {
                     sumPacketSize += data.length;
                     packetSent++;
+                }
 
-                    Thread imagePartSender = new Thread(new ImagePartSender(data));
-                    imagePartSender.start();
+                Thread imagePartSender = new Thread(new ImagePartSender(data));
+                imagePartSender.start();
 
+            }
+
+            private class ImagePartSender implements Runnable {
+
+                private final byte[] data;
+
+                public ImagePartSender(byte[] data) {
+//                    if (data.length >= PACKET_SIZE)
+//                        System.out.println(data.length);
+                    this.data = data;
                 }
 
                 @Override
                 public void run() {
 
                     try {
-
-                        BufferedImage resizedImg = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
-                        byte[] data = Util.compressImgToByte(resizedImg, IMAGE_QUALITY);
-
-                        byte[] IV = aes.generateIV();
-                        byte[] cryptImg = aes.encrypt(data, IV);
-
-                        int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
-//                    System.out.println("Packet: " + numOfPart + " " + data.length);
-
-                        byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
-                        sendImagePart(header);
-
-                        for (int id = 1; id <= numOfPart; id++) {
-                            int start = (id - 1) * DATA_SIZE;
-                            int end = Math.min(cryptImg.length, start + DATA_SIZE);
-                            byte[] part = Arrays.copyOfRange(cryptImg, start, end);
-                            byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
-
-                            // TODO: Implement thread pool later..
-                            sendImagePart(packetData);
-                        }
-
-                        if (BENCHMARK)
-                            sendFPS++;
-
+                        DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
+                        employeeUDPSocket.send(sendPacket);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                    }
-
-                }
-
-                private class ImagePartSender implements Runnable {
-
-                    private final byte[] data;
-
-                    public ImagePartSender(byte[] data) {
-//                    if (data.length >= PACKET_SIZE)
-//                        System.out.println(data.length);
-                        this.data = data;
-                    }
-
-                    @Override
-                    public void run() {
-
-                        try {
-                            DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
-                            employeeUDPSocket.send(sendPacket);
-                        } catch (Exception e) {
-//                        e.printStackTrace();
-                        }
-
                     }
 
                 }

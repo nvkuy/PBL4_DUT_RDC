@@ -1,9 +1,14 @@
-
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.security.PublicKey;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientEmployee {
 
@@ -89,7 +94,6 @@ public class ClientEmployee {
     }
 
     public void Interact() throws Exception {
-
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         writeMes(String.valueOf(screenSize.width));
