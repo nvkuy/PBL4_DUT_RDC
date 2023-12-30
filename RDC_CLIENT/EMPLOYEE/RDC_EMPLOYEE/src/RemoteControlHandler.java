@@ -97,8 +97,6 @@ public class RemoteControlHandler implements Runnable {
 
         private BufferedReader inp;
         private PrintWriter out;
-        private Robot robot;
-
         private BlockingQueue<String> mouseSignals;
         private BlockingQueue<String> keySignals;
 
@@ -110,8 +108,6 @@ public class RemoteControlHandler implements Runnable {
                 isRunning = true;
                 inp = new BufferedReader(new InputStreamReader(employeeTCPSocket.getInputStream()));
                 out = new PrintWriter(employeeTCPSocket.getOutputStream(), true);
-
-                robot = new Robot();
 
                 syncTime();
 
@@ -141,10 +137,14 @@ public class RemoteControlHandler implements Runnable {
 
         private class MouseSignalHandler implements Runnable {
 
+            private Robot robot;
+
             @Override
             public void run() {
 
                 try {
+
+                    robot = new Robot();
 
                     while (isRunning) {
 
@@ -183,10 +183,14 @@ public class RemoteControlHandler implements Runnable {
 
         private class KeySignalHandler implements Runnable {
 
+            private Robot robot;
+
             @Override
             public void run() {
 
                 try {
+
+                    robot = new Robot();
 
                     while (isRunning) {
 

@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +37,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Merging FixScreenScaleRatio",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "E:/Projects/PBL4/RDC_SERVER",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -113,7 +113,7 @@
       <workItem from="1703665171873" duration="2201000" />
       <workItem from="1703673606257" duration="2681000" />
       <workItem from="1703730183286" duration="6198000" />
-      <workItem from="1703920145887" duration="2125000" />
+      <workItem from="1703920145887" duration="3252000" />
     </task>
     <servers />
   </component>
