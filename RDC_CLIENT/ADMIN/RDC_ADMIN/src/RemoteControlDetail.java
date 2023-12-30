@@ -46,7 +46,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(1000, 750);
+        setSize(1400, 800);
 
         lb1 = new JLabel("COMPUTER REMOTE CONTROLLER");
         lb1.setForeground(Color.WHITE);
@@ -59,8 +59,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         btnBack.setForeground(Color.black);
 
         pn = new JPanel(null);
-        pn.setSize(1000, 750);
-        pn.setBounds(0, 0, 1000, 750);
+        pn.setSize(1400, 800);
+        pn.setBounds(0, 0, 1400, 800);
         pn.setBackground(Color.BLACK);
 
         controlSignalQueue = new LinkedBlockingQueue<>();
@@ -69,8 +69,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         Thread thread = new Thread(remoteControlHandler);
         thread.start();
 
-        lb1.setBounds(50, 10, 400, 30);
-        btnBack.setBounds(900, 10, 100, 30);
+        lb1.setBounds(10, 10, 400, 30);
+        btnBack.setBounds(1300, 10, 100, 30);
         btnBack.addActionListener(this);
         screen = new ScreenDisplayer();
         pn.add(lb1);
@@ -92,12 +92,12 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
 
-        public static final int MAX_WIDTH = 900;
-        public static final int MAX_HEIGHT = 600;
+        public static final int MAX_WIDTH = 1300;
+        public static final int MAX_HEIGHT = 800;
 
         public ScreenDisplayer() {
             setSize(viewport_width, viewport_height);
-            setBounds(50, 50, viewport_width, viewport_height);
+            setBounds(10, 50, viewport_width, viewport_height);
         }
 
         @Override

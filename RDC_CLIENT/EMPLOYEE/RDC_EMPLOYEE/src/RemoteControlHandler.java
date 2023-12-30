@@ -320,14 +320,35 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    long curTimeID = System.currentTimeMillis() + timeDiff;
-
-//                    BufferedImage image = JNAScreenShot.capture(hwnd);
                     Robot robot = new Robot();
+
+                    byte[] curTimeID = Util.longToBytes(System.currentTimeMillis() + timeDiff, 8);
                     BufferedImage image = robot.createScreenCapture(area);
 
-                    Thread imageSender = new Thread(new ImageSender(curTimeID, image));
-                    imageSender.start();
+                    if (image.getWidth() > TARGET_SCREEN_WIDTH)
+                        image = Util.resizeImage(image, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
+                    byte[] data = Util.compressImgToByte(image, IMAGE_QUALITY);
+
+                    byte[] IV = aes.generateIV();
+                    byte[] cryptImg = aes.encrypt(data, IV);
+
+                    int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
+//                    System.out.println("Packet: " + numOfPart + " " + data.length);
+
+                    byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
+                    sendImagePart(header);
+
+                    for (int id = 1; id <= numOfPart; id++) {
+                        int start = (id - 1) * DATA_SIZE;
+                        int end = Math.min(cryptImg.length, start + DATA_SIZE);
+                        byte[] part = Arrays.copyOfRange(cryptImg, start, end);
+                        byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
+
+                        // TODO: Implement thread pool later..
+                        sendImagePart(packetData);
+                    }
+
+                    if (BENCHMARK) sendFPS++;
 
                 } catch (Exception e) {
 //                    e.printStackTrace();
@@ -335,84 +356,36 @@ public class RemoteControlHandler implements Runnable {
 
             }
 
-            private class ImageSender implements Runnable {
+            private void sendImagePart(byte[] data) {
 
-                private BufferedImage img;
-                private final byte[] curTimeID;
-
-                public ImageSender(long curTimeID, BufferedImage img) {
-                    this.img = img;
-                    this.curTimeID = Util.longToBytes(curTimeID, 8);
+                if (BENCHMARK) {
+                    sumPacketSize += data.length;
+                    packetSent++;
                 }
 
-                private void sendImagePart(byte[] data) {
+                Thread imagePartSender = new Thread(new ImagePartSender(data));
+                imagePartSender.start();
 
-                    if (BENCHMARK) {
-                        sumPacketSize += data.length;
-                        packetSent++;
-                    }
+            }
 
-                    Thread imagePartSender = new Thread(new ImagePartSender(data));
-                    imagePartSender.start();
+            private class ImagePartSender implements Runnable {
 
+                private final byte[] data;
+
+                public ImagePartSender(byte[] data) {
+//                    if (data.length >= PACKET_SIZE)
+//                        System.out.println(data.length);
+                    this.data = data;
                 }
 
                 @Override
                 public void run() {
 
                     try {
-
-                        if (img.getWidth() > TARGET_SCREEN_WIDTH)
-                            img = Util.resizeImage(img, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
-                        byte[] data = Util.compressImgToByte(img, IMAGE_QUALITY);
-
-                        byte[] IV = aes.generateIV();
-                        byte[] cryptImg = aes.encrypt(data, IV);
-
-                        int numOfPart = (cryptImg.length + DATA_SIZE - 1) / DATA_SIZE;
-//                    System.out.println("Packet: " + numOfPart + " " + data.length);
-
-                        byte[] header = Util.concat(curTimeID, Util.longToBytes(0, 2), Util.longToBytes(numOfPart, 2), IV);
-                        sendImagePart(header);
-
-                        for (int id = 1; id <= numOfPart; id++) {
-                            int start = (id - 1) * DATA_SIZE;
-                            int end = Math.min(cryptImg.length, start + DATA_SIZE);
-                            byte[] part = Arrays.copyOfRange(cryptImg, start, end);
-                            byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
-
-                            // TODO: Implement thread pool later..
-                            sendImagePart(packetData);
-                        }
-
-                        if (BENCHMARK) sendFPS++;
-
+                        DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
+                        employeeUDPSocket.send(sendPacket);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                    }
-
-                }
-
-                private class ImagePartSender implements Runnable {
-
-                    private final byte[] data;
-
-                    public ImagePartSender(byte[] data) {
-//                    if (data.length >= PACKET_SIZE)
-//                        System.out.println(data.length);
-                        this.data = data;
-                    }
-
-                    @Override
-                    public void run() {
-
-                        try {
-                            DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
-                            employeeUDPSocket.send(sendPacket);
-                        } catch (Exception e) {
-//                        e.printStackTrace();
-                        }
-
                     }
 
                 }
