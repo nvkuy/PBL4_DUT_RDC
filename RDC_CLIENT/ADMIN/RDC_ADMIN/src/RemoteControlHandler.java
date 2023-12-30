@@ -5,11 +5,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class RemoteControlHandler implements Runnable {

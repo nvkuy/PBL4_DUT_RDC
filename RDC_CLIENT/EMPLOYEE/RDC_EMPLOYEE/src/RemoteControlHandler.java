@@ -1,19 +1,11 @@
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.*;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,7 +16,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14;
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.5f;
+    private static final float IMAGE_QUALITY = 0.3f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
@@ -33,8 +25,6 @@ public class RemoteControlHandler implements Runnable {
     private DatagramSocket employeeUDPSocket;
     private InetAddress inetAddress;
     private Rectangle area;
-//    private double scaleRatio;
-    private WinDef.HWND hwnd;
 
     private int sendFPS = 0;
     private long packetSent = 0;
@@ -86,14 +76,8 @@ public class RemoteControlHandler implements Runnable {
 
             System.out.println("RDC: " + inetAddress.getHostAddress());
 
-//            area = Util.getScreenSize();
-//            System.out.println(area.width);
-//            System.out.println(area.height);
-//            scaleRatio = Util.getSystemScaleRatio();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             area = new Rectangle(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-
-            hwnd = User32.INSTANCE.GetDesktopWindow();
 
             Thread screenHandler = new Thread(new ScreenShareHandler());
             screenHandler.start();
@@ -171,8 +155,6 @@ public class RemoteControlHandler implements Runnable {
 
                             int x = Integer.parseInt(signal[2]);
                             int y = Integer.parseInt(signal[3]);
-//                            int x_real = (int) ((x * area.width * scaleRatio) / TARGET_SCREEN_WIDTH);
-//                            int y_real = (int) ((y * area.height * scaleRatio) / TARGET_SCREEN_HEIGHT);
                             int x_real = (x * area.width) / TARGET_SCREEN_WIDTH;
                             int y_real = (y * area.height) / TARGET_SCREEN_HEIGHT;
                             robot.mouseMove(x_real, y_real);
@@ -338,10 +320,11 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    BufferedImage image = JNAScreenShot.capture(hwnd);
-//                    Robot robot = new Robot();
-//                    BufferedImage image = robot.createScreenCapture(area);
                     long curTimeID = System.currentTimeMillis() + timeDiff;
+
+//                    BufferedImage image = JNAScreenShot.capture(hwnd);
+                    Robot robot = new Robot();
+                    BufferedImage image = robot.createScreenCapture(area);
 
                     Thread imageSender = new Thread(new ImageSender(curTimeID, image));
                     imageSender.start();

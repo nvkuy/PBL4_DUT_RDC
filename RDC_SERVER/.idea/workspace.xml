@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/JNAScreenShot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/jna/extra/GDI32Extra.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/jna/extra/User32Extra.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/jna/extra/WinGDIExtra.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/RDC_EMPLOYEE.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/RDC_EMPLOYEE.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/JNAScreenShot.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/JNAScreenShot.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/Util.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java_compile_cmd.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../java_compile_cmd.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +115,7 @@
       <workItem from="1703562829315" duration="8324000" />
       <workItem from="1703665171873" duration="2201000" />
       <workItem from="1703673606257" duration="2681000" />
-      <workItem from="1703730183286" duration="3199000" />
+      <workItem from="1703730183286" duration="6198000" />
     </task>
     <servers />
   </component>

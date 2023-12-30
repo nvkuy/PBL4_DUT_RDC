@@ -10,16 +10,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/jna-jpms-5.14.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/jna-platform-5.14.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/filters-2.0.235-1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -48,12 +48,19 @@ public class Util {
     }
 
     public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
-        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
-        graphics2D.dispose();
-        return resizedImage;
+        MultiStepRescaleOp mro = new MultiStepRescaleOp(targetWidth, targetHeight, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        mro.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.None);
+        return mro.filter(originalImage, null);
     }
+
+//    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+//        int w = originalImage.getWidth();
+//        double scaleRatio = 1.0 * targetWidth / w;
+//        BufferedImage scaledImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+//        AffineTransform at = AffineTransform.getScaleInstance(scaleRatio, scaleRatio);
+//        AffineTransformOp ato = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+//        return ato.filter(originalImage, scaledImage);
+//    }
 
     public static byte[] compressImgToByte(BufferedImage img, float quality) throws IOException {
 
@@ -76,18 +83,5 @@ public class Util {
         }
 
     }
-
-//    public static Rectangle getScreenSize() {
-//        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-//        Rectangle bounds = devices[0].getDefaultConfiguration().getBounds();
-//        DisplayMode dm = devices[0].getDefaultConfiguration().getDevice().getDisplayMode();
-//        return new Rectangle((int) bounds.getX(), (int) bounds.getY(), dm.getWidth(), dm.getHeight());
-//    }
-//
-//    public static double getSystemScaleRatio() {
-//        Rectangle screenSize = getScreenSize();
-//        Dimension scaleScreenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
-//        return screenSize.getWidth() / scaleScreenSize.getWidth();
-//    }
 
 }
