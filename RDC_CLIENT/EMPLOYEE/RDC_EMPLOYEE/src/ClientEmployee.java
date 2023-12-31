@@ -1,3 +1,5 @@
+import doryan.windowsnotificationapi.fr.Notification;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -242,8 +244,16 @@ public class ClientEmployee {
 
 //                        JOptionPane.showMessageDialog(null, "Your computer are being controlled!", "Message",JOptionPane.INFORMATION_MESSAGE);
 
-                    } else {
-                        // ..
+                    } else if(option.equals("/ReceiveNotification")){
+                        String notiType = readMes();
+                        String message = readMes();
+                        if("INFO".equals(notiType)){
+                            Notification.sendNotification("INFO", message, TrayIcon.MessageType.INFO);
+                        } else{
+                            Notification.sendNotification("CAUTION", message, TrayIcon.MessageType.WARNING);
+                        }
+                    } else{
+
                     }
                 } catch (Exception e) {
                     Shutdown();

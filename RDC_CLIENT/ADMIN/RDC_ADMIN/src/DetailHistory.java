@@ -78,16 +78,16 @@ public class DetailHistory extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(1000, 600);
+        setSize(2000, 1200);
 
         pn = new JPanel(null);
-        pn.setSize(1000, 600);
-        pn.setBounds(0, 0, 1000, 600);
-        pn.setBackground(Color.BLACK);
+        pn.setSize(2000, 1200);
+        pn.setBounds(0, 0, 2000, 1200);
+        pn.setBackground(Color.WHITE);
 
         lb1 = new JLabel("COMPUTER APP DETAIL HISTORY");
-        lb1.setForeground(Color.WHITE);
-        lb1.setFont(new Font("Arial", Font.BOLD, 20));
+        lb1.setForeground(Color.BLACK);
+        lb1.setFont(new Font("Arial", Font.BOLD, 40));
 
         String[] columnNames = {"Time", "Log App"};
 
@@ -100,33 +100,38 @@ public class DetailHistory extends JFrame implements ActionListener {
         }
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
         table = new JTable(model);
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setFont(new Font("Arial", Font.PLAIN, 30));
 
         TableCellRenderer cellRenderer = new TableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = new JLabel(value.toString());
-                label.setFont(new Font("Arial", Font.PLAIN, 14));
-                label.setPreferredSize(new Dimension(0, 100));
+                label.setFont(new Font("Arial", Font.PLAIN, 30));
+                Dimension preferredSize = new Dimension(600, 200);
+                label.setPreferredSize(preferredSize);
+                label.setMinimumSize(preferredSize);
                 label.setVerticalAlignment(SwingConstants.TOP);
                 return label;
             }
         };
 
         table.setDefaultRenderer(Object.class, cellRenderer);
+        table.setRowHeight(50);
+        table.setFillsViewportHeight(true);
+
         btnBack = new JButton("BACK");
-        btnBack.setFont(new Font("Arial", Font.BOLD, 16));
-        btnBack.setBackground(Color.white);
-        btnBack.setForeground(Color.black);
+        btnBack.setFont(new Font("Arial", Font.BOLD, 30));
+        btnBack.setBackground(Color.BLUE);
+        btnBack.setForeground(Color.WHITE);
         btnBack.addActionListener(this);
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(800, 350));
-        btnBack.setBounds(770, 500, 200, 60);
+        scrollPane.setPreferredSize(new Dimension(1600, 700));
+        btnBack.setBounds(1550, 1000, 400, 120);
 
         table.setFillsViewportHeight(true);
 
-        scrollPane.setBounds(50, 120, 800, 350);
-        lb1.setBounds(50, 50, 400, 50);
+        scrollPane.setBounds(50, 240, 1600, 700);
+        lb1.setBounds(50, 100, 800, 100);
 
         pn.add(lb1);
         pn.add(scrollPane);
