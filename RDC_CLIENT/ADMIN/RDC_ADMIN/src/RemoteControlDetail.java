@@ -175,7 +175,10 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-
+            try {
+                controlSignalQueue.put("M M " + e.getX() + " " + e.getY());
+            } catch (Exception ignored) {
+            }
         }
 
         @Override

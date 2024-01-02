@@ -5,17 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d5ffa82-8ae8-415b-a130-4f379005013f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/ServerInfo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/AppHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/AppHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/DetailComputer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/DetailComputer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/ImageData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlDetail.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlView.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/RemoteControlView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/ClientEmployee.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/ADMIN/RDC_ADMIN/src/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/ServerInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/ServerInfo.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/RemoteControlHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RDC_CLIENT/EMPLOYEE/RDC_EMPLOYEE/src/Util.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,22 +38,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "FixLowFps",
-    "last_opened_file_path": "E:/Projects/PBL4/RDC_SERVER",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "advanced.settings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;FixLowFps&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Projects/PBL4/RDC_SERVER&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Server" />
@@ -127,7 +124,11 @@
       <workItem from="1703949260309" duration="3146000" />
       <workItem from="1703966180131" duration="1460000" />
       <workItem from="1704006683630" duration="3937000" />
-      <workItem from="1704162452564" duration="3008000" />
+      <workItem from="1704162452564" duration="3017000" />
+      <workItem from="1704175137844" duration="564000" />
+      <workItem from="1704186626040" duration="766000" />
+      <workItem from="1704196087488" duration="1158000" />
+      <workItem from="1704203933384" duration="1035000" />
     </task>
     <servers />
   </component>

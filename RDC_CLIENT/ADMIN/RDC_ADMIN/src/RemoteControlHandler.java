@@ -15,7 +15,7 @@ public class RemoteControlHandler implements Runnable {
     private String targetIP;
     private static final int SCREEN_PORT = 6969;
     private static final int COMMAND_PORT = 8888;
-    private static final int PACKET_SIZE = (1 << 14) + 100; // TODO: Will try (1 << 16) + 100
+    private static final int PACKET_SIZE = (1 << 14) + 100;
     private static final long MAX_DELAY = 1000;
 //    private ImageQueue frameQueue;
     private ImageQueueV2 frameQueue;

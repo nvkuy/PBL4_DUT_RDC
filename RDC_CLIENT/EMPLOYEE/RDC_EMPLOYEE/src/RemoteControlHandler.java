@@ -1,7 +1,9 @@
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
@@ -16,7 +18,7 @@ public class RemoteControlHandler implements Runnable {
     private static final int DATA_SIZE = 1 << 14; // TODO: Will try 1 << 16
     private static final int FPS = 24;
     private static final int SLEEP_BETWEEN_FRAME = 1000 / FPS;
-    private static final float IMAGE_QUALITY = 0.5f;
+    private static final float IMAGE_QUALITY = 0.2f;
     private final int TARGET_SCREEN_WIDTH;
     private final int TARGET_SCREEN_HEIGHT;
 
@@ -202,6 +204,8 @@ public class RemoteControlHandler implements Runnable {
                             int keyCode = Integer.parseInt(signal[2]);
                             try { // skip utf-8 character..
                                 robot.keyPress(keyCode);
+                                if (keyCode == KeyEvent.VK_WINDOWS)
+                                    robot.keyRelease(keyCode);
                             } catch (Exception ignored) {
                             }
 
@@ -347,7 +351,6 @@ public class RemoteControlHandler implements Runnable {
                         int end = Math.min(cryptImg.length, start + DATA_SIZE);
                         byte[] part = Arrays.copyOfRange(cryptImg, start, end);
                         byte[] packetData = Util.concat(curTimeID, Util.longToBytes(id, 2), part);
-
                         // TODO: Implement thread pool later..
                         sendImagePart(packetData);
                     }
@@ -360,7 +363,7 @@ public class RemoteControlHandler implements Runnable {
 
             }
 
-            private void sendImagePart(byte[] data) {
+            private void sendImagePart(byte[] data) throws Exception {
 
                 if (BENCHMARK) {
                     sumPacketSize += data.length;
