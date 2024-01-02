@@ -167,6 +167,7 @@ public class ClientEmployee {
 
         String data = "";
         int num = 0;
+        private final int REPORT_HISTORY_TIME = 10 * 60 * 1000; // 10 mins
         @Override
         public void run() {
             while (isRunning) {
@@ -213,7 +214,7 @@ public class ClientEmployee {
                     data = "";
                     num = 0;
 
-                    Thread.sleep(120000);
+                    Thread.sleep(REPORT_HISTORY_TIME);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -242,7 +243,7 @@ public class ClientEmployee {
                         Thread remoteControlHandler = new Thread(new RemoteControlHandler(key, targetIP, targetScreenWidth, targetScreenHeight));
                         remoteControlHandler.start();
 
-//                        JOptionPane.showMessageDialog(null, "Your computer are being controlled!", "Message",JOptionPane.INFORMATION_MESSAGE);
+                        Notification.sendNotification("INFO", "Your computer are being controlled!", TrayIcon.MessageType.INFO);
 
                     } else if(option.equals("/ReceiveNotification")){
                         String notiType = readMes();
@@ -250,7 +251,7 @@ public class ClientEmployee {
                         if("INFO".equals(notiType)){
                             Notification.sendNotification("INFO", message, TrayIcon.MessageType.INFO);
                         } else{
-                            Notification.sendNotification("CAUTION", message, TrayIcon.MessageType.WARNING);
+                            Notification.sendNotification("WARNING", message, TrayIcon.MessageType.WARNING);
                         }
                     } else{
 

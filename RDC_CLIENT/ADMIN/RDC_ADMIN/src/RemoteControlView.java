@@ -13,8 +13,6 @@ public class RemoteControlView extends JFrame implements ActionListener {
     private JLabel lb1, lb2, lb3;
     private JPanel pn, pnList1, pnList2;
     private ArrayList<JButton> btnList1, btnList2;
-
-
     private List<String> onlineComps;
     private List<String> offlineComps;
     private List<Integer> onlineNotAllow;
@@ -163,7 +161,7 @@ public class RemoteControlView extends JFrame implements ActionListener {
     }
 
     public void GUI() {
-        setDefaultCloseOperation(3);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);

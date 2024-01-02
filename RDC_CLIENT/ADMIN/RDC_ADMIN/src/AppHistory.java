@@ -90,7 +90,7 @@ public class AppHistory extends JFrame implements ActionListener {
     }
 
     public void GUI() throws Exception {
-        setDefaultCloseOperation(3);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);

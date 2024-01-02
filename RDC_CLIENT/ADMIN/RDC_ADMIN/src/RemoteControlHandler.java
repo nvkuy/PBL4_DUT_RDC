@@ -234,7 +234,7 @@ public class RemoteControlHandler implements Runnable {
                     packetDataProcessor.start();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
 
