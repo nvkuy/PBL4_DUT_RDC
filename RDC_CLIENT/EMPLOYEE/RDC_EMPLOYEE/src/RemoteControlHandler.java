@@ -389,7 +389,7 @@ public class RemoteControlHandler implements Runnable {
                         DatagramPacket sendPacket = new DatagramPacket(data, data.length, inetAddress, SCREEN_PORT);
                         employeeUDPSocket.send(sendPacket);
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
 
                 }

@@ -99,6 +99,7 @@ public class DetailComputer extends JFrame implements ActionListener {
         btnBack.setBounds(400, 700, 300, 120);
         btnRemote.setBounds(750, 700, 300, 120);
         btnHistory.setBounds(1100, 700, 300, 120);
+
         btnNoti.addActionListener(this);
         btnBack.addActionListener(this);
         btnRemote.addActionListener(this);

@@ -17,7 +17,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public ScreenDisplayer screen;
     private BlockingQueue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
-
+    private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private int viewport_width;
     private int viewport_height;
 
@@ -61,6 +61,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         pn = new JPanel(null);
         pn.setSize(1500, 900);
         pn.setBounds(0, 0, 1500, 900);
+
         pn.setBackground(Color.WHITE);
 
         controlSignalQueue = new LinkedBlockingQueue<>();
@@ -71,6 +72,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         lb1.setBounds(50, 20, 600, 60);
         btnBack.setBounds(1100, 20, 300, 60);
+
         btnBack.addActionListener(this);
         screen = new ScreenDisplayer();
         pn.add(lb1);
