@@ -17,7 +17,7 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public ScreenDisplayer screen;
     private BlockingQueue<String> controlSignalQueue;
     private RemoteControlHandler remoteControlHandler;
-
+    private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private int viewport_width;
     private int viewport_height;
 
@@ -46,21 +46,22 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(2000, 1200);
+        setSize(1500, 900);
 
         lb1 = new JLabel("COMPUTER REMOTE CONTROLLER");
         lb1.setForeground(Color.BLACK);
-        lb1.setFont(new Font("Arial", Font.BOLD, 27));
+        lb1.setFont(new Font("Arial", Font.BOLD, 24));
 
 
         btnBack = new JButton("BACK");
-        btnBack.setFont(new Font("Arial", Font.BOLD, 27));
+        btnBack.setFont(new Font("Arial", Font.BOLD, 24));
         btnBack.setBackground(Color.BLUE);
         btnBack.setForeground(Color.WHITE);
 
         pn = new JPanel(null);
-        pn.setSize(2000, 1200);
-        pn.setBounds(0, 0, 2000, 1200);
+        pn.setSize(1500, 900);
+        pn.setBounds(0, 0, 1500, 900);
+
         pn.setBackground(Color.WHITE);
 
         controlSignalQueue = new LinkedBlockingQueue<>();
@@ -69,8 +70,9 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         Thread thread = new Thread(remoteControlHandler);
         thread.start();
 
-        lb1.setBounds(50, 20, 800, 60);
-        btnBack.setBounds(1750, 20, 200, 60);
+        lb1.setBounds(50, 20, 600, 60);
+        btnBack.setBounds(1100, 20, 300, 60);
+
         btnBack.addActionListener(this);
         screen = new ScreenDisplayer();
         pn.add(lb1);
@@ -92,8 +94,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
 
-        public static final int MAX_WIDTH = 1800;
-        public static final int MAX_HEIGHT = 1000;
+        public static final int MAX_WIDTH = 1280;
+        public static final int MAX_HEIGHT = 720;
 
         public ScreenDisplayer() {
             setSize(viewport_width, viewport_height);
@@ -173,7 +175,10 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-
+            try {
+                controlSignalQueue.put("M M " + e.getX() + " " + e.getY());
+            } catch (Exception ignored) {
+            }
         }
 
         @Override
