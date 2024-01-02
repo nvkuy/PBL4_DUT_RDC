@@ -328,10 +328,8 @@ public class RemoteControlHandler implements Runnable {
 
                 try {
 
-                    Robot robot = new Robot();
-
+                    BufferedImage image = new Robot().createScreenCapture(area);
                     byte[] curTimeID = Util.longToBytes(System.currentTimeMillis() + timeDiff, 8);
-                    BufferedImage image = robot.createScreenCapture(area);
 
                     if (image.getWidth() > TARGET_SCREEN_WIDTH)
                         image = Util.resizeImage(image, TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT);
