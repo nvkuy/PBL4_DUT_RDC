@@ -94,11 +94,11 @@ public class AppHistory extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(2000, 1200);
+        setSize(1500, 900);
 
         pn = new JPanel(null);
-        pn.setSize(2000, 1200);
-        pn.setBounds(0, 0, 2000, 1200);
+        pn.setSize(1500, 900);
+        pn.setBounds(0, 0, 1500, 900);
         pn.setBackground(Color.WHITE);
 
         lb1 = new JLabel("COMPUTER APP HISTORY FOR " + comp);
@@ -123,8 +123,8 @@ public class AppHistory extends JFrame implements ActionListener {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = new JLabel(value.toString());
-                label.setFont(new Font("Arial", Font.PLAIN, 30));
-                Dimension preferredSize = new Dimension(600, 200);
+                label.setFont(new Font("Arial", Font.PLAIN, 25));
+                Dimension preferredSize = new Dimension(400, 150);
                 label.setPreferredSize(preferredSize);
                 label.setMinimumSize(preferredSize);
                 label.setVerticalAlignment(SwingConstants.TOP);
@@ -137,17 +137,17 @@ public class AppHistory extends JFrame implements ActionListener {
         table.setFillsViewportHeight(true);
 
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(1600, 700));
+        scrollPane.setPreferredSize(new Dimension(1200, 500));
 
         table.setFillsViewportHeight(true);
         btnBack = new JButton("BACK");
-        btnBack.setFont(new Font("Arial", Font.BOLD, 32));
+        btnBack.setFont(new Font("Arial", Font.BOLD, 24));
         btnBack.setBackground(Color.BLUE);
         btnBack.setForeground(Color.white);
         btnBack.addActionListener(this);
-        scrollPane.setBounds(50, 240, 1600, 700);
-        btnBack.setBounds(1550, 1000, 400, 120);
-        lb1.setBounds(50, 100, 1200, 100);
+        scrollPane.setBounds(50, 150, 1200, 500);
+        btnBack.setBounds(1270, 700, 200, 100);
+        lb1.setBounds(50, 50, 1200, 70);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override

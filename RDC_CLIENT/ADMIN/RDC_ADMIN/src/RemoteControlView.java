@@ -165,7 +165,7 @@ public class RemoteControlView extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(2000, 1200);
+        setSize(1500, 900);
 
         lb1 = new JLabel("DESKTOP REMOTE CONTROL");
         lb1.setForeground(Color.BLACK);
@@ -178,24 +178,24 @@ public class RemoteControlView extends JFrame implements ActionListener {
         lb3.setFont(new Font("Arial", Font.PLAIN, 32));
 
         pnList1 = new JPanel(null);
-        pnList1.setSize(1800, 140);
-        pnList1.setBounds(50, 460, 1800, 140);
+        pnList1.setSize(1350, 105);
+        pnList1.setBounds(50, 345, 1350, 105);
         pnList1.setBackground(Color.WHITE);
         pnList2 = new JPanel(null);
-        pnList2.setSize(1800, 140);
-        pnList2.setBounds(50, 860, 1800, 140);
+        pnList2.setSize(1350, 105);
+        pnList2.setBounds(50, 650, 1350, 105);
         pnList2.setBackground(Color.WHITE);
 
 
         pn = new JPanel(null);
-        pn.setSize(2000, 1200);
-        pn.setBounds(0, 0, 2000, 1200);
+        pn.setSize(1500, 900);
+        pn.setBounds(0, 0, 1500, 900);
         pn.setBackground(Color.WHITE);
 
 
-        lb1.setBounds(100, 100, 800, 100);
-        lb2.setBounds(100, 300, 800, 100);
-        lb3.setBounds(100, 700, 800, 100);
+        lb1.setBounds(100, 100, 600, 100);
+        lb2.setBounds(100, 250, 600, 100);
+        lb3.setBounds(100, 500, 600, 100);
 
         pn.add(lb1);
         pn.add(lb2);
@@ -222,7 +222,7 @@ public class RemoteControlView extends JFrame implements ActionListener {
             JButton btn = new JButton("<html><center><b>"+onlineComps.get(i) + "<br>" + onlineNotAllow.get(i) +"</center></html>");
             btn.setFont(customFont);
             btnList1.add(btn);
-            btn.setBounds(200 * i, 0, 180, 140);
+            btn.setBounds(150 * i, 0, 130, 100);
             btn.setBackground(Color.GREEN);
             if(onlineNotAllow.get(i) > 0) {
                 btn.setBackground(Color.RED);
@@ -236,7 +236,7 @@ public class RemoteControlView extends JFrame implements ActionListener {
             JButton btn = new JButton("<html><center><b>"+offlineComps.get(i) + "<br>" + offlineNotAllow.get(i) +"</center></html>");
             btn.setFont(customFont);
             btnList2.add(btn);
-            btn.setBounds(200 * i, 0, 180, 140);
+            btn.setBounds(150 * i, 0, 130, 100);
             btn.setBackground(Color.YELLOW);
             if(offlineNotAllow.get(i) > 0) {
                 btn.setBackground(Color.RED);

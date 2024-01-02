@@ -75,16 +75,16 @@ public class Notification  extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(2000, 1200);
+        setSize(1500, 900);
 
         lb1 = new JLabel(new String("SEND NOTIFICATION TO EMPLOYEE"));
         lb1.setForeground(Color.BLACK);
-        lb1.setFont(new Font("Arial", Font.BOLD, 40));
+        lb1.setFont(new Font("Arial", Font.BOLD, 32));
 
         textArea = new JTextArea();
         textArea.setColumns(40);
         textArea.setRows(20);
-        textArea.setFont(new Font("Arial", Font.PLAIN, 30));
+        textArea.setFont(new Font("Arial", Font.PLAIN, 24));
 
         textArea.setText("Your computer is using "+ notAllowNum +" invalid processes");
 
@@ -92,7 +92,7 @@ public class Notification  extends JFrame implements ActionListener {
         textArea.setBorder(border);
 
         JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(1900, 750));
+        scrollPane.setPreferredSize(new Dimension(1400, 450));
 
         btnWarnning = new JButton("Send warning");
         btnWarnning.setFont(new Font("Arial", Font.BOLD, 25));
@@ -115,17 +115,17 @@ public class Notification  extends JFrame implements ActionListener {
         btnBack.setForeground(Color.white);
 
         pn = new JPanel(null);
-        pn.setSize(2000, 1200);
-        pn.setBounds(0, 0, 2000, 1200);
+        pn.setSize(1500, 900);
+        pn.setBounds(0, 0, 1500, 900);
         pn.setBackground(Color.WHITE);
 
-        lb1.setBounds(50, 100, 800, 100);
-        textArea.setBounds(50,220,1900,750);
+        lb1.setBounds(50, 100, 800, 75);
+        textArea.setBounds(50,200,1400,450);
 
-        btnWarnning.setBounds(50, 1000, 400, 120);
-        btnInfor.setBounds(550, 1000, 400, 120);
-        btnReset.setBounds(1050, 1000, 400, 120);
-        btnBack.setBounds(1500, 1000, 400, 120);
+        btnWarnning.setBounds(50, 700, 300, 100);
+        btnInfor.setBounds(400, 700, 300, 100);
+        btnReset.setBounds(750, 700, 300, 100);
+        btnBack.setBounds(1100, 700, 300, 100);
 
         btnWarnning.addActionListener(this);
         btnInfor.addActionListener(this);
