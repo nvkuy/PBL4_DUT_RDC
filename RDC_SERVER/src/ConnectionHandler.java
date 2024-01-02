@@ -260,8 +260,18 @@ public class ConnectionHandler implements Runnable {
 					connectionHandler.writeMes(String.valueOf(w2));
 					connectionHandler.writeMes(String.valueOf(h2));
 
-				} else {
-					// more feature..
+				} else if (option.equals("/SendNotification")){
+					String targetCompID = readMes();
+					String notiType = readMes();
+					String message = readMes();
+					ConnectionHandler connectionHandler = server.employees.get(targetCompID);
+
+					connectionHandler.writeMes("/ReceiveNotification");
+					connectionHandler.writeMes(notiType);
+					connectionHandler.writeMes(message);
+
+				} else{
+					//More feature
 				}
 
 			}

@@ -46,22 +46,22 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
-        setSize(1400, 800);
+        setSize(2000, 1200);
 
         lb1 = new JLabel("COMPUTER REMOTE CONTROLLER");
-        lb1.setForeground(Color.WHITE);
-        lb1.setFont(new Font("Arial", Font.BOLD, 16));
+        lb1.setForeground(Color.BLACK);
+        lb1.setFont(new Font("Arial", Font.BOLD, 27));
 
 
         btnBack = new JButton("BACK");
-        btnBack.setFont(new Font("Arial", Font.BOLD, 12));
-        btnBack.setBackground(Color.white);
-        btnBack.setForeground(Color.black);
+        btnBack.setFont(new Font("Arial", Font.BOLD, 27));
+        btnBack.setBackground(Color.BLUE);
+        btnBack.setForeground(Color.WHITE);
 
         pn = new JPanel(null);
-        pn.setSize(1400, 800);
-        pn.setBounds(0, 0, 1400, 800);
-        pn.setBackground(Color.BLACK);
+        pn.setSize(2000, 1200);
+        pn.setBounds(0, 0, 2000, 1200);
+        pn.setBackground(Color.WHITE);
 
         controlSignalQueue = new LinkedBlockingQueue<>();
 
@@ -69,8 +69,8 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
         Thread thread = new Thread(remoteControlHandler);
         thread.start();
 
-        lb1.setBounds(10, 10, 400, 30);
-        btnBack.setBounds(1300, 10, 100, 30);
+        lb1.setBounds(50, 20, 800, 60);
+        btnBack.setBounds(1750, 20, 200, 60);
         btnBack.addActionListener(this);
         screen = new ScreenDisplayer();
         pn.add(lb1);
@@ -92,12 +92,12 @@ public class RemoteControlDetail extends JFrame implements ActionListener {
     public class ScreenDisplayer extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
         private BufferedImage screenFrame;
 
-        public static final int MAX_WIDTH = 1300;
-        public static final int MAX_HEIGHT = 800;
+        public static final int MAX_WIDTH = 1800;
+        public static final int MAX_HEIGHT = 1000;
 
         public ScreenDisplayer() {
             setSize(viewport_width, viewport_height);
-            setBounds(10, 50, viewport_width, viewport_height);
+            setBounds(50, 100, viewport_width, viewport_height);
         }
 
         @Override
