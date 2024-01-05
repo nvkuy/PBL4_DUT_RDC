@@ -250,20 +250,18 @@ public class RemoteControlHandler implements Runnable {
             public PacketDataProcessor(byte[] rawData, int length) {
                 this.rawData = rawData;
                 this.length = length;
+                if (BENCHMARK) {
+                    sumDelay += System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8));
+                    packetCnt++;
+                    receivedBytePerSecond += length;
+                }
             }
 
             @Override
             public void run() {
 
                 try {
-
-                    if (BENCHMARK) {
-                        sumDelay += System.currentTimeMillis() - Util.bytesToLong(Arrays.copyOfRange(rawData, 0, 8));
-                        packetCnt++;
-                        receivedBytePerSecond += rawData.length;
-                    }
                     frameQueue.push(Arrays.copyOfRange(rawData, 0, length));
-
                 } catch (Exception e) {
 //                    e.printStackTrace();
                 }
