@@ -11,7 +11,7 @@
 ### System overview:
 
 1. Server: The company will setup a server to handle connection from admins or employees, forward message from admins to employees, store the app history of employee, set up the session for remote desktop..
-2. Admin client: The company will give admins a software that can connect to server and do what admin can do like: tracking employee app history, send messages, remote desktop control..
+2. Admin client: The company will give admins a software that can connect to server and do what admin can do like: tracking employee app history, send messages, remote desktop control(24fps, network 10mb/s, AES encryption)..
 3. Employee client: The company will give employee the device(laptop, pc..) that have a service pre-installed that report app history, tracking and receive messages from server, admin.
 4. System admin Cli: The company will give system admin a cli that can generate RSA public and private keys, this key is require to active the client admin or client employee software.
 
